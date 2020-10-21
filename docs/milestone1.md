@@ -1,3 +1,9 @@
+
+
+#Milestone 1
+
+# Introduction
+
 # Background
 
 
@@ -38,6 +44,10 @@ This suite of operations is encoded on the trace table.
 
 Therefore, from the previous points, we see that we will be able to compute value of the gradient of a function evaluated on a point by iteratively applying the chain rule at every operation node and leveraging a set of basic derivatives and operation on derivatives.
 
+## How to use
+
+
+## Software organization
 
 # Implementation
 
@@ -56,7 +66,10 @@ From the background part, there are several questions that need to be dealt with
 4. Leverage he datastructures defined in 3, and define a class of elementary functions where we define explicitely the derivatives.
 
 
+External dependencies: numpy, math
+Elementary functions: use numpy
+Ability to act on an array
 
-
+ 
 
 
