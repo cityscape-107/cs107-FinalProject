@@ -23,9 +23,9 @@ The principal concept that is going to be leveraged through automatic differenti
 Now that we know how to compute the derivatives of atoms and how to handle derivatives on basic operations of functions, we want to visualize how can a function be decomposed into thse basic operations.
 An important visualization of how a function can be decomposed into several elementary operations is the computational graph. 
 
-For instance, we are going to draw the graph of the function $f(x) = $ 
+For instance, we are going to draw the graph of the function $f(x,y) =exp(-(sin(x)-cos(x))**2) $ 
 
-"insert the computational graph"
+![Computational_graph.jpeg](Computational_graph.jpeg)
 
 Therefore, the resulting quantity of interest can be explicitely expressed as a composition of several functions. In order to compute the derivative of these successive compositions, we are going to leverage a powerful mathematical tool: the **chain rule**.
 A simple version of the chain rule can be expressed as follows : for $f$ and $g$ two functions, 
@@ -37,12 +37,16 @@ Now, the question is to get the derivative of the inner function, that represent
 This suite of operations is encoded on the trace table. 
 
 
-"insert the forward trace table related to the computational graph"
-
-
-
+![Evaluation_table.png](Evaluation_table.png)
 
 Therefore, from the previous points, we see that we will be able to compute value of the gradient of a function evaluated on a point by iteratively applying the chain rule at every operation node and leveraging a set of basic derivatives and operation on derivatives.
+
+
+ 
+
+
+
+
 
 ## How to use
 
@@ -65,11 +69,17 @@ From the background part, there are several questions that need to be dealt with
 3. To be done, how to deal with elementary operations how to define addition ..
 4. Leverage he datastructures defined in 3, and define a class of elementary functions where we define explicitely the derivatives.
 
+We will use a constructor so set values representing the first row of the computational table discussed above (i.e. the first layer of the computational tree).
 
-External dependencies: numpy, math
-Elementary functions: use numpy
-Ability to act on an array
 
+Handling of invalid inputs: as we will be defining a class for elementary operations that will override the usual dunder methods we will also need to ensure that the inputs into these are valid. Notably, since we are only working with real numbers, we will not define these operations for imaginary inputs and will need to implement checks to ensure only real values are passed through.
+
+
+The library will have the following external dependencies: numpy, math
+Elementary functions such as cos, sin, exp etc. will be implemented using the the numpy and math dependences.
+The goal for the library is also to be able to implement the AD differention on an input array, similar to how one can apply the np.exp() function to both a single value and an array.
+
+Also included, will be an application using the AD library to implement Newton's Root Finding Method for vector valued functions of vector variables using the AD library. This will be held in a seperate library to the AD library.
  
 
 
