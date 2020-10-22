@@ -49,12 +49,149 @@ Therefore, from the previous points, we see that we will be able to compute valu
 
 
 
+# How to use
+
+### The url to the project is: https://pseudo.link
 
 
-## How to use
+
+- Create and activate a virtual environment.
+
+```
+#test if you have Anaconda installed, our package relies on it
+#in command line
+conda -V
+conda create -n Cityscape
+activate Cityscape
+```
+
+- Install and test Cityscape® AD tool using pip.
+
+```
+#Installation 
+conda install -n CityscapeAD
+
+#test
+pytest tests
+```
 
 
-## Software organization
+#### Demos
+
+```
+import CityscapeAD as  ad
+import numpy as np
+```
+
+
+- Variables input
+
+```
+#input constant
+a=ad.input([1],'const')
+
+#input scalar
+s=ad.input([1,2,3],'scalar')
+
+#input matrix
+m=ad.input([1,2,3;4,5,6],'matrix')
+```
+
+- define function
+
+```
+f=ad.f(f(x))
+
+```
+
+- Demo 1: ℝ1→ℝ1
+
+Consider the case of f(x)= x, we calculate the value and the first derivative at x=1.
+
+```
+#value input
+x=ad.input(1)
+
+#define function
+f=ad.f( x )
+
+#derivative
+ad.de(f)
+
+#value
+ad.val(f)
+
+```
+
+- Demo 2: ℝ𝑚→ℝ1
+
+Consider the case of f(x)= y-x, we calculate the value and the first derivative at x=1, y=1.
+
+```
+#value input
+x=ad.input(1)
+y=ad.input(1)
+
+#define function
+f=ad.f( y - x )
+
+#derivative
+ad.de(f)
+
+#value
+ad.val(f)
+
+```
+
+- Demo 3: ℝ1→ℝ𝑛
+
+Consider the case of f(x)= (x^2, x+1), we calculate the value and the first derivative at x=1.
+
+```
+#value input
+x=ad.input(1)
+
+#define function
+f=ad.f( [x^2] , [x+1] )
+
+#derivative
+ad.de(f)
+
+#value
+ad.val(f)
+
+
+```
+
+- Demo 4: ℝ𝑚→ℝ𝑛
+
+Consider the case of f(x,y,z)= (x+1 , z+y ), we calculate the value and the first derivative at x=y=z=1.
+
+
+```
+#value input
+x=ad.input(1)
+y=ad.input(1)
+z=ad.input(1)
+
+#define function
+f=ad.f( [x+1] , [z+y] )
+
+#derivative
+ad.de(f)
+
+#value
+ad.val(f)
+
+
+```
+
+
+
+
+
+
+
 
 # Implementation
 
