@@ -13,7 +13,8 @@ Automatic Differentiation, or Algorithmic Differentiation, is a term used to des
 The principal concept that is going to be leveraged through automatic differentiation is that we will construct the point derivative of every function based on how a function can be decomposed into elementary operations. Computing the derivatives of these different atoms will subsequently enable us to be able to construct derivatives of a wide range of real-valued functions. Therefore, the derivative of every function can be deduced from simple laws : how to derive basic functions (or atoms) and how to handle the derivates on basic operations of functions. THis is explained in the following table. We first present the atoms and then present how to handle the derivative on basic operations on functions. Here, x is a real variable and u and v are functions. 
 
 |Atom function   |   Derivative |
-|$x^r$           | r*x^{r-1}    *|
+|:--------------:|:-------------:|
+|$x^r$           | r*x^{r-1}    |
 |$ln(x)$|$\frac{1}{x}$|
 |e^x|e^x|
 |cos(x)|-sin(x)|
@@ -57,6 +58,32 @@ Therefore, from the previous points, we see that we will be able to compute valu
 ## Software organization
 
 # Implementation
+
+
+class AD_diff():
+
+- Takes as an input the vector function and array of points
+- Calls upon the classes discussed below
+- Output the derivative at the input points
+
+class comp_graph():
+
+- Takes as an input a function for which we wish to calculate the graph 
+- Outputs a series of groups of consisting of at least 2 elements - one node and one elementary operation, with the optional third element for elementary operation requiring 2 input nodes as indicated for the operations() class
+
+class operations():
+
+- Defines elementary operations, including the number of arguments required 
+- Elementary functions such as sin, cos, exp, etc. will be imported from numpy
+- operations such as +,-,*,/ will be defined as methods within the class
+
+class derivatives():
+
+- The class will define derivatives for the inputs
+- For elementary functions such as sin, cos etc these can be defined explicitly
+- For products, e.g.  u*v we will use the definition fo the chain rule
+
+
 
 From the background part, there are several questions that need to be dealt with during implementation:
 
