@@ -350,4 +350,4 @@ Additionally, `Codecov` will provide coverage reports of the tests performed i.e
 
 #### 5. Packaging: How will you package your software? Will you use a framework? If so, which one and why? If not, why not?
 
-NEED HELP :(
+For ease of user implementation and due to the extensive documentation available on the software, we will use the software framework PyScaffold. Using a software framework will allow for a more coherent organization of code and more straightforward user interaction with the library. Additionally, PyScaffold is a very commonly implemented framework that has been shown to be consistently effective and could be considered like a standar for Python.
