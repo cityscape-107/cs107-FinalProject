@@ -89,20 +89,14 @@ import numpy as np
 - Variables input
 
 ```
-#input constant
-a=ad.input([1],'const')
+x=ad.function.val(1)
 
-#input scalar
-s=ad.input([1,2,3],'scalar')
-
-#input matrix
-m=ad.input([1,2,3;4,5,6],'matrix')
 ```
 
 - define function
 
 ```
-f=ad.f(f(x))
+f=ad.function(f(x))
 
 ```
 
@@ -112,16 +106,16 @@ Consider the case of f(x)= x, we calculate the value and the first derivative at
 
 ```
 #value input
-x=ad.input(1)
+x=ad.function.val(1)
 
 #define function
-f=ad.f( x )
+f=ad.function( x )
 
 #derivative
-ad.de(f)
+f.get_der()
 
 #value
-ad.val(f)
+f.get_value()
 
 ```
 
@@ -131,17 +125,17 @@ Consider the case of f(x)= y-x, we calculate the value and the first derivative 
 
 ```
 #value input
-x=ad.input(1)
-y=ad.input(1)
+x=ad.function.val(1)
+y=ad.function.val(1)
 
 #define function
-f=ad.f( y - x )
+f=ad.function( y - x )
 
 #derivative
-ad.de(f)
+f.get_der()
 
 #value
-ad.val(f)
+f.get_value()
 
 ```
 
@@ -151,17 +145,16 @@ Consider the case of f(x)= (x^2, x+1), we calculate the value and the first deri
 
 ```
 #value input
-x=ad.input(1)
+x=ad.function.val(1)
 
 #define function
-f=ad.f( [x^2] , [x+1] )
+f=ad.function( [x^2] , [x+1] )
 
 #derivative
-ad.de(f)
+f.get_der()
 
 #value
-ad.val(f)
-
+f.get_value()
 
 ```
 
@@ -172,21 +165,21 @@ Consider the case of f(x,y,z)= (x+1 , z+y ), we calculate the value and the firs
 
 ```
 #value input
-x=ad.input(1)
-y=ad.input(1)
-z=ad.input(1)
+x=ad.function.val(1)
+y=ad.function.val(1)
+z=ad.function.val(1)
 
 #define function
-f=ad.f( [x+1] , [z+y] )
+f=ad.function( [x+1] , [z+y] )
 
 #derivative
-ad.de(f)
+f.get_der()
 
 #value
-ad.val(f)
-
+f.get_value()
 
 ```
+
 
 
 
