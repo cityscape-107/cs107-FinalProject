@@ -67,14 +67,12 @@ conda create -n Cityscape
 activate Cityscape
 ```
 
-- Install and test Cityscape® AD tool using pip.
+- Install Cityscape® AD tool using pip.
 
 ```
 #Installation 
 conda install -n CityscapeAD
 
-#test
-pytest tests
 ```
 
 
@@ -86,13 +84,6 @@ import numpy as np
 ```
 
 
-- Variables input
-
-```
-x=ad.function.val(1)
-
-```
-
 - define function
 
 ```
@@ -100,16 +91,24 @@ f=ad.function(f(x))
 
 ```
 
+- Value input
+
+```
+f.val(1)
+
+```
+
+
 - Demo 1: ℝ1→ℝ1
 
 Consider the case of f(x)= x, we calculate the value and the first derivative at x=1.
 
 ```
-#value input
-x=ad.function.val(1)
-
 #define function
 f=ad.function( x )
+
+#value input
+f.val(1)
 
 #derivative
 f.get_der()
@@ -124,12 +123,11 @@ f.get_value()
 Consider the case of f(x)= y-x, we calculate the value and the first derivative at x=1, y=1.
 
 ```
-#value input
-x=ad.function.val(1)
-y=ad.function.val(1)
-
 #define function
 f=ad.function( y - x )
+
+#value input
+f.val( 1,1 )
 
 #derivative
 f.get_der()
@@ -144,11 +142,11 @@ f.get_value()
 Consider the case of f(x)= (x^2, x+1), we calculate the value and the first derivative at x=1.
 
 ```
-#value input
-x=ad.function.val(1)
-
 #define function
 f=ad.function( [x^2] , [x+1] )
+
+#value input
+f.val(1)
 
 #derivative
 f.get_der()
@@ -164,13 +162,11 @@ Consider the case of f(x,y,z)= (x+1 , z+y ), we calculate the value and the firs
 
 
 ```
-#value input
-x=ad.function.val(1)
-y=ad.function.val(1)
-z=ad.function.val(1)
-
 #define function
 f=ad.function( [x+1] , [z+y] )
+
+#value input
+f.val( 1,1,1 )
 
 #derivative
 f.get_der()
