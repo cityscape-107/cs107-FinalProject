@@ -347,3 +347,31 @@ Additionally, `Codecov` will provide coverage reports of the tests performed i.e
 #### 5. Packaging: How will you package your software? Will you use a framework? If so, which one and why? If not, why not?
 
 For ease of user implementation and due to the extensive documentation available on the software, we will use the software framework PyScaffold. Using a software framework will allow for a more coherent organization of code and more straightforward user interaction with the library. Additionally, PyScaffold is a very commonly implemented framework that has been shown to be consistently effective and could be considered like a standar for Python.
+
+
+
+
+
+#### Milestone 1 Feedback
+
+
+2/2 Introduction
+  - Looks good!
+
+2/2 Background
+  - Looks good!
+  - I think there's a typo in your f(x,y) example, if not then you will need to fix your computational graph.
+
+3/3 How to use
+  - Add the expected output from f.get_der() and f.get_value() in your examples.
+
+2.5/3 Software Organization
+  - What is the proposed basic functionality of the root finder and optimization modules?
+  - What are some example inputs/outputs/functions expected in your modules?
+  - Where will your test suite live? Even though its shown in your directory structure, explicitly write it out.
+
+5/5 Implementation
+  - Looks good, but your additional considerations section is a bit hard to read.
+       - You can consider using more subcategories (e.g. each data structure along with its application and corresponding classes).
+
+Note. https://latex.codecogs.com/ is a helpful rendering service for showing equations on markdown.
