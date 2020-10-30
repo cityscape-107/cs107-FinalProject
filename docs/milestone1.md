@@ -28,7 +28,7 @@ _Table 1._
 Now that we know how to compute the derivatives of atoms and how to handle derivatives on basic operations of functions, we want to visualize how can a function be decomposed into thse basic operations.
 An important visualization of how a function can be decomposed into several elementary operations is the computational graph. 
 
-For instance, we are going to draw the graph of the function $f(x,y) =exp(-(sin(x)-cos(x))**2) $ 
+For instance, we are going to draw the graph of the function $f(x,y) =exp(-(sin(x)-cos(y))**2) $ 
 
 ![Computational_graph.jpeg](Computational_graph.jpeg)
 
@@ -222,7 +222,7 @@ From the background part, there are several questions that need to be dealt with
 4. How to represent the derivatives of elementary functions ? 
 
 
-1. We could use a tree structure in order to encode the structure of the computational graph. Every node would encode an elementary operation. How would we further encode these elementary operations is another question (structure to be defined further). The tree root will be the final function and the leaves would be the atom operations, when we assign values. The children of a node would be the several components composing a elementary operation. 
+**Computational graph** We could use a tree structure in order to encode the structure of the computational graph. Every node would encode an elementary operation. How would we further encode these elementary operations is another question (structure to be defined further). The tree root will be the final function and the leaves would be the atom operations, when we assign values. The children of a node would be the several components composing a elementary operation. 
 Therefore, in order to construct the entire function, we would be able to leverage the recursive construction of a tree: in order to construct the operation at a specfic node, we would need to recursively get the operations made on every child and unite them with the operation encoded on the node. 
 The node would contain several attributes, their children (links) and the elementary operation (structure to be defined later on).
 This class would be called `comp_graph()`. An instance of this class will have two attributes: a string (the initial function to differentiate) and a link to the root of the computational tree. 
