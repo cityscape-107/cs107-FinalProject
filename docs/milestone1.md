@@ -51,6 +51,8 @@ Therefore, from the previous points, we see that we will be able to compute valu
 
 
 
+
+
 # How to use
 
 ### The url to the project is: https://pseudo.link
@@ -112,9 +114,11 @@ f.val(1)
 
 #derivative
 f.get_der()
+>>> 1
 
 #value
 f.get_value()
+>>> 1
 
 ```
 
@@ -131,9 +135,13 @@ f.val( 1,1 )
 
 #derivative
 f.get_der()
+>>> -1
+>>> 1
 
 #value
 f.get_value()
+>>> 0
+
 
 ```
 
@@ -150,9 +158,11 @@ f.val(1)
 
 #derivative
 f.get_der()
+>>> 2x , 1
 
 #value
 f.get_value()
+>>> 1 , 2
 
 ```
 
@@ -170,9 +180,13 @@ f.val( 1,1,1 )
 
 #derivative
 f.get_der()
+>>> 1
+>>> 1
+>>> 1
 
 #value
 f.get_value()
+>>> 2 , 2
 
 ```
 
