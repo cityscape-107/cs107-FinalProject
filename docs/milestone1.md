@@ -28,7 +28,7 @@ _Table 1._
 Now that we know how to compute the derivatives of atoms and how to handle derivatives on basic operations of functions, we want to visualize how can a function be decomposed into thse basic operations.
 An important visualization of how a function can be decomposed into several elementary operations is the computational graph. 
 
-For instance, we are going to draw the graph of the function $f(x,y) =exp(-(sin(x)-cos(x))**2) $ 
+For instance, we are going to draw the graph of the function $f(x,y) =exp(-(sin(x)-cos(y))**2) $ 
 
 ![Computational_graph.jpeg](Computational_graph.jpeg)
 
@@ -185,64 +185,49 @@ f.get_value()
 
 # Implementation
 
-Our library will contain the following classes, which will be the primary data structures used. Classes will contain various methods and have attributes like "kind of function".
-
-class `function()`:
-
-- Takes as an input the vector function 
-- Has a method that allows us to introduce the input points (array or scalar).
-- Calls upon the classes discussed below in order to compute the evaluation of the derivatives.
-- Output a tuple containing the value of the function and the derivative at the input points.
-
-class `comp_graph()`:
-
-- Takes as an input a function for which we wish to calculate the graph 
-- Outputs a series of groups of consisting of at least 2 elements - one node and one elementary operation, with the optional third element for elementary operation requiring 2 input nodes as indicated for the operations() class
-
-class `operations()`:
-
-- Defines elementary operations, including the number of arguments required 
-- Elementary functions such as sin, cos, exp, etc. will be imported from numpy
-- operations such as +,-,*,/ will be defined as methods within the class
-
-class `derivatives()`:
-
-- The class will define derivatives for the inputs, as defined in _Table 1_.
-- For elementary functions such as sin, cos etc these can be defined explicitly
-- For products, e.g.  u*v we will use the definition fo the chain rule
-
-
-### Additional considerations on implementation
 
 From the background part, there are several questions that need to be dealt with during implementation:
 
 1. How can we encode the structure of the computational graph, that allows us to construct the trace table, which is an illustration of how we will perform the operations?
-2. How can we represent an elementary operation between functions ? 
-3. What will be the data structure used to represent the value of a function and its derivative ? 
-4. How to represent the derivatives of elementary functions ? 
+2. How can we represent an elementary operation between functions ?
+3. What will be the data structure used to represent the value of a function and its derivative ?
+4. How to represent the derivatives of elementary operations ?
 
 
-1. We could use a tree structure in order to encode the structure of the computational graph. Every node would encode an elementary operation. How would we further encode these elementary operations is another question (structure to be defined further). The tree root will be the final function and the leaves would be the atom operations, when we assign values. The children of a node would be the several components composing a elementary operation. 
-Therefore, in order to construct the entire function, we would be able to leverage the recursive construction of a tree: in order to construct the operation at a specfic node, we would need to recursively get the operations made on every child and unite them with the operation encoded on the node. 
-The node would contain several attributes, their children (links) and the elementary operation (structure to be defined later on).
-This class would be called `comp_graph()`. An instance of this class will have two attributes: a string (the initial function to differentiate) and a link to the root of the computational tree. 
-We will define methods in order to build a computational tree from a string, that would be a recursive function (explicitely or not, using a stack). 
+Our library will contain the following classes, which will be the primary data structures used. Classes will contain various methods and have attributes like "kind of function".
 
-2. We will use elementary operations (+, -, x, /) when we are given two functions, alogside their derivatives. According to the trace table, we will need from these elementary operations their action on values and on derivatives. Therefore, we would implement a class of elementary operations that would be called `operations()`, that would contain as attributes:
-- the left part of the operation
-- the elementary operation at sake 
-- the right hand side of the operation. 
-Within the class we will implement the following methods:
-- `resulting_value`, which will compute the value of the resulting operation
-- `resulting_derivatives` which will compute the value of the resulting derivatives (leveraging the class of elementary functions and how we compute their derivatives). 
+class `function()`:
 
-Another idea might be to override the existing `__add__` and `__radd__` in order to have a more comprehensive coding practice. 
+- The attributes of this function class: a string representing the analytical expression, an input with the point at sake, a value which is the output of the function at this point and the value of the gradient at this point
+- Wrapper class that leverages all of the classes defined below. 
+- Takes as an input the vector function 
+- Has a method that allows us to introduce the input points (array or scalar).
+- Calls upon the classes discussed below in order to compute the evaluation of the derivatives
+- Output a tuple containing the value of the function and the derivative at the input points
 
-3. At every step of the computational graph, the value of a function is defined by the actual value of the function at that point, and the value of its gradient. Therefore, we could use a tuple in order to encode (value, gradient). Every element of a tuple might be a list, or an array, in order to account for high-dimension settings. We might also want to define two attributes for an instance of `function` class, like f.values and f.derivatives.
-The class `function` will contain a constructor and we will let the class `operations` handle all the operations. Furthermore, using a tuple enables us to keep a immutable sequence and making sure to not perform unwanted changes to our objects.
 
-4. We will define a class of elementary functions called `operations`. Several things need to be dealt with here. We will leverage these elementary functions when having dealt with the entire initial function, computing the computational graph, and when we need to evaluate an atomic expression and its derivative (as part of the flow described when presenting the operations: we need to work on both sides of the operations, and then work on combining what we got). Therefore, we will need these elementary operations in order to evaluate the value of a function and the value of a function's derivative. 
-Therefore, we need to construct a wide basis of elementary functions, having identifiers for each of them and define the derivatives of these functions. An instance of this class `operations` will have several attributes, including an unique identifier in order to define which elementary function it is.
+class `comp_graph()`:
+
+- Attributes of this class:  a function for which we wish to calculate the graph and a link to the root of the computational tree, which contains the final expression.
+- Arguments of the constructor: a string representing the final function. 
+- Data structure used for this class: a binary tree. Every node of the tree would encapsulate an operation instance and the children of this node would be the left hand and right hand sides of this operation. The leaves of this tree would be the atomic 'assignment' operations. 
+- Methods: a constructor, which would encode the recursive construction of a binary tree. 
+- Outputs a series of groups of consisting of at least 2 elements - one node and one elementary operation, with the optional third element for elementary operation requiring 2 input nodes as indicated for the operations() class # i do not understand this section
+
+
+
+class `operations()`:
+
+- Defines elementary operations, including the number of arguments required and the action of an operation on the current value of the function AND its derivative 
+- Attributes of this class: left and right hand sides of the operations, from the function class and a string operation (might be better to use something else than a string).
+- Operations such as +,-,*,/ will be defined as methods within the class. This will be done by overwriting the dunder methods already existing. For these operations, we will also define the methods that implement their range of actions on the value and the derivative. FOr instance, the action on the derivative of __mul__(f1, f2) will be something like f1.der*f2.val + f1.val*f2.der. 
+
+class `elementary_functions()`:
+
+- The class will define values and derivatives for atomic inputs, as defined in _Table 1_.
+- Elementary functions such as sin, cos, exp, etc. will be imported from numpy
+- The attributes of this class will be : expression (which will contain the reference to the kind of elementary function it is), value and derivative
+
 
 
 Handling of invalid inputs: as we will be defining a class for elementary operations that will override the usual dunder methods we will also need to ensure that the inputs into these are valid. Notably, since we are only working with real numbers, we will not define these operations for imaginary inputs and will need to implement checks to ensure only real values are passed through.
@@ -347,3 +332,31 @@ Additionally, `Codecov` will provide coverage reports of the tests performed i.e
 #### 5. Packaging: How will you package your software? Will you use a framework? If so, which one and why? If not, why not?
 
 For ease of user implementation and due to the extensive documentation available on the software, we will use the software framework PyScaffold. Using a software framework will allow for a more coherent organization of code and more straightforward user interaction with the library. Additionally, PyScaffold is a very commonly implemented framework that has been shown to be consistently effective and could be considered like a standar for Python.
+
+
+
+
+
+# Milestone 1 Feedback
+
+
+2/2 Introduction
+  - Looks good!
+
+2/2 Background
+  - Looks good!
+  - I think there's a typo in your f(x,y) example, if not then you will need to fix your computational graph.
+
+3/3 How to use
+  - Add the expected output from f.get_der() and f.get_value() in your examples.
+
+2.5/3 Software Organization
+  - What is the proposed basic functionality of the root finder and optimization modules?
+  - What are some example inputs/outputs/functions expected in your modules?
+  - Where will your test suite live? Even though its shown in your directory structure, explicitly write it out.
+
+5/5 Implementation
+  - Looks good, but your additional considerations section is a bit hard to read.
+       - You can consider using more subcategories (e.g. each data structure along with its application and corresponding classes).
+
+Note. https://latex.codecogs.com/ is a helpful rendering service for showing equations on markdown.
