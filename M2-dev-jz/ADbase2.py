@@ -130,14 +130,15 @@ class AD:
         if any(nonpoints):
             raise ValueError("Math error, Tangent cannot handle i*0.5pi ")
         val = np.tan(self.val)
-        der = np.multiply(np.power(1 / np.cos(self.val), 2), self.der)
+        #der = np.multiply(np.power(1 / np.cos(self.val), 2), self.der)
+        der = np.multiply(1/np.power(np.cos(self.val), 2), self.der)
         return AD(val, der)
 
     def sin(self):
         val = np.sin(self.val)
         der = np.cos(self.val) * self.der
         return AD(val, der)
-    
+
     def cos(self):
         val = np.cos(self.val)
         der = -np.sin(self.val) * self.der
@@ -150,6 +151,10 @@ class AD:
 
 
     def ln(self):
+        if self.val<=0:
+            raise ValueError("Cannot take natural log of zero or negative values")
         val = np.log(self.val)
-        der = 1/val
+        der = 1/self.val
         return AD(val, der)
+
+    #add log to other bases
