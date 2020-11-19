@@ -5,12 +5,20 @@ import numpy as np
 
 class AD:
 
-    def __init__(self, value, der=[0]):
+    def __init__(self, value, der=0): #changed from der=[0]
         if isinstance(value, float) or isinstance(value, int):
             value = [value]
+        elif isinstance(value, np.ndarray):
+            value = value 
+        else: # NEW
+            raise TypeError(f'Value should be int or float and not {type(value)}')
 
         if isinstance(der, float) or isinstance(der, int):
             der = [der]
+        elif isinstance(der, np.ndarray):
+            der = der
+        else: # NEW
+            raise TypeError(f'Derivative should be int or float and not {type(der)}')
 
         self.val = np.array(value)
         self.der = np.array(der)
@@ -39,11 +47,10 @@ class AD:
     def __neg__(self):
         try:
             val = -self.val
-            der = -self.der
+            der = -self.derreturn AD(val, der)
         except:  # for some reason, der is None
             val = -self.val
-            der = None
-        return AD(val, der)
+            return AD(val)
 
     # overloading the '-' operator
     def __sub__(self, other):

@@ -36,24 +36,22 @@ def test_repr():
     x = AD(42,43)
     assert repr(x) == 'Numerical Value is:\n{}, \nJacobian is:\n{}'.format([42], [43])
 
+#I don't think we need the following tests.
+#They fail because the add/mul functions already handle these cases and don't raise an exception
+"""
 #29 - check for attribute error if adding a non-ad var
-
 def test_add_non_AD():
     with pytest.raises(AttributeError):
-        AD(0.3,1) + 7
-
+        x = AD(0.3,1) 
+        y = x + 7
 
 #60 - attribute error when multiplying by non-ad
-
 def test_mult_non_AD():
     with pytest.raises(AttributeError):
         AD(0.3,1) * 7
->>>>>>> ab2c8348264e5440f5a67273ccd2ca174105d9a3
-#65 - check A*B=B*A
-#68 - division testing
-#74 - 0 div attribute error
-#74 - 0/other =0
-#96 - check exponent
+"""
+
+#96 - check exponent 
 #Leave power testing until we talk with team
 #131 - tan value error
 
@@ -113,12 +111,10 @@ def test_log():
     assert z.val==np.log(0.5)
     assert z.der==1/0.5
 
-######## Testing Basic functions #######################
+######## Testing Basic operations #######################
 
-<<<<<<< HEAD
-=======
+
 # testing addition
->>>>>>> ab2c8348264e5440f5a67273ccd2ca174105d9a3
 def test_add_const():
     x = AD(3,1)
     z = 3*x + 2
@@ -140,18 +136,18 @@ def test_add_vars():
     assert 3 + 3==z.val
     assert 1 + 1==z.der
 
-<<<<<<< HEAD
-=======
+
 #testing negation
 def test_neg():
-    x = (0.5,1)
+    x = AD(0.5,1)
     y = -x
     assert y.val == -x.val
     assert y.der == -x.der
-    x = (0.5)
+    x = AD(0.5)
     y = -x
     assert y.val == -x.val
     assert y.der == -x.der
+
 
 #testing subtraction
 def test_sub_const():
@@ -182,30 +178,77 @@ def test_sub_0(): #check 0-A=neg(A)
     assert z.val == x_neg.val
     assert z.der == x_neg.der
 
+
 #testing multiplication
->>>>>>> ab2c8348264e5440f5a67273ccd2ca174105d9a3
 def test_mul_const():
     x = AD(3,1)
-    z = 3*x + 2
-    assert 11 == z.val
-    assert 3 == z.der
+    z = x*4
+    assert 12 == z.val
+    assert 4 == z.der
 
-def test_add_const_rev():
+def test_mul_const_rev(): # check A*B=B*A
     x = AD(3,1)
-    z = 3*x + 2
-    z_r = 2 + 3*x
+    z = x*4
+    z_r = 4*x
     assert z.val == z_r.val
     assert z.der == z_r.der
 
-def test_add_vars():
+def test_mul_vars():
     x = AD(3,1)
-    z = x + x
-    assert x.val + x.val==z.val
-    assert x.der + x.der==z.der
-    assert 3 + 3==z.val
-    assert 1 + 1==z.der
+    y = AD(4,1)
+    z = x*y
+    assert x.val*y.val == z.val
+    assert 12 == z.val
+    assert x.der*y.val + y.der*x.val == z.der
+    assert 7 == z.der
+
+def test_mul_vars():
+    x = AD(3,1)
+    y = AD(4,1)
+    z = x*y
+    z_r = y*x
+    assert z.val == z_r.val
+    assert z.der == z_r.der
+
+
+#testing division 
+def test_div_const():
+    x = AD(12,1)
+    z = x/4
+    assert 3 == z.val
+    assert 1/4 == z.der
+
+def test_dev_const_rev():
+    x = AD(3,1)
+    z = 12/x
+    assert z.val == 4
+    assert z.der == -12/9
+
+def test_div_vars():
+    x = AD(12,1)
+    y = AD(4,1)
+    z = x/y
+    assert x.val/y.val == z.val
+    assert 3 == z.val
+    assert (x.der*y.val - y.der*x.val)/(y.val**2) == z.der
+    print('z der=',z.der)
+    assert (4-12)/(4**2) == z.der
+
+def test_mul_vars():
+    x = AD(3,1)
+    y = AD(4,1)
+    z = x*y
+    z_r = y*x
+    assert z.val == z_r.val
+    assert z.der == z_r.der
+
+
+#74 - 0 div attribute error
+#74 - 0/other =0
+
 
 ######## Testing combining multiple functions ##########
+
 
 def test_two_vars():
     x = AD(3,1)
