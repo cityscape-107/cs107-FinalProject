@@ -1,10 +1,9 @@
 language: python
 python:
     - "3.6"
-before_install:
-    - pip install pytest pytest-cov
-    - pip install codecov
+install:
+    - pip install -r requirements.txt
 script:
-    - pytest --cov=./
+    - pytest --cov=AD/ADbase2
 after_success:
     - bash <(curl https://codecov.io/bash) -t a79ff441-9e7b-4564-a6c9-72b1b2316c80
