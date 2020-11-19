@@ -9,6 +9,7 @@ import pytest
 
 ############ Testing for AD #####################
 
+
 #Testing constant input
 def test_val_basic():
     x = AD(0.5)
@@ -22,6 +23,7 @@ def test_val_x():
     assert x.der==1
 
 #check for non float and no int inputs for vals
+
 def test_val_types():
     with pytest.raises(TypeError):
         x = AD('2',1)
@@ -37,32 +39,6 @@ def test_der_types():
 def test_repr():
     x = AD(42,43)
     assert repr(x) == 'Numerical Value is:\n{}, \nJacobian is:\n{}'.format([42], [43])
-
-#I don't think we need the following tests.
-#They fail because the add/mul functions already handle these cases and don't raise an exception
-"""
-#29 - check for attribute error if adding a non-ad var
-def test_add_non_AD():
-    with pytest.raises(AttributeError):
-        x = AD(0.3,1)
-        y = x + 7
-
-#60 - attribute error when multiplying by non-ad
-def test_mult_non_AD():
-    with pytest.raises(AttributeError):
-        AD(0.3,1) * 7
-"""
-
-#96 - check exponent
-#Leave power testing until we talk with team
-#131 - tan value error
-
-
-
-
-
-
-
 
 
 
@@ -112,6 +88,7 @@ def test_log():
 
 
 # testing addition
+
 def test_add_const():
     x = AD(3,1)
     z = 3*x + 2
@@ -178,6 +155,7 @@ def test_sub_0(): #check 0-A=neg(A)
 
 
 #testing multiplication
+
 def test_mul_const():
     x = AD(3,1)
     z = x*4
