@@ -9,10 +9,10 @@ def test_forward_init():
     print("Case: z = x**2 + sin(x) + ln(x)")
     print("Value=",0.5)
     #Initiating the Forward mode
-    x = AD(0.5)
+    x = AD(0.5,1)
     #Function example
-    z = x**2 + x.sin() + x.ln(0)
-    print('z.grad()=',z.der)
+    z = x**2 + x.sin() + x.ln()
+    print('z.der()=',z.der)
     print("_________________________")
 
 test_forward_init()
@@ -26,9 +26,9 @@ def f2(x):
 def test_forward_fn():
     print("Case: f2(x)=z")
     print("Value=",0.5)
-    x = AD(0.5)
+    x = AD(0.5,1)
     z1=f2(x)
-    print('z1.grad()=',z1.der)
+    print('z1.der=',z1.der)
     print("_________________________")
 
 test_forward_fn()
@@ -37,7 +37,7 @@ def NRFM(f,xn,tol):
 
 
     #Initialising
-    x=AD(xn)
+    x=AD(xn,1)
     y=f(x)
     xn=x.val-y.val/y.der
 
@@ -45,7 +45,7 @@ def NRFM(f,xn,tol):
     while abs(x.val-xn)>tol:
 
 
-        x=AD(xn)
+        x=AD(xn,1)
         y=f(x)
         xn=x.val-y.val/y.der
 
@@ -70,7 +70,7 @@ def test_f2():
     print("x_0:{}, tol:{}".format(x0,tol))
     trial=NRFM(f2,x0,tol)
     print('x_final=',trial)
-    print('f2(x)=',f2(AD(trial)).val)
+    print('f2(x)=',f2(AD(trial,1)).val)
     print("_________________________")
 
 test_f2()
