@@ -1,5 +1,5 @@
 #Importing the package
-from ADbase2 import AD, constant,power,ln,sin
+from ADbase2 import AD
 
 #Importing dependencies
 import math
@@ -22,7 +22,7 @@ def test_forward_init():
     else:
         print("Fail")
 
-    if ((2*0.5+np.cos(0.5)+1/0.5))-(z.der))<(0.000001):
+    if ((2*0.5+np.cos(0.5)+1/0.5)-(z.der))<(0.000001):
         print("Pass")
     else:
         print("Fail")
@@ -58,7 +58,7 @@ def NRFM(f,xn,tol):
     while abs(x.val-xn)>tol:
 
 
-        x=ADxn)
+        x=AD(xn)
         y=f(x)
         xn=x.val-y.val/y.der
 
@@ -153,24 +153,6 @@ def test_sin():
     x = AD(0.5)
     z = sin(x)
     assert z.der==np.cos(0.5)
-
-def test_power():
-    x = AD(0.5)
-    z = x**2
-    assert z.der==2*0.5
-
-def test_log():
-    x = AD(0.5)
-    z = ln(x)
-    assert z.der==1/0.5
-
-
-#Combos
-def test_sin():
-    x = AD(0.5)
-    y = AD(1)
-    z = x.val+y.val
-    assert z=
 
 def test_power():
     x = AD(0.5)
