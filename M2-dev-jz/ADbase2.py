@@ -47,7 +47,8 @@ class AD:
     def __neg__(self):
         try:
             val = -self.val
-            der = -self.derreturn AD(val, der)
+            der = -self.der
+            return AD(val, der)
         except:  # for some reason, der is None
             val = -self.val
             return AD(val)
