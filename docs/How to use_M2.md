@@ -25,10 +25,16 @@ conda install math
 
 - Download Cityscape AD from https://github.com/cityscape-107/cs107-FinalProject, alternatively, you can clone the repository
 
-- Unzip downloaded file, copy `ADbase2.py` into your working directory
+- Unzip downloaded file, copy `ADbase2.py` into your current working directory
 
+- If you are unsure of current working directory, run:
+```
+import os
 
-- In your IDE, import `ADbase2`
+os.getcwd()
+```
+
+- Then, in your script, import `ADbase2`
 ```
 from ADbase2 import *
 
@@ -83,5 +89,8 @@ f.der()
 >>> 96
 
 ```
+
+
+
 
 
