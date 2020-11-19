@@ -57,10 +57,10 @@ f = f(x)
 
 ```
 # value
-f.val()
+f.val
 
 # Jacobian
-f.der()
+f.der
 ```
 
 - Demo: ℝ1→ℝ1
@@ -77,15 +77,13 @@ f=2*x**3
 
 
 #value
-f.val()
-
+f.val
 >>> 128
 
 
 
 #Jacobian
-f.der()
-
+f.der
 >>> 96
 
 ```
