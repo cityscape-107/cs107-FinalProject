@@ -1,7 +1,0 @@
-The library relies on the following packages:
-math
-numpy
-
-Testing relies on:
-pytest
-
