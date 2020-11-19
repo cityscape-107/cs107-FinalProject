@@ -124,3 +124,26 @@ class AD:
             val = n ** self.val
             der = n ** self.val * math.log(n) * self.der
         return AD(val, der)
+    
+    def tan(self):
+        nonpoints = map(lambda x: ((x / np.pi) - 0.5) % 1 == 0.00, self.val)
+        if any(nonpoints):
+            raise ValueError("Math error, Tangent cannot handle i*0.5pi ")
+        val = np.tan(self.val)
+        der = np.multiply(np.power(1 / np.cos(self.val), 2), self.der)
+        return AD(val, der)
+
+    def sin(self):
+        val = np.sin(self.val)
+        der = np.cos(self.val) * self.der
+        return AD(val, der)
+    
+    def cos(self):
+        val = np.cos(self.val)
+        der = -np.sin(self.val) * self.der
+        return AD(val, der)
+    
+    def exp(self):     
+        val = np.exp(self.val)
+        der = np.multiply(np.exp(self.val), self.der)
+        return AD(val, der)
