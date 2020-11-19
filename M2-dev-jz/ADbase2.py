@@ -111,7 +111,7 @@ class AD:
         return AD(new_val, new_der)
 
     def __rpow__(self, n):
-        # how to handle negative values ? We cannot compute -2**(2.5), but we can -2**2 and self should be a function? 
+        # how to handle negative values ? We cannot compute -2**(2.5), but we can -2**2 and self should be a function?
         # in this case, n is an integer (otherwise, we are in the case __mul__)
         if n < 0:
             raise ValueError('negative values are not currently supported')
@@ -124,26 +124,37 @@ class AD:
             val = n ** self.val
             der = n ** self.val * math.log(n) * self.der
         return AD(val, der)
-    
+
     def tan(self):
         nonpoints = map(lambda x: ((x / np.pi) - 0.5) % 1 == 0.00, self.val)
         if any(nonpoints):
             raise ValueError("Math error, Tangent cannot handle i*0.5pi ")
         val = np.tan(self.val)
-        der = np.multiply(np.power(1 / np.cos(self.val), 2), self.der)
+        #der = np.multiply(np.power(1 / np.cos(self.val), 2), self.der)
+        der = np.multiply(1/np.power(np.cos(self.val), 2), self.der)
         return AD(val, der)
 
     def sin(self):
         val = np.sin(self.val)
         der = np.cos(self.val) * self.der
         return AD(val, der)
-    
+
     def cos(self):
         val = np.cos(self.val)
         der = -np.sin(self.val) * self.der
         return AD(val, der)
-    
-    def exp(self):     
+
+    def exp(self):
         val = np.exp(self.val)
         der = np.multiply(np.exp(self.val), self.der)
         return AD(val, der)
+
+
+    def ln(self):
+        if self.val<=0:
+            raise ValueError("Cannot take natural log of zero or negative values")
+        val = np.log(self.val)
+        der = 1/self.val
+        return AD(val, der)
+
+    #add log to other bases
