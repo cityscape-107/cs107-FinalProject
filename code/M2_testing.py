@@ -4,6 +4,8 @@ from ADbase2 import AD, constant,power,ln,sin
 #Importing dependencies
 import math
 import numpy as np
+import sys
+import pytest
 
 
 def test_forward_init():
@@ -15,6 +17,15 @@ def test_forward_init():
     z = x**2 + sin(x) + ln(x)
     print('z.der()=',z.der())
     print('z.val()=',z.val())
+    if ((0.5*0.5+np.sin(0.5)+np.log(0.5))-(z.val))<(0.000001):
+        print("Pass")
+    else:
+        print("Fail")
+
+    if ((2*0.5+np.cos(0.5)+1/0.5))-(z.der))<(0.000001):
+        print("Pass")
+    else:
+        print("Fail")
     print("_________________________")
 
 test_forward_init()
@@ -35,9 +46,9 @@ def test_forward_fn():
 
 test_forward_fn()
 
+
+
 def NRFM(f,xn,tol):
-
-
     #Initialising
     x=AD(xn)
     y=f(x)
@@ -76,3 +87,97 @@ def test_f2():
     print("_________________________")
 
 test_f2()
+
+
+############ Testing for AD #####################
+def test_val__basic():
+    x = AD(0.5)
+    assert z.der==0
+
+def test_val_result():
+    x = AD(0.5)
+    z = x**2 + sin(x) + ln(x)
+    assert z.val==(0.5*0.5+np.sin(0.5)+np.log(0.5))
+
+def test_val_result2():
+    def f2(x):
+        return x**2 + sin(x) + ln(x)
+    x = AD(0.5)
+    z=f2(x)
+    assert z.val==(0.5*0.5+np.sin(0.5)+np.log(0.5))
+
+def test_der_basic():
+    x = AD(0.5)
+    assert z.val==0.5
+
+def test_der_results():
+    x = AD(0.5)
+    z = x**2 + sin(x) + ln(x)
+    assert z.der==(2*0.5+np.cos(0.5)+1/0.5)
+
+def test_der_results2():
+    def f2(x):
+        return x**2 + sin(x) + ln(x)
+    x = AD(0.5)
+    z=f2(x)
+    assert z.der==(2*0.5+np.cos(0.5)+1/0.5)
+
+def test_AD_types():
+    with pytest.raises(TypeError):
+        AD("name")
+
+#Values for extra fns
+def test_sin():
+    x = AD(0.5)
+    z = sin(x)
+    assert z.val==np.sin(0.5)
+
+def test_power():
+    x = AD(0.5)
+    z = x**2
+    assert z.val==0.5**2
+
+def test_log():
+    x = AD(0.5)
+    z = ln(x)
+    assert z.val==np.log(0.5)
+
+def test_log_0():
+    x = AD(0)
+    with pytest.raises(ValueError):
+        z = ln(x)
+
+
+#Derivs for extra fns
+def test_sin():
+    x = AD(0.5)
+    z = sin(x)
+    assert z.der==np.cos(0.5)
+
+def test_power():
+    x = AD(0.5)
+    z = x**2
+    assert z.der==2*0.5
+
+def test_log():
+    x = AD(0.5)
+    z = ln(x)
+    assert z.der==1/0.5
+
+
+#Combos
+def test_sin():
+    x = AD(0.5)
+    y = AD(1)
+    z = x.val+y.val
+    assert z=
+
+def test_power():
+    x = AD(0.5)
+    z = x**2
+    assert z.der==2*0.5
+
+def test_log():
+    x = AD(0.5)
+    z = ln(x)
+    assert z.der==1/0.5
