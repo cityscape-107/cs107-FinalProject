@@ -9,7 +9,7 @@ class AD:
         if isinstance(value, float) or isinstance(value, int):
             value = [value]
         elif isinstance(value, np.ndarray):
-            value = value 
+            value = value  
         else: # NEW
             raise TypeError(f'Value should be int or float and not {type(value)}')
 
@@ -21,7 +21,7 @@ class AD:
             raise TypeError(f'Derivative should be int or float and not {type(der)}')
 
         self.val = np.array(value)
-        self.der = np.array(der)
+        self.der = np.array(der)            
 
     def __repr__(self):  # todo: pb with __repr__, solved
         val = self.val
@@ -37,7 +37,7 @@ class AD:
         except AttributeError:  # the other variable does not have any
             value = self.val + other
             derivative = self.der
-
+        
         return AD(value, derivative)
 
     def __radd__(self, other):
@@ -52,7 +52,7 @@ class AD:
         except:  # for some reason, der is None
             val = -self.val
             return AD(val)
-
+        
     # overloading the '-' operator
     def __sub__(self, other):
         return self.__add__(-other)  # the add function already defines a new variable
@@ -75,7 +75,7 @@ class AD:
 
     def __truediv__(self, other):
         try:  # other is an instance of the AD class
-            if other.val == 0:
+            if other.val == 0 or other.val==np.array([0]):
                 raise ZeroDivisionError
             new_val = self.val / other.val
             new_der = (self.der * other.val - self.val * other.der) / other.val ** 2
@@ -87,16 +87,17 @@ class AD:
         return AD(new_val, new_der)
 
     def __rtruediv__(self, other):
-        try:
-            if self.val == 0:
-                raise ZeroDivisionError
-            new_val = other / self.val
-            new_der = -other * self.der / self.val ** 2
-        except AttributeError:
-            if self == 0:
-                raise ZeroDivisionError
-            new_val = other / self.val
-            new_der = None
+        #try:
+        if self.val == 0 or self.val==np.array([0]):
+  
+          raise ZeroDivisionError
+        new_val = other / self.val
+        new_der = -other * self.der / self.val ** 2
+        #except AttributeError:
+        #    if self.val == 0:    
+        #        raise ZeroDivisionError
+        #    new_val = other / self.val
+        #    new_der = None
         return AD(new_val, new_der)
 
     def __pow__(self, n):
