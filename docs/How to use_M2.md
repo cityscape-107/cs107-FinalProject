@@ -45,22 +45,22 @@ from ADbase2 import *
 
 ```
 # x=a, and is of 1 dimension
-x = AD(a,1)
+>>> x = AD(a,1)
 ```
 
 - Define function
 
 ```
-f = f(x)
+>>> f = f(x)
 ```
 - Find value and 1D Jacobian (derivative)
 
 ```
 # value
-f.val()
+>>> f.val()
 
 # Jacobian
-f.der()
+>>> f.der()
 ```
 
 - Demo: ℝ1→ℝ1
@@ -69,24 +69,24 @@ Consider the case of $f(x)=2 x^{3}$ at $x=4$
 
 ```
 #define variable
-x=AD(4,1)
+>>> x=AD(4,1)
 
 #define function
-f=2*x**3
+>>> f=2*x**3
 
 
 
 #value
-f.val()
+>>> f.val()
 
->>> 128
+128
 
 
 
 #Jacobian
-f.der()
+>>> f.der()
 
->>> 96
+96
 
 ```
 
