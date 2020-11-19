@@ -1,7 +1,15 @@
 from ADbase2 import *
 
+
+
+
 # variable x
 x=AD(3)
+
+y = x*2
+
+print(y)
+
 
 ############################################
 # define function i
