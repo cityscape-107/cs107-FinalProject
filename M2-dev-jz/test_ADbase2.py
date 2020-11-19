@@ -10,6 +10,16 @@ import pytest
 ############ Testing for AD #####################
 
 #9-check for non float and no int inputs for vals
+<<<<<<< HEAD
+#12-check for non float and no int inputs for derivs
+#18 - test the printed string is as expected
+#29 - check for attribute error if adding a non-ad var
+#39 - test for negation as with addition
+#49 - subtraction
+#52 - check A-B!=B-A but - of the answer
+#52 - check 0-A=neg(A)
+#60 - attribute error when multiplying by non-ad
+=======
 def test_val_types():
     with pytest.raises(TypeError):
         x = AD('2',1)
@@ -38,6 +48,7 @@ def test_add_non_AD():
 def test_mult_non_AD():
     with pytest.raises(AttributeError):
         AD(0.3,1) * 7
+>>>>>>> ab2c8348264e5440f5a67273ccd2ca174105d9a3
 #65 - check A*B=B*A
 #68 - division testing
 #74 - 0 div attribute error
@@ -104,7 +115,10 @@ def test_log():
 
 ######## Testing Basic functions #######################
 
+<<<<<<< HEAD
+=======
 # testing addition
+>>>>>>> ab2c8348264e5440f5a67273ccd2ca174105d9a3
 def test_add_const():
     x = AD(3,1)
     z = 3*x + 2
@@ -126,6 +140,8 @@ def test_add_vars():
     assert 3 + 3==z.val
     assert 1 + 1==z.der
 
+<<<<<<< HEAD
+=======
 #testing negation
 def test_neg():
     x = (0.5,1)
@@ -167,6 +183,7 @@ def test_sub_0(): #check 0-A=neg(A)
     assert z.der == x_neg.der
 
 #testing multiplication
+>>>>>>> ab2c8348264e5440f5a67273ccd2ca174105d9a3
 def test_mul_const():
     x = AD(3,1)
     z = 3*x + 2

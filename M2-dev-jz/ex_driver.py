@@ -1,5 +1,5 @@
 #Importing the package
-from brainstorm import Forward, constant,power,ln,sin
+from ADbase2 import AD
 
 #Importing dependencies
 import math
@@ -9,10 +9,10 @@ def test_forward_init():
     print("Case: z = x**2 + sin(x) + ln(x)")
     print("Value=",0.5)
     #Initiating the Forward mode
-    x = Forward(0.5)
+    x = AD(0.5,1)
     #Function example
-    z = x**2 + sin(x) + ln(x)
-    print('z.grad()=',z.grad())
+    z = x**2 + x.sin() + x.ln()
+    print('z.der()=',z.der)
     print("_________________________")
 
 test_forward_init()
@@ -21,14 +21,14 @@ def f1(x):
     return x**2
 
 def f2(x):
-    return x**2 + sin(x) + ln(x)
+    return x**2 + x.sin() + x.ln()
 
 def test_forward_fn():
     print("Case: f2(x)=z")
     print("Value=",0.5)
-    x = Forward(0.5)
+    x = AD(0.5,1)
     z1=f2(x)
-    print('z1.grad()=',z1.grad())
+    print('z1.der=',z1.der)
     print("_________________________")
 
 test_forward_fn()
@@ -37,17 +37,17 @@ def NRFM(f,xn,tol):
 
 
     #Initialising
-    x=Forward(xn)
+    x=AD(xn,1)
     y=f(x)
-    xn=x.value-y.value/y.derivative
+    xn=x.val-y.val/y.der
 
 
-    while abs(x.value-xn)>tol:
+    while abs(x.val-xn)>tol:
 
 
-        x=Forward(xn)
+        x=AD(xn,1)
         y=f(x)
-        xn=x.value-y.value/y.derivative
+        xn=x.val-y.val/y.der
 
     return xn
 
@@ -70,7 +70,7 @@ def test_f2():
     print("x_0:{}, tol:{}".format(x0,tol))
     trial=NRFM(f2,x0,tol)
     print('x_final=',trial)
-    print('f2(x)=',f2(Forward(trial)).value)
+    print('f2(x)=',f2(AD(trial,1)).val)
     print("_________________________")
 
 test_f2()
