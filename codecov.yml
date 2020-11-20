@@ -1,4 +1,1 @@
-coverage:
-  round: up
-  range: 0..10
-  precision: 5
+CODECOV_TOKEN=8b18a4cf-b95e-43ba-aa0c-227c26544eb6
