@@ -167,3 +167,6 @@ class AD:
         return AD(val, der)
 
     #add log to other bases
+    
+    
+    
