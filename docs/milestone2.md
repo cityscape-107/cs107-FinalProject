@@ -213,10 +213,14 @@ also via the overloading of elementary operations, but we should be more cautiou
 
 ## Software organization
 #### 1. Modules 
-Our automatic differentiation package (named `Cityscape`) will consist of probably three modules:
- - A main module (`autodiff`) for the basic requirements of automatic differentiation. 
- - Probably two additional modules (`rootfinder` and `optimization`) as extensions of the basic requirements. The names here are tentative since we have not made a final decision on which will be the extensions to our project.
- 
+Our automatic differentiation package (named `Cityscape-107`) will consist of three modules:
+ - A main module (`AD`) for the basic requirements of automatic differentiation. 
+ - Two additional modules (`rootfinder` and `optimization`) as extensions of the basic requirements. The first one will be used to find roots of polynomials or functions using methods like Newton's method, which make use of the derivatives of the function. The optimization method will be used to maximize or minimize a given function making use of its derivative and maybe also making use of the rootfinder method in order to find the values for which the sderivatives become zero. Both
+
+
+The `AD` module has a main class called AD. It is initialized with a two arguments (value and value for the derivative) and they are stored as `self.val` and `self.der` attributes. There are several functions including the overloaded dunder methods/operations `__add__`, `__radd__`,`__mul__`, `__sub__`, `__pow__`, etc. as well as some basic functions `sin`, `cos`, `exp`, etc.
+
+
 #### 2. Directory Structure 
 All the modules will be found in the directory `Cityscape`, under subdirectories with the name of the module. There will also be a directory for `tests`, as well as `examples` and `documentation`. Additional documentation will be also provided for each individual module.
 
@@ -226,63 +230,53 @@ The structure will be similar to the following example:
 
 
 ```python
-Cityscape/
-        __init__.py  
-        Cityscape/ #directory with the modules
-                __init__.py
-                autodiff/ #main module
+Cityscape-107/
+        cs107-FinalProject/ #directory with the modules' folders and files
+                __init__.py  
+                AD/ #main module
                         __init__.py
-                        autodiff.py
-                        
-                        documentation/ #docs of main module (.txt, .md, .tex, ...)
-                                doc_autodiff.txt 
-                
+                        AD.py
+
                 rootfinder/ #extension 1
                         __init__.py
                         rootfinder.py
-                        
-                        documentation/
-                                doc_rootfinder.txt
-                
+
                 optimization/ #extension 2
                         __init__.py
                         optimization.py
-                        
-                        documentation/
-                                doc_optimization.txt
+
+                docs/ #documentation
+                        doc_AD_base2.txt
+                        doc_rootfinder.txt
+                        doc_optimization.txt
+
+                tests/ #tests
+                        __init__.py
+                        tests_autodiff.py
+                        tests_rootfinder.py
+                        tests_optimization.py
+                        ...
+
+                examples/
+                        example1.py
+                        example2.py
+                        example3.py
+                        ...
+
+                requirements.txt
+                .travis.yml
+                .codecov.yml
+                setup.py
+                setup.cfg
+                README.md # description or the module / goal of the project
+                LICENSE.txt #terms of distribution
                 ...
-        
-        tests/ #tests
-                __init__.py
-                tests_autodiff.py
-                tests_rootfinder.py
-                tests_optimization.py
-                ...
-        
-        examples/
-                example1.py
-                example2.py
-                example3.py
-                ...
-                
-        documentation/ #general documentation
-                doc_general.txt
-                ...
-        #We could also place the documentation in the main directory     
-            
-        .travis.yml
-        .codecov.yml
-        setup.py
-        setup.cfg
-        README.md # description or the module / goal of the project
-        LICENSE.txt #terms of distribution
-        ...
 ```
 
 #### 3. Distribution
-We will distribute our package using `PyPI`. The files  `setup.py`, `setup.cfg`, `LICENSE.txt` and `README.md` that are outside of the `Cityscape` package folder are necessary for PyPI to work. 
+We will distribute our package using `PyPI`. The files  `setup.py`, `setup.cfg`, `LICENSE.txt` and `README.md` that are outside of the `Cityscape-107` package folder are necessary for PyPI to work. 
 
-The file `setup.py` contains important information like:
+The file `setup.py` will contain important information like:
  - the `name` and `version` of the package.
  - `download_url` (GitHub url).
  - `install_requires` (list of dependencies).
@@ -292,14 +286,13 @@ By uploading our package to `PyPI` it will be easy to install just by simply wri
        $ pip install Cityscape
 
 #### 4. Testing 
-We will use the continuous integration tool `Travis-CI` linked to our GitHub project to automatically test changes before integrating them into the project. This will ensure that new changes are merged only if they pass the tests and do not break our code. 
+We will use the continuous integration tool `Travis-CI` linked to our GitHub project to automatically test changes before integrating them into the project. This will ensure that new changes are merged only if they pass the tests and do not break our code. The tests suite is now in the file `test_ADbase2.py` and contains many tests for the AD function. This file will be moved to a folder called `tests` in the future.
 
 Additionally, `Codecov` will provide coverage reports of the tests performed i.e. the percentage of our code that the tests actually tested. After tests are successfully run by `Travis-CI` a report is sent to `Codecov`, which will show the test coverage of the code in our project repository. 
 
 #### 5. Packaging: How will you package your software? Will you use a framework? If so, which one and why? If not, why not?
 
 For ease of user implementation and due to the extensive documentation available on the software, we will use the software framework PyScaffold. Using a software framework will allow for a more coherent organization of code and more straightforward user interaction with the library. Additionally, PyScaffold is a very commonly implemented framework that has been shown to be consistently effective and could be considered like a standar for Python.
-
 
 
 
