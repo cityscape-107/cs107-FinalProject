@@ -21,14 +21,14 @@ The principal concept that is going to be leveraged through automatic differenti
 |sin(x)|cos(x)|
 |u+v|u'+v'|
 |uv|u'v+uv'|
-|\frac{u}{v}|\frac{u'v-uv'}{v^2}|
+|$\frac{u}{v}$|$\frac{u'v-uv'}{v^2}$|
 _Table 1._
 
 
 Now that we know how to compute the derivatives of atoms and how to handle derivatives on basic operations of functions, we want to visualize how can a function be decomposed into thse basic operations.
 An important visualization of how a function can be decomposed into several elementary operations is the computational graph. 
 
-For instance, we are going to draw the graph of the function $f(x,y) =exp(-(sin(x)-cos(y))**2) $ 
+For instance, we are going to draw the graph of the function $[f(x,y) =exp(-(sin(x)-cos(y))**2)$]
 
 ![Computational_graph.jpeg](Computational_graph.jpeg)
 
@@ -218,7 +218,7 @@ By uploading our package to `PyPI` it will be easy to install just by simply wri
        $ pip install Cityscape
 
 #### 4. Testing 
-We will use the continuous integration tool `Travis-CI` linked to our GitHub project to automatically test changes before integrating them into the project. This will ensure that new changes are merged only if they pass the tests and do not break our code. The tests suite is now in the file `test_ADbase2.py` and contains many tests for the AD function. This file will be moved to a folder called `tests` in the future.
+We will use the continuous integration tool `Travis-CI` linked to our GitHub project to automatically test changes before integrating them into the project. This will ensure that new changes are merged only if they pass the tests and do not break our code. The tests suite is now in the file `test_ADbase2.py` and contains many tests for the AD function. This file will be moved to a directory called `tests` in the future.
 
 Additionally, `Codecov` will provide coverage reports of the tests performed i.e. the percentage of our code that the tests actually tested. After tests are successfully run by `Travis-CI` a report is sent to `Codecov`, which will show the test coverage of the code in our project repository. 
 
@@ -306,16 +306,20 @@ In this release, our package handles 1D-in-1D-out situations (scalar) only. In t
 >>> z.jac
 ```
 
-#### Visualizing Forward and Reverse Mode
-We aim to provide a visualization tool that is comparable to "Auto-eD." Our GUI will be able to take function inputs directly, and users no longer need to do tedious input by button clicking.
-
 #### Applications to Optimization, Gradient Descent, and Machine Learning 
 There are several computational applications that implemenent a type of gradient descent that could harness our automatic differentiation tool. In order to apply our AD tool to a neural network, for instance, we would need to have variables that stored the weights for the layers of the network, and our AD tool would be used as a step of the backpropogation methodology. 
 
-We would also add another subdirectory in our "code" folder - our subdirectories would then be as stated in the #2. Directory Structure section above. We would have three subdirectories under our code folder: one for "AD", one for "root finding", and one for "optimization". 
+Gradient Descent, overall, is an algorithm that involves a set of parameters that will minimize a loss. It's equation looks something like this: $$\theta_{t+1} = \theta_t - \alpha * \Delta_\theta* J$$
 
-#### Root Finding 
+Gradient descent is the algorithm that involves updating a set of parameters to minimize a loss, and is typically in the form of 𝜃_𝑡+1=𝜃_𝑡−𝛼∇_𝜃𝐽. The gradient here is the gradient of the loss with respect to the parameters - Automatic differentiation allows us to automate the calculation of this step / these derivatives. Our file would repeatedly make use of the AD() class to calculate the derivatives! The disadvantages of automatic differentiation outweigh the advantages in this situation. 
+
+We would also add another subdirectory in our "code" folder - our subdirectories would then be as stated in the #2. Directory Structure section above. We would have three subdirectories under our code folder: one for "AD", one for "root finding", and one for "optimization". The code in the optimization folder would include a file that imported our AD class and, as mentioned above, used it to repeatedly calculated derivates. 
+
+#### Other Possibilities: 
+## Newton's Method:
 In order to implement Newton's Root Finding Method for vector valued functions of vector variables, we would add anonther subdirectory in our "code" folder - our subdirectories would then be as stated in the #2. Directory Structure section above. We would have three subdirectories under our code folder: one for "AD", one for "root finding", and one for "optimization". 
 
+## Visualizing Forward and Reverse Mode
+We aim to provide a visualization tool that is comparable to "Auto-eD." Our GUI will be able to take function inputs directly, and users no longer need to do tedious input by button clicking.
 
 
