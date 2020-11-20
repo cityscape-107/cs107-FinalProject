@@ -145,69 +145,63 @@ f.der
 
 
 
+# Implementation 
+
+### 1. Core Class
+
+In order to implement our Forward Mode, our core class was the AD class. 
+The AD class was a representation of a Node in our computational graph. It holds as attributes a value 
+and a derivative, which are computed as in the trace table. 
+
+### 2. Core Data Structure 
+
+For now, our data structure only supports 1D input and 1D output. We leveraged numpy arrays as data structures
+for our values and derivatives because of their convenience in term of memory and time efficiency. 
+This choice has a counterpart though, we will need to handle the rigidity and the immutable aspect of these data 
+structures. Furthermore, in higher dimensions, gradients are arrays and Jacobians are matrices. This 
+is why we wanted our code to be adapted to numpy arrays as of now. 
+
+### 3. Important attributes of the class
+
+The important attributes of the AD class are value and derivative. We decided to define the default value of 
+the derivative for a new instance to be 0. Therefore, a user could implement a *constant* via only specifying its value. However, 
+this choice required that when defining a *variable*, the user should input a 1 value for the value of the 
+derivative. 
+
+For now, the Jacobian and the derivative are the same value so there is no Jacobian attribute or function.
+
+### 4. External Dependencies
+
+We tried to keep the external dependencies at the lowest possible. There are two reasons for that:
+- User Convenience (the user does not need to install 100 packages to run our code)
+- Implementation convenience (every external dependency has its own syntax in a way, and we wanted to be consistent 
+in our implementation regarding design)
+
+Therefore, the only two external dependencies needed in order to run our code are: math and numpy libraries.
+
+### 5. Elementary functions
+
+We defined several elementary functions in order to define the way AD variables would interact between each other.
+This has been done via overloading the elementary operations: addition, substraction, multiplication, division and power functions. 
+For the division operation, we needed to pay extra attention to the __rtruediv__ operation, because of the asymmetry of this operation. 
+Last, the power overloading was also delicate because of forbidden cases and the derivation of a function which exponent being another function.   
+We also defined the elementary functions: trig functions, exp and log. 
+
+### 6. Future aspects of implementation
+
+The next steps of our work regarding our core class:
+- Define other elementary functions (sigmoid function, arcsine, arctan, ..)
+- Review our implementation in order for it to be compatible with higher dimensions input and higher dimensions outputs. This should be done 
+also via the overloading of elementary operations, but we should be more cautious about the way we deal with division and power. 
+- Implement the future features aspect of our implementation
 
 
 
 
 
-# Implementation
-
-
-From the background part, there are several questions that need to be dealt with during implementation:
-
-1. How can we encode the structure of the computational graph, that allows us to construct the trace table, which is an illustration of how we will perform the operations?
-2. How can we represent an elementary operation between functions ?
-3. What will be the data structure used to represent the value of a function and its derivative ?
-4. How to represent the derivatives of elementary operations ?
-
-
-Our library will contain the following classes, which will be the primary data structures used. Classes will contain various methods and have attributes like "kind of function".
-
-class `function()`:
-
-- The attributes of this function class: a string representing the analytical expression, an input with the point at sake, a value which is the output of the function at this point and the value of the gradient at this point
-- Wrapper class that leverages all of the classes defined below. 
-- Takes as an input the vector function 
-- Has a method that allows us to introduce the input points (array or scalar).
-- Calls upon the classes discussed below in order to compute the evaluation of the derivatives
-- Output a tuple containing the value of the function and the derivative at the input points
-
-
-class `comp_graph()`:
-
-- Attributes of this class:  a function for which we wish to calculate the graph and a link to the root of the computational tree, which contains the final expression.
-- Arguments of the constructor: a string representing the final function. 
-- Data structure used for this class: a binary tree. Every node of the tree would encapsulate an operation instance and the children of this node would be the left hand and right hand sides of this operation. The leaves of this tree would be the atomic 'assignment' operations. 
-- Methods: a constructor, which would encode the recursive construction of a binary tree. 
-- Outputs a series of groups of consisting of at least 2 elements - one node and one elementary operation, with the optional third element for elementary operation requiring 2 input nodes as indicated for the operations() class # i do not understand this section
 
 
 
-class `operations()`:
-
-- Defines elementary operations, including the number of arguments required and the action of an operation on the current value of the function AND its derivative 
-- Attributes of this class: left and right hand sides of the operations, from the function class and a string operation (might be better to use something else than a string).
-- Operations such as +,-,*,/ will be defined as methods within the class. This will be done by overwriting the dunder methods already existing. For these operations, we will also define the methods that implement their range of actions on the value and the derivative. FOr instance, the action on the derivative of __mul__(f1, f2) will be something like f1.der*f2.val + f1.val*f2.der. 
-
-class `elementary_functions()`:
-
-- The class will define values and derivatives for atomic inputs, as defined in _Table 1_.
-- Elementary functions such as sin, cos, exp, etc. will be imported from numpy
-- The attributes of this class will be : expression (which will contain the reference to the kind of elementary function it is), value and derivative
-
-
-
-Handling of invalid inputs: as we will be defining a class for elementary operations that will override the usual dunder methods we will also need to ensure that the inputs into these are valid. Notably, since we are only working with real numbers, we will not define these operations for imaginary inputs and will need to implement checks to ensure only real values are passed through.
-
-
-The library will have the following external dependencies: numpy, math
-
-Elementary functions such as cos, sin, exp etc. will be implemented using the numpy and math dependencies.
-
-The goal for the library is also to be able to implement the AD differention on an input array, similar to how one can apply the np.exp() function to both a single value and an array.
-
-We will also include an application using the AD library to implement Newton's Root Finding Method for vector valued functions of vector variables. This will be held in a seperate library.
- 
 
 
 
