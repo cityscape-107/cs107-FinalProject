@@ -5,6 +5,9 @@ Group Members: Isha Puri, Paul Kramer, Jim Zhang, David Assaraf, Eleonora Shants
  
 Current state of our work: Between M1B and M1
 
-[![Build tatus](https://travis-ci.com/cityscape-107/cs107-FinalProject.svg?token=teRcJtzAha2XHvJyHUuV&branch=eleonora)](https://travis-ci.com/cityscape-107/cs107-FinalProject.svg?token=xYsv5q7x2gpMtwWCxi9Q&branch=eleonora)
+[![Build tatus](https://travis-ci.com/cityscape-107/cs107-FinalProject.svg?token=teRcJtzAha2XHvJyHUuV&branch=master)](https://travis-ci.com/cityscape-107/cs107-FinalProject.svg?token=xYsv5q7x2gpMtwWCxi9Q&branch=master)
 
-[![codecov](https://codecov.io/gh/cityscape-107/cs107-FinalProject/branch/eleonora/graph/badge.svg?token=N45TQOIGSJ)](https://codecov.io/gh/cityscape-107/cs107-FinalProject/branch/master/graph/badge.svg?token=N45TQOIGSJ)](https://codecov.io/gh/cityscape-107/cs107-FinalProject/banch=eleonora)
+
+[![codecov](https://codecov.io/gh/cityscape-107/cs107-FinalProject/branch/master/graph/badge.svg?token=N45TQOIGSJ)](https://codecov.io/gh/cityscape-107/cs107-FinalProject)
+
+
