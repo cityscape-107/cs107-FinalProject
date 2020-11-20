@@ -316,10 +316,10 @@ Gradient descent is the algorithm that involves updating a set of parameters to 
 We would also add another subdirectory in our "code" folder - our subdirectories would then be as stated in the #2. Directory Structure section above. We would have three subdirectories under our code folder: one for "AD", one for "root finding", and one for "optimization". The code in the optimization folder would include a file that imported our AD class and, as mentioned above, used it to repeatedly calculated derivates. 
 
 #### Other Possibilities: 
-## Newton's Method:
+Newton's Method:
 In order to implement Newton's Root Finding Method for vector valued functions of vector variables, we would add anonther subdirectory in our "code" folder - our subdirectories would then be as stated in the #2. Directory Structure section above. We would have three subdirectories under our code folder: one for "AD", one for "root finding", and one for "optimization". 
 
-## Visualizing Forward and Reverse Mode
+Visualizing Forward and Reverse Mode
 We aim to provide a visualization tool that is comparable to "Auto-eD." Our GUI will be able to take function inputs directly, and users no longer need to do tedious input by button clicking.
 
 
