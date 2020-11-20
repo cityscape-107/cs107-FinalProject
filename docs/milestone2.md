@@ -108,10 +108,10 @@ from ADbase2 import *
 
 ```
 # value
->>> f.val()
+>>> f.val
 
 # Jacobian
->>> f.der()
+>>> f.der
 ```
 
 - Demo: ℝ1→ℝ1
@@ -128,13 +128,13 @@ Consider the case of $f(x)=2 x^{3}$ at $x=4$
 
 
 #value
->>> f.val()
+>>> f.val
 128
 
 
 
 #Jacobian
->>> f.der()
+>>> f.der
 96
 
 ```
