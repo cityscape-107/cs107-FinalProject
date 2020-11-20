@@ -2,12 +2,12 @@
 
 # Milestone 2
 
-# Introduction
+## Introduction
 
 Automatic Differentiation, or Algorithmic Differentiation, is a term used to describe a collection of techniques that can be used to calculate the derivatives of complicated functions. Because derivatives play a key role in computational analyses, statistics, and machine and deep learning algorithms, the ability to quickly and efficiently take derivatives is a crucial one. Other methods for taking derivatives, however, including Finite Differentiation and Symbolic Differentiation have drawbacks, including extreme slowness, precision errors, inaccurate in high dimensions, and memory intensivity.  Automatic differentiation addresses many of these concerns by providing an exact, high-speed, and highly-applicable method to calculate derivatives. Its importance is evidenced by the fact that it is used as a backbone for TensorFlow, one of the most widely-used machine learning libraries. In this project, we will be implementing an Automatic Differentiation library that can be used as the basis for analysis methods, including a Newton’s Method extension that we will illustrate. 
 
 
-# Background
+## Background
 
 
 The principal concept that is going to be leveraged through automatic differentiation is that we will construct the point derivative of every function based on how a function can be decomposed into elementary operations. Computing the derivatives of these different atoms will subsequently enable us to be able to construct derivatives of a wide range of real-valued functions. Therefore, the derivative of every function can be deduced from simple laws : how to derive basic functions (or atoms) and how to handle the derivates on basic operations of functions. THis is explained in the following table. We first present the atoms and then present how to handle the derivative on basic operations on functions. Here, x is a real variable and u and v are functions. 
@@ -50,10 +50,9 @@ Therefore, from the previous points, we see that we will be able to compute valu
  
 
 
-# How to use
+## How to use
 
-### The url to the project is: https://github.com/cityscape-107/cs107-FinalProject
-
+- The url to the project is: https://github.com/cityscape-107/cs107-FinalProject
 
 
 - Install Anaconda, then create and activate a virtual environment.
@@ -80,14 +79,14 @@ conda install math
 
 - If you are unsure of current working directory, run:
 ```
-import os
+>>> import os
 
-os.getcwd()
+>>> os.getcwd()
 ```
 
 - Then, in your script, import `ADbase2`
 ```
-from ADbase2 import *
+>>> from ADbase2 import *
 
 ```
 
@@ -96,22 +95,24 @@ from ADbase2 import *
 
 ```
 # x=a, and is of 1 dimension
-x = AD(a,1)
+>>> x = AD(a,1)
 ```
 
 - Define function
 
 ```
-f = f(x)
+>>> f = f(x)
 ```
 - Find value and 1D Jacobian (derivative)
 
 ```
 # value
-f.val
+>>> f.val
 
 # Jacobian
-f.der
+# 1D Jacobian is just derivative, so we use .der here. 
+# Use .jac in nD situations
+>>> f.der
 ```
 
 - Demo: ℝ1→ℝ1
@@ -120,22 +121,22 @@ Consider the case of $f(x)=2 x^{3}$ at $x=4$
 
 ```
 #define variable
-x=AD(4,1)
+>>> x=AD(4,1)
 
 #define function
-f=2*x**3
+>>> f=2*x**3
 
 
 
 #value
-f.val
->>> 128
+>>> f.val
+128
 
 
 
 #Jacobian
-f.der
->>> 96
+>>> f.der
+96
 
 ```
 
@@ -205,7 +206,7 @@ Cityscape-107/
 ```
 
 #### 3. Distribution
-We will distribute our package using `PyPI`. The files  `setup.py`, `setup.cfg`, `LICENSE.txt` and `README.md` that are outside of the `Cityscape-107` package folder are necessary for PyPI to work. 
+Currently, users should download directly from our GitHub repo. However, in the final release, we will distribute our package using `PyPI`. The files  `setup.py`, `setup.cfg`, `LICENSE.txt` and `README.md` that are outside of the `Cityscape-107` package folder are necessary for PyPI to work. 
 
 The file `setup.py` will contain important information like:
  - the `name` and `version` of the package.
@@ -235,13 +236,13 @@ For ease of user implementation and due to the extensive documentation available
 
 ## Implementation 
 
-### 1. Core Class
+#### 1. Core Class
 
 In order to implement our Forward Mode, our core class was the AD class. 
 The AD class was a representation of a Node in our computational graph. It holds as attributes a value 
 and a derivative, which are computed as in the trace table. 
 
-### 2. Core Data Structure 
+#### 2. Core Data Structure 
 
 For now, our data structure only supports 1D input and 1D output. We leveraged numpy arrays as data structures
 for our values and derivatives because of their convenience in term of memory and time efficiency. 
@@ -249,7 +250,7 @@ This choice has a counterpart though, we will need to handle the rigidity and th
 structures. Furthermore, in higher dimensions, gradients are arrays and Jacobians are matrices. This 
 is why we wanted our code to be adapted to numpy arrays as of now. 
 
-### 3. Important attributes of the class
+#### 3. Important attributes of the class
 
 The important attributes of the AD class are value and derivative. We decided to define the default value of 
 the derivative for a new instance to be 0. Therefore, a user could implement a *constant* via only specifying its value. However, 
@@ -258,7 +259,7 @@ derivative.
 
 For now, the Jacobian and the derivative are the same value so there is no Jacobian attribute or function.
 
-### 4. External Dependencies
+#### 4. External Dependencies
 
 We tried to keep the external dependencies at the lowest possible. There are two reasons for that:
 - User Convenience (the user does not need to install 100 packages to run our code)
@@ -267,7 +268,7 @@ in our implementation regarding design)
 
 Therefore, the only two external dependencies needed in order to run our code are: math and numpy libraries.
 
-### 5. Elementary functions
+#### 5. Elementary functions
 
 We defined several elementary functions in order to define the way AD variables would interact between each other.
 This has been done via overloading the elementary operations: addition, substraction, multiplication, division and power functions. 
@@ -275,7 +276,7 @@ For the division operation, we needed to pay extra attention to the __rtruediv__
 Last, the power overloading was also delicate because of forbidden cases and the derivation of a function which exponent being another function.   
 We also defined the elementary functions: trig functions, exp and log. 
 
-### 6. Future aspects of implementation
+#### 6. Future aspects of implementation
 
 The next steps of our work regarding our core class:
 - Define other elementary functions (sigmoid function, arcsine, arctan, ..)
@@ -287,7 +288,7 @@ also via the overloading of elementary operations, but we should be more cautiou
 
 
 ## Future Features
-### Handling N-Dimensions
+#### Handling N-Dimensions
 In this release, our package handles 1D-in-1D-out situations (scalar) only. In the next update, we will add R^n^-in-R^n^-out (matrix) compatibility. 
 ```
 # define variables
@@ -305,15 +306,15 @@ In this release, our package handles 1D-in-1D-out situations (scalar) only. In t
 >>> z.jac
 ```
 
-### Visualizing Forward and Reverse Mode
+#### Visualizing Forward and Reverse Mode
 We aim to provide a visualization tool that is comparable to "Auto-eD." Our GUI will be able to take function inputs directly, and users no longer need to do tedious input by button clicking.
 
-### Applications to Optimization, Gradient Descent, and Machine Learning 
+#### Applications to Optimization, Gradient Descent, and Machine Learning 
 There are several computational applications that implemenent a type of gradient descent that could harness our automatic differentiation tool. In order to apply our AD tool to a neural network, for instance, we would need to have variables that stored the weights for the layers of the network, and our AD tool would be used as a step of the backpropogation methodology. 
 
 We would also add another subdirectory in our "code" folder - our subdirectories would then be as stated in the #2. Directory Structure section above. We would have three subdirectories under our code folder: one for "AD", one for "root finding", and one for "optimization". 
 
-### Root Finding 
+#### Root Finding 
 In order to implement Newton's Root Finding Method for vector valued functions of vector variables, we would add anonther subdirectory in our "code" folder - our subdirectories would then be as stated in the #2. Directory Structure section above. We would have three subdirectories under our code folder: one for "AD", one for "root finding", and one for "optimization". 
 
 
