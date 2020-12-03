@@ -8,11 +8,13 @@ def test_add():
     z = x+y
     print(z)
 
-def test_add_c():
+def test_add_c():  # todo: why does it change ?
     x = AD(1, 1, 'x')
     y = AD(2, 2, 'y')
-    z = x + y + 4
-    print(z)
+    z1 = x+y
+    print(z1)
+    z2 = z1+4
+    print(z2)
 
 def test_mul():
     # x = AD(1, [1, 0])
@@ -22,13 +24,13 @@ def test_mul():
     z = x*y
     print(z)
 
-def test_mul_c():
+def test_mul_c(): # todo: same
     x = AD(1, 1, 'x')
     y = AD(2, 2, 'y')
     z = x*y + 4
     print(z)
 
-def test_mul_c2():
+def test_mul_c2():  # todo: same
     x = AD(1, 1, 'x')
     y = AD(2, 2, 'y')
     z = x * y * 4
@@ -52,6 +54,8 @@ def test_mul_last():
     y = AD(2, 7, 'y')
     w = x*y
     z = x+y
+    print(w)
+    print(z)
     v = z+w
     print(v)
 
@@ -123,11 +127,29 @@ def test_pow_3():  # checked, is okay
 
 
 
-def test_add_mult_1():
-    x = AD([1, 1], [1, 1], 'x')
-    y = AD([2, 2], [2, 2], 'y')
-    z = x+y
-    print(z)
+
+def test_multi_dim():
+    x = AD(1, 4, 'x')
+    y = AD(2, 3, 'y')
+    z = AD(1, 7, 'z')
+    v = AD([x*y, y+z, z+x])
+    print(v)
+
+
+def test_multi_dim_2():
+    x = AD(1, 4, 'x')
+    y = AD(2, 3, 'y')
+    z = AD(1, 7, 'z')
+    print('1 x value is', x)
+    print(x*y)
+    print(y+z)
+    print(z+x)
+    print('y value is', y)
+    print('2 x value is', x)
+    print(x+y)
+    v = AD([x * y, y + z, z + x, 4, x+y, x+y])
+    print(v)
+
 
 
 
