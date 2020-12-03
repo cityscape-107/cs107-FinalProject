@@ -15,6 +15,8 @@ def test_add_c():
     print(z)
 
 def test_mul():
+    # x = AD(1, [1, 0])
+    # y = AD(2, [0, 5])
     x = AD(1, 1, 'x')
     y = AD(2, 2, 'y')
     z = x*y
@@ -96,6 +98,37 @@ def test_rtrue_div():
     y = AD(2, 7, 'y')
     z = x+y
     print(2/z)
+
+
+def test_pow():
+    x = AD(1, 4, 'x')
+    z = x**3
+    print(z)
+
+def test_pow_2():
+    x = AD(1, 4, 'x')
+    y = AD(2, 7, 'y')
+    z = x**y
+    print(z)
+
+def test_pow_3():  # checked, is okay
+    x = AD(1, 2, 'x')
+    y = AD(2, 1, 'y')
+    w = x*y
+    v = x+y
+    print('Product is ', w)
+    print('Sum is ', v)
+    z = w**v
+    print(z)
+
+
+
+def test_add_mult_1():
+    x = AD([1, 1], [1, 1], 'x')
+    y = AD([2, 2], [2, 2], 'y')
+    z = x+y
+    print(z)
+
 
 
 
