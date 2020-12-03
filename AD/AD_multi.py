@@ -6,26 +6,66 @@ import numpy as np
 class AD:
 
     def __init__(self, value, der=0, name="x"):  # changed from der=[0]
-        if isinstance(value, float) or isinstance(value, int) or isinstance(value, list):
-            value = np.array(value).reshape(1, -1)  # todo: pb when we will be working with multidimenstional outputs
-        elif isinstance(value, np.ndarray):
-            value = value.reshape(1, -1)  # todo: same
-        else:
-            raise TypeError(f'Value should be int or float and not {type(value)}')
-        if isinstance(der, float) or isinstance(der, int) or isinstance(der, list):
-            der = np.array(der).reshape(1, -1)  # todo: same
-        elif isinstance(der, np.ndarray):
-            der = der
-        else:
-            raise TypeError(f'Derivative should be int or float and not {type(der)}')
 
-        self.val = np.array(value, dtype=np.float64)
-        self.der = np.array(der, dtype=np.float64)
+        if isinstance(value, list):
+            names = []
+            for AD_function in value:
+                try:
+                    names.append(AD_function.name)
+                except AttributeError:
+                    continue
+            unique_names = set(np.asarray(names).flatten())  # reference
+            global_value = []  # vector of values
+            global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
+            for AD_function in value:
+                try:
+                    print('The value we are appending is ', AD_function.val)
+                    global_value.append(AD_function.val[0][0])
+                except AttributeError:
+                    global_value.append(AD_function)  # constant
+            for AD_function in value:
+                AD_jacobian = []
+                for var in unique_names:
+                    try:
+                        print('We are looking for ', var)
+                        print('Inside', AD_function.name)
+                        index = AD_function.name.index(var)  # ['x', 'y'] vs ['y', 'x']
+                        print('It is ', index)
+                        print('The derivative of the AD var is ', AD_function.der)
+                        AD_jacobian.append(AD_function.der[0][index])
+                    except:
+                        AD_jacobian.append(0)
+                    print('...', AD_jacobian)
+                global_jacobian.append(AD_jacobian)
+            self.val = global_value
+            self.der = global_jacobian
+            self.name = unique_names
 
-        if isinstance(name, list):
-            self.name = name
         else:
-            self.name = [name]
+            if isinstance(value, float) or isinstance(value, int):
+                value = np.array(value).reshape(1, -1)
+            elif isinstance(value, list):
+                value = np.array(value).reshape(len(value), 1)
+            elif isinstance(value, np.ndarray):
+                value = value.reshape(value.shape[0], 1)
+            else:
+                raise TypeError(f'Value should be int or float and not {type(value)}')
+            if isinstance(der, float) or isinstance(der, int):
+                der = np.array(der).reshape(1, -1)
+            if isinstance(der, list):
+                der = np.array(der).reshape(len(der), 1)
+            elif isinstance(der, np.ndarray):
+                der = der.reshape(der.shape[0], -1)
+            else:
+                raise TypeError(f'Derivative should be int or float and not {type(der)}')
+
+            self.val = np.array(value, dtype=np.float64)
+            self.der = np.array(der, dtype=np.float64)
+
+            if isinstance(name, list):
+                self.name = name
+            else:
+                self.name = [name]
 
     def __repr__(self):
         val = self.val
@@ -35,7 +75,7 @@ class AD:
 
     def __add__(self, other):
         try:
-            names_1 = self.name
+            names_1 = self.name.copy()
             names_2 = other.name
             value = self.val + other.val
             derivative = self.der.copy()
@@ -59,12 +99,12 @@ class AD:
 
     def __neg__(self):
         try:
-            val = -self.val
-            der = -self.der
+            val = -self.val.copy()
+            der = -self.der.copy()
             name = self.name
             return AD(val, der, name)
         except:  # for some reason, der is None
-            val = -self.val
+            val = -self.val.copy()
             name = self.name
             return AD(val, name)
 
@@ -78,9 +118,9 @@ class AD:
     # overloading the '*' operator
     def __mul__(self, other):
         try:
-            names_1 = self.name
-            names_2 = other.name
-            new_value = self.val * other.val  # numpy array multiplication
+            names_1 = self.name.copy()
+            names_2 = other.name.copy()
+            new_value = self.val.copy() * other.val.copy()  # numpy array multiplication
             new_names = names_1 + [name for name in other.name if name not in names_1]
             derivative = self.der.copy()
             for name in new_names:
@@ -90,7 +130,7 @@ class AD:
                 if name in names_1 and name in names_2:
                     index_1 = names_1.index(name)
                     index_2 = names_2.index(name)
-                    new_der = self.val * other.der[:, index_2] + self.der[:, index_1] * other.val
+                    new_der = self.val.copy() * other.der[:, index_2] + self.der[:, index_1] * other.val
                     derivative[:, index_1] = new_der
                 if name in names_1 and name not in names_2:
                     # print('I am here')
@@ -106,7 +146,6 @@ class AD:
                     # print(new_der)
                     # print('Before the update', derivative)
                     derivative = np.concatenate((derivative, new_der), axis=1)
-                    # print(derivative)
             name = new_names
 
         except AttributeError:  # one of the coefficients of other is None, it is a constant
@@ -159,7 +198,7 @@ class AD:
     def __pow__(self, n):
         if isinstance(n, float) or isinstance(n, int):  # duck typing fails here because of the raised exception
             float(n)  # n is an int/float
-            value = self.val
+            value = self.val.copy()
             derivative = self.der.copy()
             names = self.name
             if value < 0 and 0 < n < 1:
@@ -183,7 +222,7 @@ class AD:
                 if name in names_1 and name in names_2:
                     index_2 = names_2.index(name)
                     new_der = (n.der[:, index_2] * math.log(value_base) + value_exponent * self.der[:,
-                                                                                           i] / value_base) * new_val
+                                                                           i] / value_base) * new_val
                     derivative[:, i] = new_der
                 if name in names_1 and name not in names_2:
                     index_1 = names_1.index(name)
