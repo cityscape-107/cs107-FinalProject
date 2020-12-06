@@ -1,4 +1,4 @@
-from AD_multi import AD
+from ADmulti import AD
 import numpy as np
 import pytest
 
