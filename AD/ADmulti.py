@@ -1,5 +1,4 @@
 import math
-# this is where we are going to work on creating the new class
 import numpy as np
 
 
@@ -7,19 +6,23 @@ class AD:
 
     def __init__(self, value, der=0, name='x'):  # changed from der=[0]
 
+        self.val = None
+        self.der = None
+        self.name = None
+
         if isinstance(value, list):
             names = []
             for AD_function in value:
                 try:
                     names.append(AD_function.name)
                 except AttributeError:
-                    continue
+                    continue  # if just list names never has anything appended
             unique_names = set(np.asarray(names).flatten())  # reference
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
                 try:
-                    print('The value we are appending is ', AD_function.val)
+                    # print('The value we are appending is ', AD_function.val)
                     global_value.append(AD_function.val[0][0])
                 except AttributeError:
                     global_value.append(AD_function)  # constant
@@ -27,41 +30,46 @@ class AD:
                 AD_jacobian = []
                 for var in unique_names:
                     try:
-                        print('We are looking for ', var)
-                        print('Inside', AD_function.name)
+                        # print('We are looking for ', var)
+                        # print('Inside', AD_function.name)
                         index = AD_function.name.index(var)  # ['x', 'y'] vs ['y', 'x']
-                        print('It is ', index)
-                        print('The derivative of the AD var is ', AD_function.der)
+                        # print('It is ', index)
+                        # print('The derivative of the AD var is ', AD_function.der)
                         AD_jacobian.append(AD_function.der[0][index])
                     except:
                         AD_jacobian.append(0)
-                    print('...', AD_jacobian)
+                    # print('...', AD_jacobian)
                 global_jacobian.append(AD_jacobian)
-            self.val = global_value
-            self.der = global_jacobian
-            self.name = unique_names
+            if len(unique_names) != 0:
+                self.val = global_value
+                self.der = global_jacobian
+                self.name = unique_names
+            else:
+                self.val = np.array(value).reshape(len(value), 1)
 
-        else:
+        if self.val is None:
             if isinstance(value, float) or isinstance(value, int):
                 value = np.array(value, dtype=np.float64).reshape(1, -1)
-            elif isinstance(value, list):
-                value = np.array(value, dtype=np.float64).reshape(len(value), 1)
             elif isinstance(value, np.ndarray):
                 value = value.reshape(value.shape[0], 1)
             else:
                 raise TypeError(f'Value should be int or float and not {type(value)}')
 
+            self.val = np.array(value, dtype=np.float64)
+
+        if self.der is None:
             if isinstance(der, float) or isinstance(der, int):
                 der = np.array(der, dtype=np.float64).reshape(1, -1)
             if isinstance(der, list):
-                der = np.array(der, dtype=np.float64).reshape(len(der), 1)
+                der = np.array(der).reshape(len(der), 1)
             elif isinstance(der, np.ndarray):
                 der = der.reshape(der.shape[0], -1)
             else:
                 raise TypeError(f'Derivative should be int or float and not {type(der)}')
-            self.val = value
-            self.der = der
 
+            self.der = np.array(der, dtype=np.float64)
+
+        if self.name is None:
             if isinstance(name, list):
                 self.name = name
             else:
@@ -98,17 +106,13 @@ class AD:
         return new_var.__add__(other)
 
     def __neg__(self):
-        try:
-            val = -self.val.copy()
-            der = -self.der.copy()
-            name = self.name
-            return AD(val, der, name)
-        except:  # for some reason, der is None
-            val = -self.val.copy()
-            name = self.name
-            return AD(val, name)
+        val = -self.val.copy()
+        der = -self.der.copy()
+        name = self.name
+        return AD(val, der, name)
 
-    # overloading the '-' operator
+        # overloading the '-' operator
+
     def __sub__(self, other):
         return self.__add__(-other)
 
@@ -162,7 +166,8 @@ class AD:
             names_1 = self.name
             names_2 = other.name
             new_value = self.val / other.val  # numpy array multiplication
-            new_names = names_1 + [name for name in other.name if name not in names_1]
+            new_names = names_1 + [name for name in other.name if
+                                   name not in names_1]  # we should raise an error when dividing by 0
             derivative = self.der.copy()
             for name in new_names:
                 if name in names_1 and name in names_2:
@@ -213,6 +218,10 @@ class AD:
         if isinstance(n, AD):  # n is an AD object
             value_base = self.val
             value_exponent = n.val
+            if value_base < 0 and 0 < value_exponent < 1:
+                raise ValueError('Illegal value and exponent')
+            if value_base == 0 and value_exponent < 1:
+                raise ZeroDivisionError
             new_val = value_base ** value_exponent
             names_1 = self.name
             names_2 = n.name
@@ -222,7 +231,7 @@ class AD:
                 if name in names_1 and name in names_2:
                     index_2 = names_2.index(name)
                     new_der = (n.der[:, index_2] * math.log(value_base) + value_exponent * self.der[:,
-                                                                           i] / value_base) * new_val
+                                                                                           i] / value_base) * new_val
                     derivative[:, i] = new_der
                 if name in names_1 and name not in names_2:
                     index_1 = names_1.index(name)
@@ -235,87 +244,100 @@ class AD:
             return AD(new_val, derivative, new_names)
 
     def __lt__(self, other):
-        # raises an error when the two objects do not have the same attributes
         if isinstance(other, AD):
+
+            # Error if object don't have same dim.
             if len(self.name) != len(other.name):
                 raise AttributeError('Incoherent dimension input')
+
+            # < acts on scalars and vector
             if self.val < other.val:
                 return True
-            elif self.val > other.val:
+            else:
                 return False
-            else:  # need to compare the derivatives
-                for i, name in enumerate(self.name):
-                    if name in other.name:
-                        index_2 = other.name.index(name)
-                        der_1 = self.der[:, i]
-                        der_2 = other.der[:, index_2]
-                        if der_1 < der_2:
-                            return True
-                        elif der_1 > der_2:
-                            return False
-                        else:
-                            continue
-                    else:
-                        raise AttributeError('Incoherent dimension input')
-                return False
+
+            # else:  # need to compare the derivatives
+
+            # else:
+            # for i, name in enumerate(self.name):
+            # if name in other.name:
+            # index_2 = other.name.index(name)
+            # der_1 = self.der[:, i]
+            # der_2 = other.der[:, index_2]
+            # if der_1 < der_2:
+            #   return True
+            # elif der_1 > der_2:
+            #    return False
+            # else:
+            #    continue
+            # else:
+            # raise AttributeError('Incoherent dimension input')
+            # return False
         else:
-            return self.val < other
+            if len(self.name) == 1:
+                return self.val < other
+            else:
+                raise AttributeError('Incoherent dimension input')
 
     def __gt__(self, other):
         if isinstance(other, AD):
             return other.__lt__(self)
         else:
-            return self.val > other
+            if len(self.name) == 1:
+                return self.val > other
+            else:
+                raise AttributeError('Incoherent dimension input')
 
     def __le__(self, other):
-        # raises an error when the two objects do not have the same attributes
+
         if isinstance(other, AD):
+
+            # Error if object don't have same dim.
             if len(self.name) != len(other.name):
                 raise AttributeError('Incoherent dimension input')
+
+            # < acts on scalars and vector
             if self.val <= other.val:
                 return True
-            elif self.val >= other.val:
+            else:
                 return False
-            else:  # need to compare the derivatives
-                for i, name in enumerate(self.name):
-                    if name in other.name:
-                        index_2 = other.name.index(name)
-                        der_1 = self.der[:, i]
-                        der_2 = other.der[:, index_2]
-                        if der_1 <= der_2:
-                            return True
-                        elif der_1 >= der_2:
-                            return False
-                        else:
-                            continue
-                    else:
-                        raise AttributeError('Incoherent dimension input')
-        return True
+        else:
+            if len(self.name) == 1:
+                return self.val <= other
+            else:
+                raise AttributeError('Incoherent dimension input')
 
     def __ge__(self, other):
         # raises an error when the two objects do not have the same attributes
         if isinstance(other, AD):
             return other.__le__(self)
         else:
-            return self.val >= other
+            if len(self.name) == 1:
+                return self.val >= other
+            else:
+                raise AttributeError('Incoherent dimension input')
 
-    def __eq__(self, other):  # change this is instance into duck typing, @David wanted it
+    def __eq__(self, other):
+
         if isinstance(other, AD):
+
+            # Error if object don't have same dim.
+            if len(self.name) != len(other.name):
+                raise AttributeError('Incoherent dimension input')
+
+            # < acts on scalars and vector
             if self.val == other.val:
-                if self.name == other.name:
-                    for i, name in self.name:
-                        idx_2 = other.name.index(name)
-                        if self.der[:, i] != other.der[:, idx_2]:
-                            return False
-                else:
-                    return False
+                return True
             else:
                 return False
         else:
-            return self.val == other
+            if len(self.name) == 1:
+                return self.val == other
+            else:
+                raise AttributeError('Incoherent dimension input')
 
     def __ne__(self, other):
-        return ~self.__eq__(other)
+        return not self.__eq__(other)
 
     def tan(self):
         nonpoints = map(lambda x: ((x / np.pi) - 0.5) % 1 == 0.00, self.val)
@@ -324,28 +346,29 @@ class AD:
         val = np.tan(self.val)
         # der = np.multiply(np.power(1 / np.cos(self.val), 2), self.der)
         der = np.multiply(1 / np.power(np.cos(self.val), 2), self.der)
-        return AD(val, der)
+        return AD(val, der, self.name)
 
     def sin(self):
         val = np.sin(self.val)
         der = np.cos(self.val) * self.der
-        return AD(val, der)
+        return AD(val, der, self.name)
 
     def cos(self):
         val = np.cos(self.val)
         der = -np.sin(self.val) * self.der
-        return AD(val, der)
+        return AD(val, der, self.name)
 
     def exp(self):
         val = np.exp(self.val)
         der = np.multiply(np.exp(self.val), self.der)
-        return AD(val, der)
+        return AD(val, der, self.name)
 
     def ln(self):
         if self.val <= 0:
             raise ValueError("Cannot take natural log of zero or negative values")
         val = np.log(self.val)
         der = 1 / self.val
-        return AD(val, der)
+        return AD(val, der, self.name)
 
-    # add log to other bases
+    # add log to other basesimport math
+# this is where we are going to work on creating the new class
