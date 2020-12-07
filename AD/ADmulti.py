@@ -17,7 +17,9 @@ class AD:
                     names.append(AD_function.name)
                 except AttributeError:
                     continue #if just list names never has anything appended
-            unique_names = set(np.asarray(names).flatten())  # reference
+            #unique_names = set(np.asarray(names).flatten())  # reference
+            unique_names = list(set(np.array(np.concatenate(names, axis=0 )))) # reference
+            #print('unique_names',list(unique_names))
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
@@ -61,7 +63,7 @@ class AD:
             if isinstance(der, float) or isinstance(der, int):
                 der = np.array(der).reshape(1, -1)
             if isinstance(der, list):
-                der = np.array(der).reshape(len(der), 1) 
+                der = np.array(der).reshape(len(der), 1)
             elif isinstance(der, np.ndarray):
                 der = der.reshape(der.shape[0], -1)
             else:
@@ -109,8 +111,8 @@ class AD:
         val = -self.val.copy()
         der = -self.der.copy()
         name = self.name
-        return AD(val, der, name)  
-       
+        return AD(val, der, name)
+
 
     # overloading the '-' operator
     def __sub__(self, other):
@@ -159,7 +161,7 @@ class AD:
         return AD(new_value, derivative, name)
 
     def __rmul__(self, other):
-        return AD(self.val, self.der).__mul__(other)
+        return AD(self.val, self.der, self.name).__mul__(other)
 
     def __truediv__(self, other):
         try:
@@ -254,9 +256,9 @@ class AD:
                 return True
             else:
                 return False
- 
+
             #else:  # need to compare the derivatives
-                
+
                 #else:
                     #for i, name in enumerate(self.name):
                         #if name in other.name:
@@ -336,7 +338,7 @@ class AD:
             else:
                 raise AttributeError('Incoherent dimension input')
 
-    
+
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -374,3 +376,15 @@ class AD:
 
     # add log to other basesimport math
 # this is where we are going to work on creating the new class
+
+x=AD(1,1,'x')
+y=AD(2,1,'y')
+z=AD(3,1,'z')
+
+f=x+y+z
+g=2*x+y+2*z
+h=2*x+y+z*2
+
+v=AD([f,g,h])
+
+print(v)
