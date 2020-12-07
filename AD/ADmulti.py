@@ -376,15 +376,3 @@ class AD:
 
     # add log to other basesimport math
 # this is where we are going to work on creating the new class
-
-x=AD(1,1,'x')
-y=AD(2,1,'y')
-z=AD(3,1,'z')
-
-f=x+y+z
-g=2*x+y+2*z
-h=2*x+y+z*2
-
-v=AD([f,g,h])
-
-print(v)

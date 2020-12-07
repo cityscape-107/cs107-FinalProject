@@ -12,24 +12,24 @@ def test_der_array():
     x = AD(1, np.array([1]), 'x')
     assert x.val==[1]
     assert x.der==[1]
-    
+
 def test_invalid_val():
     with pytest.raises(TypeError):
         x = AD('hello',1, 'x')
 
 
-def test_der_init():
-    x = AD(1, [1, 2], 'x')
-    assert x.val == [1]
-    np.testing.assert_array_equal(x.der, np.array([[1], [2]]))
-    assert x.name == ['x']
+#def test_der_init():
+    #x = AD(1, [1, 2], 'x')
+    #assert x.val == [1]
+    #np.testing.assert_array_equal(x.der, np.array([[1], [2]]))
+    #assert x.name == ['x']
 
 
-def test_list_init():
-    x = AD([1, 2], 1, 'x')
-    np.testing.assert_array_equal(x.val, [[1],[2]])
-    np.testing.assert_array_equal(x.der, np.array([[1]]))
-    assert x.name == ['x']
+#def test_list_init():
+    #x = AD([1, 2], 1, 'x')
+    #np.testing.assert_array_equal(x.val, [[1],[2]])
+    #np.testing.assert_array_equal(x.der, np.array([[1]]))
+    #assert x.name == ['x']
 
 def test_add_constant():
     x = AD(1, 1, 'x')
@@ -74,7 +74,7 @@ def test_sub():
     z = y-x
     assert z.val == [1]
     np.testing.assert_array_equal(z.der, np.array([2, -1]).reshape(1, -1))
- 
+
 
 def test_sub_c():
     y = AD(2, 2, 'y')
@@ -196,7 +196,7 @@ def test_true_div():
     x = AD(1, 3, 'x')
     z = 1/x
     assert z.name == ['x']
-    assert z.val == [1] 
+    assert z.val == [1]
     np.testing.assert_array_equal(z.der, np.array([-3]).reshape(1, -1))
 
 
@@ -352,7 +352,7 @@ def test_lt_equal():
     y = AD(1,1,'y')
     assert (x<y)==False
 
-#gt 
+#gt
 
 def test_gt_values():
     x = AD(7,1,'x')
@@ -543,7 +543,7 @@ def test_log():
     assert z.der==[1/0.5]
 
 
- 
+
 #Testing sine
 def test_sin():
     x = AD(0.5,1,'x')
@@ -569,4 +569,3 @@ def test_tan_inf():
     x = AD(np.pi/2,1,'x')
     with pytest.raises(ValueError):
         x.tan()
-        
