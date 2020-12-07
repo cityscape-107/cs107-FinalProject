@@ -17,8 +17,8 @@ class AD:
                     names.append(AD_function.name)
                 except AttributeError:
                     continue #if just list names never has anything appended
-            #unique_names = set(np.asarray(names).flatten())  # reference
-            unique_names = list(set(np.array(np.concatenate(names, axis=0 )))) # reference
+            unique_names = set(np.asarray(names).flatten())  # reference
+            #unique_names = list(set(np.array(np.concatenate(names, axis=0 )))) # reference
             #print('unique_names',list(unique_names))
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
