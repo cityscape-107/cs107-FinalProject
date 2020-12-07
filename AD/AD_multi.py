@@ -5,7 +5,7 @@ import numpy as np
 
 class AD:
 
-    def __init__(self, value, der=0, name="x"):  # changed from der=[0]
+    def __init__(self, value, der=0, name='x'):  # changed from der=[0]
 
         if isinstance(value, list):
             names = []
@@ -43,24 +43,24 @@ class AD:
 
         else:
             if isinstance(value, float) or isinstance(value, int):
-                value = np.array(value).reshape(1, -1)
+                value = np.array(value, dtype=np.float64).reshape(1, -1)
             elif isinstance(value, list):
-                value = np.array(value).reshape(len(value), 1)
+                value = np.array(value, dtype=np.float64).reshape(len(value), 1)
             elif isinstance(value, np.ndarray):
                 value = value.reshape(value.shape[0], 1)
             else:
                 raise TypeError(f'Value should be int or float and not {type(value)}')
+
             if isinstance(der, float) or isinstance(der, int):
-                der = np.array(der).reshape(1, -1)
+                der = np.array(der, dtype=np.float64).reshape(1, -1)
             if isinstance(der, list):
-                der = np.array(der).reshape(len(der), 1)
+                der = np.array(der, dtype=np.float64).reshape(len(der), 1)
             elif isinstance(der, np.ndarray):
                 der = der.reshape(der.shape[0], -1)
             else:
                 raise TypeError(f'Derivative should be int or float and not {type(der)}')
-
-            self.val = np.array(value, dtype=np.float64)
-            self.der = np.array(der, dtype=np.float64)
+            self.val = value
+            self.der = der
 
             if isinstance(name, list):
                 self.name = name
@@ -157,7 +157,7 @@ class AD:
     def __rmul__(self, other):
         return AD(self.val, self.der).__mul__(other)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other):  # todo: check for forbidden values
         try:
             names_1 = self.name
             names_2 = other.name
@@ -232,7 +232,7 @@ class AD:
                     index_2 = names_2.index(name)
                     new_der = n.der[:, index_2] * math.log(value_base) * new_val
                     derivative = np.concatenate((derivative, new_der), axis=1)
-            return AD(value_base, derivative, new_names)
+            return AD(new_val, derivative, new_names)
 
     def __lt__(self, other):
         # raises an error when the two objects do not have the same attributes
