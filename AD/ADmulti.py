@@ -62,8 +62,8 @@ class AD:
         if self.der is None:
             if isinstance(der, float) or isinstance(der, int):
                 der = np.array(der).reshape(1, -1)
-            if isinstance(der, list):
-                der = np.array(der).reshape(len(der), 1)
+            #if isinstance(der, list):
+                #der = np.array(der).reshape(len(der), 1)
             elif isinstance(der, np.ndarray):
                 der = der.reshape(der.shape[0], -1)
             else:
