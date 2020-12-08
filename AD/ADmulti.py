@@ -414,7 +414,7 @@ class AD:
 
     def logistic(self): 
        #assuming logistic function = sigmoid function = 1/(1+e^(-x))
-        val = 1/(1 + np.exp(-x)) 
+        val = 1/(1 + np.exp(-self.val)) 
         der = np.multiply(val, (1-val))
         return AD(val, der, self.name)
 
