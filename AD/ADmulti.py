@@ -61,9 +61,9 @@ class AD:
         if self.der is None:
             if isinstance(der, float) or isinstance(der, int):
                 der = np.array(der, dtype=np.float64).reshape(1, -1)
-            if isinstance(der, list):
+            elif isinstance(der, list) and len(der) == 1:
                 der = np.array(der).reshape(len(der), 1)
-            elif isinstance(der, np.ndarray):
+            elif isinstance(der, np.ndarray) and der.shape[0] == 1:
                 der = der.reshape(der.shape[0], -1)
             else:
                 raise TypeError(f'Derivative should be int or float and not {type(der)}')
