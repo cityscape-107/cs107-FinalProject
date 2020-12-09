@@ -390,32 +390,34 @@ class AD:
         #d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
         #tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
         val = np.tanh(self.val)
-        der = np.multiply((1/np.power(np.cosh(self.val), 2)), self.der)
+        der = (1/np.power(np.cosh(self.val), 2))* self.der
         return AD(val, der, self.name)
 
     def arcsin(self):
         if ((self.val <= -1) or (self.val>=1)): 
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
-        der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
+        #der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
+        der = self.der*((1 - self.val**2)**(-0.5))
         return AD(val, der, self.name)
 
     def arccos(self):
         if ((self.val <= -1) or (self.val>=1)): 
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arccos(self.val)
-        der = (np.multiply(-1, (1/(np.sqrt(1 - np.power(self.val, 2)))))) * self.der
+        #der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
+        der = -self.der*((1 - self.val**2)**(-0.5))
         return AD(val, der, self.name)
 
     def arctan(self):
         val = np.arctan(self.val)
-        der = (1/(1 + np.power(self.val, 2))) * self.der
+        der = self.der*(1 + self.val**2)**(-1)
         return AD(val, der, self.name)
 
     def logistic(self): 
        #assuming logistic function = sigmoid function = 1/(1+e^(-x))
         val = 1/(1 + np.exp(-self.val)) 
-        der = np.multiply(val, (1-val))
+        der = self.der* np.exp(-self.val)/((1 + np.exp(-self.val))**2)
         return AD(val, der, self.name)
 
     # add log to other basesimport math
