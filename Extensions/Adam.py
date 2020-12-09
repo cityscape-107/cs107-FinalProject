@@ -91,8 +91,8 @@ def adam_gd(f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2
     return final_values[best_value]
 
 
-if __name__ == '__main__':
-    f = lambda x, y, z: x ** 2 + y ** 2 + (z - 2) ** 2
-    acc = adam_gd(f, random_restarts=10)
-    print(acc)
+#if __name__ == '__main__':
+#    f = lambda x, y, z: x ** 2 + y ** 2 + (z - 2) ** 2
+#    acc = adam_gd(f, random_restarts=10)
+#    print(acc)
 
