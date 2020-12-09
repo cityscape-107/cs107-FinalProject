@@ -1,4 +1,4 @@
-from Extensions.adam import *
+from NTRF import NTRF
 import pytest
 
 def test_NTRF():

@@ -1,4 +1,4 @@
-from Extensions.adam import *
+from Adam import *
 import pytest
 
 def test_dimensionality_2():
