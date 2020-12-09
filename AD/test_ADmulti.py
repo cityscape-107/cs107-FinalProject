@@ -570,3 +570,120 @@ def test_tan_inf():
     with pytest.raises(ValueError):
         x.tan()
         
+
+
+
+#    def sinh(self): #hyperbolic sin
+        #d/dx (sinh x) = cosh x
+        #sinh x = (e^x - e^(-x))/2  range (-inf, inf)
+        #val = np.multiply(.5, (np.exp(self.val) - np.exp(np.multiply(-1, self.val))))
+        #val = np.sinh(self.val)
+        #der = np.cosh(self.val) * self.der 
+        #return AD(val, der, self.name)
+
+def test_sinh():
+    x = AD(0.5,1,'x')
+    z = x.sinh()
+    assert z.val==[np.sinh(0.5)]
+    assert z.der==[np.cosh(0.5)*(1)]
+
+def test_cosh():
+    x = AD(0.5,1,'x')
+    z = x.cosh()
+    print(z)
+    assert z.val==[np.cosh(0.5)]
+    assert z.der==[np.sinh(0.5)*(1)]
+
+def test_tanh():
+    x = AD(0.5,1,'x')
+    z = x.tanh()
+    print(z)
+    assert z.val==[np.tanh(0.5)]
+    assert z.der==[(1/np.cosh(0.5)**2)*(1)]
+"""
+        def tanh(self): #hyperbolic tan
+        #d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
+        #tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
+        val = np.tanh(self.val)
+        der = np.multiply((1/np.power(np.cosh(self.val), 2)), self.der)
+        return AD(val, der, self.name)
+"""
+
+
+"""
+     def arcsin(self):
+        if ((self.val <= -1) or (self.val>=1)): 
+            raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
+        val = np.arcsin(self.val)
+        der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
+        return AD(val, der, self.name)
+
+    def arccos(self):
+        if ((self.val <= -1) or (self.val>=1)): 
+            raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
+        val = np.arccos(self.val)
+        der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
+        return AD(val, der, self.name)
+
+    def arctan(self):
+        val = np.arctan(self.val)
+        der = (1/(1 + np.power(self.val, 2))) * self.der
+        return AD(val, der, self.name)
+
+    def logistic(self): 
+       #assuming logistic function = sigmoid function = 1/(1+e^(-x))
+        val = 1/(1 + np.exp(-self.val)) 
+        der = np.multiply(val, (1-val))
+        return AD(val, der, self.name)
+
+"""
+
+def test_arcsin():
+    x = AD(0.5,3,'x')
+    z = x.arcsin()
+    print('x=',x)
+    print(z)
+    assert z.val == [np.arcsin(0.5)]
+    #np.testing.assert_array_equal(z.der, np.array([-3/np.sqrt(1 - 0.5**2)]))
+    assert z.der == [3*(1 - 0.5**2)**(-0.5)]
+
+def test_arcsin_val_err_1():
+    x = AD(2,1,'x')
+    with pytest.raises(ValueError):
+        x.arcsin()
+
+def test_arcsin_val_err_2():
+    x = AD(-2,1,'x')
+    with pytest.raises(ValueError):
+        x.arcsin()
+
+def test_arccos():
+    x = AD(0.5,3,'x')
+    z = x.arccos()
+    print('x=',x)
+    print(z)
+    assert z.val == [np.arccos(0.5)]
+    #np.testing.assert_array_equal(z.der, np.array([-3/np.sqrt(1 - 0.5**2)]))
+    assert z.der == [-3*(1 - 0.5**2)**(-0.5)]
+
+def test_arccos_m1():
+    x = AD(-1.1,3,'x')
+    with pytest.raises(ValueError):
+        x.arccos()
+def test_arccos_p1():
+    x = AD(1.1,3,'x')
+    with pytest.raises(ValueError):
+        x.arccos()
+
+def test_arctan():
+    x = AD(0.5,3,'x')
+    z = x.arctan()
+    print(z)
+    assert z.val == [np.arctan(0.5)]
+    assert z.der == [3*(1 + 0.5**2)**(-1)]
+
+def test_logistic():
+    x = AD(2,3,'x')
+    z = x.logistic()
+    assert z.val == [1/(1+np.exp(-2))]
+    assert z.der == [3*np.exp(-2)*(1 + np.exp(-2))**(-2)]
