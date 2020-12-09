@@ -7,7 +7,12 @@ names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', '
          'w']
 
 
+
 class Optimizer:
+
+    """This class implements different types of Optimizers. Their common paradigm is gradient descent. The
+    way these optimizers differ is the way the updates are performed, and whether they include momentum
+    control or second moment of the gradient control."""
 
     def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
                  step_size=1e-3, epsilon=1e-8, tuning=False, quadratic_matrix=None, max_epochs=10, verbose=0):
@@ -112,11 +117,10 @@ class Optimizer:
         [-3.1341273654385723e-06, 1.9563233193181366e-59, 1.9998541875049667]"""
         accumulator = []
         final_values = []
-        #todo: find a way to update the init points without having this line breaking
         for i in range(self.restarts):
             try:
                 init_point = self.init[i]
-            except:
+            except TypeError:
                 init_point = self.produce_random_points()
             if self.sampling:
                 init_point = self.annealing(init_point)
@@ -162,7 +166,7 @@ class Optimizer:
                 np.min(accumulator)) + 'after ' + str(self.num_iterations[best_value]) + ' iterations')
         return self.trace_values
 
-# todo: change the syntax into a class for annealing
+
     def annealing(self, init_point):
         """ This function allows to produce points inside regions of importance in the optimization landscape of f.
             It enables to tune the initialized points entered by the user, or it allows to produce good points when the user
@@ -187,14 +191,17 @@ class Optimizer:
         accumulator = []
         for epoch in range(self.max_epochs):
             if epoch > 0:
-                temp = reduce_temp(temp)
-                length = incr_iters(length)
+                temp = reduce_temp(temp)  # cooling schedule
+                length = incr_iters(length)   # favor exploitation over exploration over time
             for it in range(length):
                 total += 1
                 new_solution = np.random.multivariate_normal(old_solution, self.covariance, size=1).flatten()
                 new_cost = self.init_function(*new_solution)
                 alpha = min(1, np.exp((old_cost - new_cost) / temp))
                 if (new_cost < old_cost) or (np.random.uniform() < alpha):
+                    print('new', new_cost, 'old', old_cost)
+                    print('Acceptance probability', alpha)
+                    print('new solution', new_solution)
                     accepted += 1
                     accumulator.append([temp, new_solution, new_cost])
 
@@ -211,10 +218,12 @@ class Optimizer:
             print('Initialization point after simulated annealing: ' + str(accumulator[-1][1]))
         return accumulator[-1][1]
 
+
     def history(self):
         if self.global_optimizer is None:
             raise Exception('Optimization not run yet. Please run your optimizer before accessing to its history')
         return self.__str__()
+
 
 
 class Adam(Optimizer):
@@ -280,10 +289,8 @@ class RMSProp(Optimizer):
 
 if __name__ == '__main__':
     f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
-    adam = Adam(f, random_restarts=10, tuning=True, quadratic_matrix=np.eye(3), verbose=2)
+    adam = Adam(f)
     adam.descent()
     print(adam)
-    adam = Adam(f, random_restarts=10, verbose=2)
-    adam.descent()
-    print(adam)
+
 

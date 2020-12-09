@@ -70,3 +70,16 @@ def test_sa():
     adam = Adam(f, random_restarts=10, verbose=2)
     adam.descent()
     print(adam)
+
+
+def test_new_syntax():
+    f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
+    adam = Adam(f, random_restarts=10, tuning=True, quadratic_matrix=np.eye(3), verbose=1)
+    adam.descent()
+    print(adam)
+    adam = Adam(f, random_restarts=10, verbose=1)
+    adam.descent()
+    print(adam)
+    sgd = sgd(f, random_restarts=10, verbose=1)
+    sgd.descent()
+    print(sgd)

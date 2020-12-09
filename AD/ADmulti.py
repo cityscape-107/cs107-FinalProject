@@ -17,7 +17,8 @@ class AD:
                     names.append(AD_function.name)
                 except AttributeError:
                     continue  # if just list names never has anything appended
-            unique_names = set(np.asarray(names).flatten())  # reference
+            # unique_names = set(np.asarray(names).flatten())  # reference
+            unique_names = list(set(np.array(np.concatenate(names, axis=0 )))) # reference
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
@@ -243,6 +244,23 @@ class AD:
                     derivative = np.concatenate((derivative, new_der), axis=1)
             return AD(new_val, derivative, new_names)
 
+
+    def sort(self, order):
+        if not isinstance(order, list) and not isinstance(order, np.ndarray):
+            raise TypeError('Order should be an array-like composed of strings')
+        for string in order:
+            if not isinstance(string, str):
+                raise TypeError('Order should only be composed of strings')
+        if self.name == order:
+            return
+        final_derivative = self.der.copy()
+        for i, variable in enumerate(order):
+            index = self.name.index(variable)
+            derivative = self.der[:, index]
+            final_derivative[:, i] = derivative
+        self.der = final_derivative
+        self.name = order
+
     def __lt__(self, other):
         if isinstance(other, AD):
 
@@ -422,3 +440,6 @@ class AD:
 
     # add log to other basesimport math
 # this is where we are going to work on creating the new class
+
+
+

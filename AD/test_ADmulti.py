@@ -25,12 +25,6 @@ def test_der_init():
     assert x.name == ['x']
 
 
-def test_list_init():
-    x = AD([1, 2], 1, 'x')
-    np.testing.assert_array_equal(x.val, [[1],[2]])
-    np.testing.assert_array_equal(x.der, np.array([[1]]))
-    assert x.name == ['x']
-
 def test_add_constant():
     x = AD(1, 1, 'x')
     z = x+2
@@ -64,6 +58,14 @@ def test_add_c():
     np.testing.assert_array_equal(z.der, np.array([1, 2]).reshape(1, -1))
     assert z.name == ['x', 'y']
 
+
+
+def test_order():
+    x = AD(1, 1, 'x')
+    y = AD(2, 2, 'y')
+    z = y + x
+    z.sort(['x', 'y'])
+    print(z)
 
 
 #Subtraction
