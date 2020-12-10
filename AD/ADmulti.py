@@ -441,7 +441,7 @@ class AD:
         return AD(self.val, self.der, self.name).__mul__(other)
 
     def __truediv__(self, other):  # todo: check for forbidden values
-		""" 
+        """ 
 		Computes self devided by other
 		
 		INPUTS
