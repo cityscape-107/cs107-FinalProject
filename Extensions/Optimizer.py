@@ -56,18 +56,72 @@ class Optimizer:
         self.trace_values = []
         self.trace_gradients = []
         self.trace = []
+        if not isinstance(max_iter, int) and not isinstance(max_iter, float):
+            raise TypeError('Max iter should be an integer or a float')
+        if max_iter < 0:
+            raise ValueError('Max iter should be a > 0 integer')
         self.max_iter = max_iter
+        if isinstance(init_points, int) or isinstance(init_points, float):
+            init_points = [init_points]
+        if init_points is not None and not isinstance(init_points, list):
+            raise TypeError('Initial points should be a list')
+        if init_points is not None:
+            try:
+                f(*init_points)
+            except:
+                raise ValueError('Please enter valid input points')
         self.init = init_points
+        if not isinstance(tolerance, float) and not isinstance(tolerance, int):
+            raise TypeError('Tolerance should be an integer or a float')
+        if tolerance < 0:
+            raise ValueError('Tolerance should be > 0')
         self.tol = tolerance
+        if not isinstance(random_restarts, int):
+            raise TypeError('Random restarts should be an integer')
+        if random_restarts < 0:
+            raise ValueError('Random restarts should be > 0')
         self.restarts = random_restarts
+        if not isinstance(step_size, float) and not isinstance(step_size, int):
+            raise TypeError('Step size should be an integer or a float')
+        if step_size < 0:
+            raise ValueError('Step size should be > 0')
         self.lr = step_size
+        if not isinstance(beta_1, int) and not isinstance(beta_1, float):
+            raise TypeError('Beta_1 should be an integer or a float')
+        if beta_1 > 1 or beta_1 < 0:
+            raise ValueError('Beta_1 should be an integer or a float between 0 and 1')
         self.beta1 = beta_1
+        if not isinstance(beta_2, int) and not isinstance(beta_2, float):
+            raise TypeError('Beta_2 should be an integer or a float')
+        if beta_2 > 1 or beta_2 < 0:
+            raise ValueError('Beta_1 should be an integer or a float between 0 and 1')
         self.beta2 = beta_2
+        if not isinstance(epsilon, int) and not isinstance(epsilon, float):
+            raise TypeError('Epsilon should be an integer or a float')
         self.eps = epsilon
+        if not isinstance(tuning, bool):
+            raise TypeError('Tuning should be a boolean')
         self.sampling = tuning
         self.global_optimizer = None
+        if not self.sampling and quadratic_matrix is not None:
+            raise ValueError('You should set tuning to true when inputing a covariance matrix')
+        if quadratic_matrix is not None and not isinstance(quadratic_matrix, np.ndarray):
+            raise TypeError('Quadratic matrix should be an array')
+        if quadratic_matrix is not None and len(quadratic_matrix.shape) < 2:
+            raise ValueError('Quadratic matrix should be a 2D array')
+        if quadratic_matrix is not None and init_points is not None:
+            if quadratic_matrix.shape[0] != len(init_points):
+                raise ValueError('Input dimensions not coherent for cov matrix and init points')
         self.covariance = quadratic_matrix
+        if not isinstance(max_epochs, int):
+            raise TypeError('Epochs should be an integer')
+        if max_epochs < 0:
+            raise ValueError('The number of epochs should be an integer > 0')
         self.max_epochs = max_epochs
+        if not isinstance(verbose, int):
+            raise TypeError('Verbose should be an integer')
+        if verbose < 0:
+            raise ValueError('The verbose should be an integer > 0')
         self.verbose = verbose
         self.num_iterations = []
 
@@ -75,12 +129,24 @@ class Optimizer:
         raise NotImplementedError
 
     def produce_random_points(self):
-        """
-        This function allows to produce random initialization points in order to start the descent algorithm when
+        """This function allows to produce random initialization points in order to start the descent algorithm when
         the user does not wish to specify some initialization points. This function infer the dimensionality of
-        the inputs and returns points sampled from a gaussian distribution
-        :return: init_point, array of shape (1, n_args)
-        """
+        the inputs and returns points sampled from a gaussian distribution. Returns, init_point, array of shape (1, n_args)
+        INPUTS
+        =======
+        self: an adam instance of the optimizer
+
+        RETURNS
+        ========
+        final_values: list of values
+           Has the form (x, y, z) where this point is the best point found across the different random restarts
+
+        EXAMPLES
+        =========
+        # >>> f = lambda x: x**2+y**2+(z-2)**2
+        # >>> sgd = sgd(f)
+        # >>> init = sgd.produce_random_points()
+        [-1.4738622, 1.0198161, -0.2515112]"""
         n_args = len(inspect.getargspec(self.init_function).args)
         test_dim_input = np.ones(n_args).reshape(n_args, 1)
         for i in range(0, 100):
@@ -88,6 +154,7 @@ class Optimizer:
                 self.init_function(*test_dim_input)
                 break
             except:
+                print('hey')
                 try:
                     self.init_function(np.array(*test_dim_input))
                     break
@@ -171,9 +238,28 @@ class Optimizer:
         """ This function allows to produce points inside regions of importance in the optimization landscape of f.
             It enables to tune the initialized points entered by the user, or it allows to produce good points when the user
             did not input any initialized points. This allows to accelerate the optimization algorithm.
-            For now, it only supports quadratic functions."""
+            For now, it only supports quadratic functions.
+            INPUTS
+            =======
+            self: an instance of optimizer class
+            init_point: the initial point, produced via self.produce_random_points() or input by user
+
+            RETURNS
+            ========
+            accumulator[-1][-1]: list of values
+               Has the form (x, y, z) where this point is the best point found accross the different epochs based
+               on random sampling based on simulated annealing.
+
+            EXAMPLES
+            =========
+            # >>> f = lambda x: x**2+y**2+(z-2)**2
+            # >>> adam = Adam(f, random_restarts=10)
+            # >>> init_point = adam.produce_random_points()
+            # >>> init_point = adam.annealing(init_point)
+            # >>> adam.init = init_point    #todo: check if this thing work
+            # >>> adam.descent()"""
         if self.covariance is None:
-            raise Exception('You must enter your quadratic form matrix in order to perform efficient sampling')
+            raise ValueError('You must enter your quadratic form matrix in order to perform efficient sampling')
 
         temp = 10  # common default value when using this cooling schedule
         length = 500
@@ -199,9 +285,9 @@ class Optimizer:
                 new_cost = self.init_function(*new_solution)
                 alpha = min(1, np.exp((old_cost - new_cost) / temp))
                 if (new_cost < old_cost) or (np.random.uniform() < alpha):
-                    print('new', new_cost, 'old', old_cost)
-                    print('Acceptance probability', alpha)
-                    print('new solution', new_solution)
+                    # print('new', new_cost, 'old', old_cost)
+                    # print('Acceptance probability', alpha)
+                    # print('new solution', new_solution)
                     accepted += 1
                     accumulator.append([temp, new_solution, new_cost])
 
@@ -285,12 +371,5 @@ class RMSProp(Optimizer):
                 self.init_function(*self.global_optimizer))
         else:
             return 'RMSProp optimizer, not yet fitted'
-
-
-if __name__ == '__main__':
-    f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
-    adam = Adam(f)
-    adam.descent()
-    print(adam)
 
 
