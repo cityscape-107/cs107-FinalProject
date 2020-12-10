@@ -391,7 +391,6 @@ class AD:
         -------
         AD object representing the result of other/self
         """
-        return AD(self.val, self.der, self.name).__mul__(other)
         if self.val == 0 or self.val == np.array([0]):
             raise ZeroDivisionError
         new_val = other / self.val
