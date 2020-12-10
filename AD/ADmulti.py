@@ -4,10 +4,27 @@ import numpy as np
 
 class AD:
     """
-    Class to represent functions (and their variables) for automatic differentiation. In order to get the derivative of a function with respect to a specific variable, that variable must be initialized as an AD object before performing any operation in which this variable is involved. Vector functions are also initialized as an AD object.
+    Class to represent functions (and their variables) for automatic differentiation. 
+    In order to get the derivative of a function with respect to a specific variable, that variable must be initialized as an AD object before performing any operation in which this variable is involved. 
+    
+    Vector functions are also initialized as an AD object.
     
     ...
     
+    Parameters
+    ----------
+    value : int, float, np.ndarray or list
+        Values or functions used to construct a new variable or function object 
+          - if value is int or float or np.ndarray         --> scalar function 
+          - if value is list(int, float, AD or np.ndarray) --> vector function
+    
+    der : int, float, np.ndarray or list, optional
+        Derivatives with respect to each of the variables of a function (default is 0).
+    
+    name : str, optional
+        Names of the variables (default is 'x'). 
+        This parameter is only needed when instantiating variables and not for functions.
+            
     Attributes
     ----------
     val : np.ndarray (scalar functions) or list (vector functions)
@@ -19,9 +36,39 @@ class AD:
         
     Methods
     ----------
-    
-    sort(self, order)
+    __init__(self, value, der=0, name='x'):  Constructs the necessary attributes of an AD object representing a variable or a function.
+    __repr__(self):  Return the canonical string representation of the object.
+    __add__(self, other):  Perform addition on an AD object.        
+    __radd__(self, other):  Perform reverse addition on an AD object.        
+    __neg__(self):  Perform negation on AD objects.        
+    __sub__(self, other):  Perform subtraction on an AD object.        
+    __rsub__(self, other):  Perform reverse subtraction on an AD object.        
+    __mul__(self, other):  Perform multiplication on an AD object.        
+    __rmul__(self, other):  Perform reverse multiplication on an AD object.        
+    __truediv__(self, other):  Perform true division on an AD object.        
+    __rtruediv__(self, other):  Perform reverse true division on an AD object.        
+    __pow__(self, n):  Raise an AD object to the power of n.        
+    sort(self, order):  Sort the derivatives and variable names of an AD object by the specified order.       
+    __lt__(self, other):  Perform "less than" comparison on an AD object.        
+    __gt__(self, other):  Perform "greater omparison on an AD object.        
+    __le__(self, other):  Perform "less or equal than" comparison on an AD object.        
+    __ge__(self, other):  Perform "greater or equal than" comparison on an AD object.        
+    __eq__(self, other):  Perform "equality" comparison on an AD object.        
+    __ne__(self, other):  Perform "inequality" comparison on an AD object.        
+    tan(self):  Compute the tangent of an AD object.        
+    sin(self):  Compute the sine of an AD object.        
+    cos(self):  Compute the cosine of an AD object.        
+    exp(self):  Compute the exponential of an AD object.        
+    ln(self):  Compute the natural logarithm of an AD object.        
+    sinh(self):  Compute the hyperbolic sine of an AD object.        
+    def cosh(self):  Compute the hyperbolic cosine of an AD object.        
+    tanh(self):  Compute the hyperbolic tangent of an AD object.        
+    arcsin(self):  Compute the arcsine (inverse of sine) of an AD object.        
+    arccos(self):  Compute the arccosine (inverse of cosine) of an AD object.       
+    def arctan(self):  Compute the arctangent (inverse of tangent) of an AD object.       
+    logistic(self):   Apply the sigmoid function to an AD object, defined as: sigmoid(x) =  1/(1+e**(-x))
     """
+    
     def __init__(self, value, der=0, name='x'):
         """
         Constructs the necessary attributes of an AD object representing a variable or a function.
