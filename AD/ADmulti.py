@@ -75,6 +75,7 @@ class AD:
     
     Methods
     ==========
+    # AD object-related methods
     __init__(self, value, der=0, name='x'):  Constructs the necessary attributes of an AD object representing a variable or a function.
     __repr__(self):  Return the canonical string representation of the object.
     sort(self, order):  Sort the derivatives and variable names of an AD object by the specified order.       
