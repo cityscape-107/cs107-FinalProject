@@ -18,6 +18,13 @@ def test_invalid_val():
         x = AD('hello',1, 'x')
 
 
+def test_names():
+    x = AD(1, 1, 'x1')
+    z = 2*x
+    print(z)
+    v = x-z
+    print(v)
+
 def test_add_constant():
     x = AD(1, 1, 'x')
     z = x+2
