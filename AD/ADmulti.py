@@ -3,13 +3,48 @@ import numpy as np
 
 
 class AD:
-
+    """
+    TO DO! 
+    """
     def __init__(self, value, der=0, name='x'):  # changed from der=[0]
+        """
+        
+		INPUTS
+		========
+		value : int, float, list, or np.array. This defines the value of a variable
 
+		der : This allows manually setting derivative (default=0)
+
+		name: stores the name of the variable
+        
+		EXAMPLES
+		========
+		# scalar input
+		>>> x = AD(1,1,'x') 
+        >>> x
+		Numerical Value is:
+        [[1.]], 
+        Jacobian is:
+        [[1.]], 
+        Name is:
+        ['x']
+
+		# vector input
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> z = AD(3,1,'z') 
+        >>> v = AD([x+y+z])
+        >>> v
+        Numerical Value is:
+        [6.0], 
+        Jacobian is:
+        [[1.0, 1.0, 1.0]], 
+        Name is:
+        ['y', 'x', 'z']
+		"""
         self.val = None
         self.der = None
         self.name = None
-
         if isinstance(value, list):
             names = []
             for AD_function in value:
@@ -45,8 +80,10 @@ class AD:
                 self.val = global_value
                 self.der = global_jacobian
                 self.name = unique_names
-            else:
-                self.val = np.array(value).reshape(len(value), 1)
+            #else:
+                #self.val = np.array(value).reshape(len(value), 1)
+                # WARNING TO DO
+                # WARNING TO DO
 
         if self.val is None:
             if isinstance(value, float) or isinstance(value, int):
@@ -77,12 +114,71 @@ class AD:
                 self.name = [name]
 
     def __repr__(self):
+        """
+        Prints the Numerical Value, Jacobian, and Name.
+        
+        INPUTS:
+        ======== 
+        self: AD object
+        
+        RETURNS:
+        ======== 
+        x: AD object with value, Jacobian matrix, and corresponding name(s)
+		
+		
+		EXAMPLES
+		========
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> z = AD(3,1,'z') 
+        >>> v = AD([x+y+z])
+        >>> print(v)
+        Numerical Value is:
+        [6.0], 
+        Jacobian is:
+        [[1.0, 1.0, 1.0]], 
+        Name is:
+        ['y', 'x', 'z']
+		"""
         val = self.val
         der = self.der
         name = self.name
         return 'Numerical Value is:\n{}, \nJacobian is:\n{}, \nName is:\n{}'.format(val, der, name)
 
     def __add__(self, other):
+        """ 
+		Computes the addition of self and other.
+		
+		INPUTS
+		========
+		self: AD object
+		other: AD object or number
+		
+		RETURNS
+		========
+		x: AD object that equals to the sum of self and other
+		
+		EXAMPLES
+		======== 
+		>>> x = AD(1,1,'x') + AD(2,1,'x')
+		>>> print(x)
+		Numerical Value is:
+        [[3.]], 
+        Jacobian is:
+        [[1.]], 
+        Name is:
+        ['x']
+
+		>>> x = AD(1,1,'x') + 2
+		>>> print(x)
+        Numerical Value is:
+        [[3.]], 
+        Jacobian is:
+        [[1.]], 
+        Name is:
+        ['x']
+
+		"""
         try:
             names_1 = self.name.copy()
             names_2 = other.name
@@ -103,10 +199,56 @@ class AD:
         return AD(value, derivative, name)
 
     def __radd__(self, other):
+        """
+		Computes the addition of other and self.
+
+		INPUTS
+		========
+		self: AD object
+		other: AD object or number
+		
+		RETURNS
+		========
+		x: AD object that has a value equals to the sum of other and self
+		
+		EXAMPLES
+		======== 
+		>>> x = 2 + AD(1,1,'x') 
+		>>> print(x)
+        Numerical Value is:
+        [[3.]], 
+        Jacobian is:
+        [[1.]], 
+        Name is:
+        ['x']
+
+		"""
         new_var = AD(self.val, self.der, self.name)  # create a new variable
         return new_var.__add__(other)
 
     def __neg__(self):
+        """ 
+		Computes the negation of self
+
+		INPUTS
+		==========
+		self: AD object
+		
+		RETURNS
+		======= 
+		y: AD object with the negative value & derivative of x
+
+		EXAMPLES
+		======== 
+		>>> x = AD(2,1,'x')
+		>>> print(-x)
+		Numerical Value is:
+        [[-2.]], 
+        Jacobian is:
+        [[-1.]], 
+        Name is:
+        ['x']
+		"""
         val = -self.val.copy()
         der = -self.der.copy()
         name = self.name
@@ -115,13 +257,112 @@ class AD:
         # overloading the '-' operator
 
     def __sub__(self, other):
+        """
+		Computes self subtracts other
+
+		INPUTS
+		==========
+		self: AD object
+		other: AD object or number
+		
+		RETURNS
+		========
+		z: Var object that has the value of self subtracts other
+		
+		EXAMPLES
+		======== 
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> print(x-y)
+        Numerical Value is:
+        [[-1.]], 
+        Jacobian is:
+        [[ 1. -1.]], 
+        Name is:
+        ['x', 'y']
+        
+        >>> print(x-2)
+        Numerical Value is:
+        [[-1.]], 
+        Jacobian is:
+        [[1.]], 
+        Name is:
+        ['x']
+		"""
         return self.__add__(-other)
 
     def __rsub__(self, other):
+        """
+		Computes self subtracts other
+
+		INPUTS
+		==========
+		self: AD object
+		other: AD object or number
+		
+		RETURNS
+		========
+		z: Var object that has the value of other subtracts self
+		
+		EXAMPLES
+		======== 
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y')
+        >>> print(y-x)        
+        Numerical Value is:
+        [[1.]], 
+        Jacobian is:
+        [[ 1. -1.]], 
+        Name is:
+        ['y', 'x']
+        
+        >>> x = AD(1,1,'x') 
+        >>> print(2-x)
+        Numerical Value is:
+        [[1.]], 
+        Jacobian is:
+        [[-1.]], 
+        Name is:
+        ['x']
+                
+		"""
         return -(self.__sub__(other))
 
     # overloading the '*' operator
     def __mul__(self, other):
+        """ 
+		Computes the product of self and other.
+		
+		INPUTS
+		==========
+		self: AD object
+		other: AD object or number
+		
+		RETURNS
+		========
+		z: Var object that has the value and derivative corresponding to self multiplies other
+		
+		EXAMPLES
+		========= 
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> print(x*y)
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[2. 1.]], 
+        Name is:
+        ['x', 'y']
+
+        >>> x = AD(1,1,'x') 
+        >>> print(x*2)
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[2.]], 
+        Name is:
+        ['x']
+        """
         try:
             names_1 = self.name.copy()
             names_2 = other.name.copy()
@@ -154,21 +395,77 @@ class AD:
             name = new_names
 
         except AttributeError:  # one of the coefficients of other is None, it is a constant
-            if isinstance(other, np.ndarray):
-                if len(other.shape) > 1:
-                    new_value = np.dot(self.val, other)
-                    derivative = np.dot(self.der, other)
-                    name = self.name
-                    return AD(new_value, derivative, name)
+            
+            # if isinstance(other, np.ndarray):
+            #     if len(other.shape) > 1:
+            #         new_value = np.dot(self.val, other)
+            #         derivative = np.dot(self.der, other)
+            #         name = self.name
+            #         return AD(new_value, derivative, name)
+            
+            # WARNING TO DO
+            # if other is ndarray, it'll never reach this place
+            
+            
+            
             new_value = self.val * other
             derivative = self.der * other
             name = self.name
         return AD(new_value, derivative, name)
 
     def __rmul__(self, other):
+        """ 
+		Computes the product of other and self.
+		
+		INPUTS
+		==========
+		self: AD object
+		other: AD object or number
+		
+		RETURNS
+		========
+		z: Var object that has the value and derivative corresponding to other multiplies self
+		
+		EXAMPLES
+		========= 
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> print(y*x)
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[1. 2.]], 
+        Name is:
+        ['y', 'x']
+
+        >>> x = AD(1,1,'x') 
+        >>> print(2*x)
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[2.]], 
+        Name is:
+        ['x']
+		"""
         return AD(self.val, self.der, self.name).__mul__(other)
 
     def __truediv__(self, other):  # todo: check for forbidden values
+        """ 
+		Computes self devided by other
+		
+		INPUTS
+		==========
+		self: AD object
+		other: AD object or number
+		
+		RETURNS
+		========
+		z: 
+		
+		
+		EXAMPLES
+		========  
+        """
         try:
             names_1 = self.name
             names_2 = other.name
@@ -200,6 +497,7 @@ class AD:
         return AD(new_value, derivative, name)
 
     def __rtruediv__(self, other):
+
         if self.val == 0 or self.val == np.array([0]):
             raise ZeroDivisionError
         new_val = other / self.val
@@ -208,6 +506,7 @@ class AD:
         return AD(new_val, new_der, names)
 
     def __pow__(self, n):
+
         if isinstance(n, float) or isinstance(n, int):  # duck typing fails here because of the raised exception
             float(n)  # n is an int/float
             value = self.val.copy()
@@ -268,6 +567,7 @@ class AD:
         self.name = order
 
     def __lt__(self, other):
+
         if isinstance(other, AD):
 
             # Error if object don't have same dim.
@@ -304,6 +604,7 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __gt__(self, other):
+
         if isinstance(other, AD):
             return other.__lt__(self)
         else:
@@ -332,6 +633,7 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __ge__(self, other):
+
         # raises an error when the two objects do not have the same attributes
         if isinstance(other, AD):
             return other.__le__(self)
@@ -361,6 +663,7 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __ne__(self, other):
+
         return not self.__eq__(other)
 
     def tan(self):

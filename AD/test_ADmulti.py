@@ -17,6 +17,9 @@ def test_invalid_val():
     with pytest.raises(TypeError):
         x = AD('hello',1, 'x')
 
+def test_der_is_list():
+    with pytest.raises(TypeError):
+        x = AD(1,[1,2], 'x')
 
 def test_names():
     x = AD(1, 1, 'x1')
