@@ -154,13 +154,19 @@ class AD:
             name = new_names
 
         except AttributeError:  # one of the coefficients of other is None, it is a constant
+            if isinstance(other, np.ndarray):
+                if len(other.shape) > 1:
+                    new_value = np.dot(self.val, other)
+                    derivative = np.dot(self.der, other)
+                    name = self.name
+                    return AD(new_value, derivative, name)
             new_value = self.val * other
             derivative = self.der * other
             name = self.name
         return AD(new_value, derivative, name)
 
     def __rmul__(self, other):
-        return AD(self.val, self.der).__mul__(other)
+        return AD(self.val, self.der, self.name).__mul__(other)
 
     def __truediv__(self, other):  # todo: check for forbidden values
         try:
