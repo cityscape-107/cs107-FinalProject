@@ -126,7 +126,12 @@ class Optimizer:
         self.num_iterations = []
 
     def __str__(self):
-        raise NotImplementedError
+        if self.global_optimizer:
+            return 'Adam optimizer, which found an optimal weight point of ' + str(
+                self.global_optimizer) + ' the value of the objective function at this point is ' + str(
+                self.init_function(*self.global_optimizer))
+        else:
+            return 'Adam optimizer, not yet fitted'
 
     def produce_random_points(self):
         """This function allows to produce random initialization points in order to start the descent algorithm when

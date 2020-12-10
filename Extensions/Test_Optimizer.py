@@ -254,9 +254,7 @@ def test_descenterror_cov():
         opt = Optimizer(f, quadratic_matrix=None, tuning=True, verbose=2)
         opt.descent()
         optimal_point = opt.global_optimizer
-        assert abs(optimal_point[0]) < 1e-3
-        assert abs(optimal_point[1]) < 1e-3
-        assert abs(optimal_point[2]) < 1e-3
+    
 
 def test_adam():
     f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
@@ -282,7 +280,11 @@ def test_rms():
     opt.history()
 
 
-
+def test_opt():
+    f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
+    opt = Optimizer(f)
+    opt.descent()
+    print(opt)
 
 # todo: finish the coverage for produce_random_samples()
 """
