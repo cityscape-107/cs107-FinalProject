@@ -18,7 +18,10 @@ class AD:
                 except AttributeError:
                     continue  # if just list names never has anything appended
             # unique_names = set(np.asarray(names).flatten())  # reference
-            unique_names = list(set(np.array(np.concatenate(names, axis=0))))  # reference
+            try:
+                unique_names = list(set(np.array(np.concatenate(names, axis=0))))  # reference
+            except ValueError:
+                unique_names = set(np.asarray(names).flatten())
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
@@ -65,6 +68,8 @@ class AD:
                 der = np.array(der).reshape(len(der), 1)
             elif isinstance(der, np.ndarray) and der.shape[0] == 1:
                 der = der.reshape(der.shape[0], -1)
+            elif isinstance(der, np.ndarray) and len(der.shape) == 2:
+                der = der
             else:
                 raise TypeError(f'Derivative should be int or float and not {type(der)}')
 
@@ -86,11 +91,16 @@ class AD:
         try:
             names_1 = self.name.copy()
             names_2 = other.name
-            value = self.val + other.val
+            value = np.array(self.val) + np.array(other.val)
             derivative = self.der.copy()
             for i, name_2 in enumerate(names_2):
                 if name_2 in names_1:
+                    print(name_2)
                     index_1 = names_1.index(name_2)
+                    if not isinstance(derivative, np.ndarray):
+                        derivative = np.array(derivative)
+                    if not isinstance(other.der, np.ndarray):
+                        other.der = np.array(other.der)
                     derivative[:, index_1] = derivative[:, index_1] + other.der[:, i]
                 else:
                     derivative = np.concatenate((derivative, other.der[:, i].reshape(-1, 1)), axis=1)
@@ -250,6 +260,21 @@ class AD:
                     derivative = np.concatenate((derivative, new_der), axis=1)
             return AD(new_val, derivative, new_names)
 
+    def __rpow__(self, other):
+        value = self.val
+        if value < 0 and other == 0:
+            raise ZeroDivisionError
+        if other < 0:
+            raise ValueError('Inconsistent value found for the base')
+        if not len(value) == 1:
+            raise TypeError('Inconsistent dimensions found')
+        der = self.der
+        name = self.name
+        new_value = other ** value
+        new_der = der*np.log(value)*new_value
+        return AD(new_value, new_der, name)
+
+
 
     def sort(self, order):
         if not isinstance(order, list) and not isinstance(order, np.ndarray):
@@ -283,24 +308,6 @@ class AD:
                 return True
             else:
                 return False
-
-            # else:  # need to compare the derivatives
-
-            # else:
-            # for i, name in enumerate(self.name):
-            # if name in other.name:
-            # index_2 = other.name.index(name)
-            # der_1 = self.der[:, i]
-            # der_2 = other.der[:, index_2]
-            # if der_1 < der_2:
-            #   return True
-            # elif der_1 > der_2:
-            #    return False
-            # else:
-            #    continue
-            # else:
-            # raise AttributeError('Incoherent dimension input')
-            # return False
         else:
             if len(self.name) == 1:
                 return self.val < other
@@ -319,12 +326,8 @@ class AD:
     def __le__(self, other):
 
         if isinstance(other, AD):
-
-            # Error if object don't have same dim.
             if len(self.name) != len(other.name):
                 raise AttributeError('Incoherent dimension input')
-
-            # < acts on scalars and vector
             if self.val <= other.val:
                 return True
             else:
@@ -336,7 +339,6 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __ge__(self, other):
-        # raises an error when the two objects do not have the same attributes
         if isinstance(other, AD):
             return other.__le__(self)
         else:
@@ -349,11 +351,9 @@ class AD:
 
         if isinstance(other, AD):
 
-            # Error if object don't have same dim.
             if len(self.name) != len(other.name):
                 raise AttributeError('Incoherent dimension input')
 
-            # < acts on scalars and vector
             if self.val == other.val:
                 return True
             else:
@@ -399,24 +399,16 @@ class AD:
         return AD(val, der, self.name)
 
     def sinh(self): #hyperbolic sin
-        #d/dx (sinh x) = cosh x
-        #sinh x = (e^x - e^(-x))/2  range (-inf, inf)
-        #val = np.multiply(.5, (np.exp(self.val) - np.exp(np.multiply(-1, self.val))))
         val = np.sinh(self.val)
         der = np.cosh(self.val) * self.der 
         return AD(val, der, self.name)
 
     def cosh(self): #hyperbolic cos
-        #d/dx (cosh x) = sinh x
-        #cosh x = (e^x + e^(-x))/2  range (-inf, inf)
-        #val = np.multiply(.5, (np.exp(self.val) + np.exp(np.multiply(-1, self.val))))
         val = np.cosh(self.val)
         der = np.sinh(self.val) * self.der 
         return AD(val, der, self.name)
 
-    def tanh(self): #hyperbolic tan
-        #d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
-        #tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
+    def tanh(self):
         val = np.tanh(self.val)
         der = (1/np.power(np.cosh(self.val), 2))* self.der
         return AD(val, der, self.name)
@@ -425,7 +417,6 @@ class AD:
         if ((self.val <= -1) or (self.val>=1)): 
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
-        #der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         der = self.der*((1 - self.val**2)**(-0.5))
         return AD(val, der, self.name)
 
@@ -433,7 +424,6 @@ class AD:
         if ((self.val <= -1) or (self.val>=1)): 
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arccos(self.val)
-        #der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         der = -self.der*((1 - self.val**2)**(-0.5))
         return AD(val, der, self.name)
 
@@ -443,13 +433,19 @@ class AD:
         return AD(val, der, self.name)
 
     def logistic(self): 
-       #assuming logistic function = sigmoid function = 1/(1+e^(-x))
-        val = 1/(1 + np.exp(-self.val)) 
+        val = 1/(1 + np.exp(-self.val))
         der = self.der* np.exp(-self.val)/((1 + np.exp(-self.val))**2)
         return AD(val, der, self.name)
 
-    # add log to other basesimport math
-# this is where we are going to work on creating the new class
+    def sqrt(self):
+        if self.val < 0:
+            raise ValueError('Square root should only be considered for positive numbers')
+        new_val = np.sqrt(self.val.copy())
+        if self.val == 0:
+            raise ValueError('The derivative of the square root can only be computed for strictly positive numbers')
+        new_der = 1/2*self.der*(self.val**-0.5)
+        return AD(new_val, new_der, self.name.copy())
+
 
 
 
