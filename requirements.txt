@@ -1,4 +1,6 @@
-#math
-numpy
-pytest
+math
+numpy~=1.18.1
+pytest~=6.1.1
 pytest-cov
+inspect
+
