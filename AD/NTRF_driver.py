@@ -50,7 +50,7 @@ def _function(init_vals):
     return v
 
 # users set their wanted starting points here
-init_vals={'x1':1,'x2':2}
+init_vals={'x1':100,'x2':-100}
 
 # users get their result
 print(NTRF(init_vals))
