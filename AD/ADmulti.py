@@ -286,27 +286,27 @@ class AD:
         -------
         AD object with self.val, self.der and self.name in the desired order.
 		
-		Example
-		-------
-		>>> x = AD(2,1,'x') 
-		>>> y = AD(3,1,'y') 
-		>>> z = AD(4,1,'z') 
-		>>> f = AD([5*x+4*y+3*z, x*y*z])
-		>>> print(f)
-		Numerical Value is:
-		[34.0, 24.0], 
-		Jacobian is:
-		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]], 
-		Name is:
-		['x', 'z', 'y']
-		>>> f.sort(['x', 'y', 'z'])
-		>>> print(f)
-		Numerical Value is:
-		[34.0, 24.0], 
-		Jacobian is:
-		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]], 
-		Name is:
-		['x', 'y', 'z']
+        Example
+        -------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(3,1,'y') 
+        >>> z = AD(4,1,'z') 
+        >>> f = AD([5*x+4*y+3*z, x*y*z])
+        >>> print(f)
+        Numerical Value is:
+        [34.0, 24.0], 
+        Jacobian is:
+        [[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]], 
+        Name is:
+        ['x', 'z', 'y']
+        >>> f.sort(['x', 'y', 'z'])
+        >>> print(f)
+        Numerical Value is:
+        [34.0, 24.0], 
+        Jacobian is:
+        [[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]], 
+        Name is:
+        ['x', 'y', 'z']
         """
         if not isinstance(order, list) and not isinstance(order, np.ndarray):
             raise TypeError('Order should be an array-like composed of strings')
@@ -340,8 +340,8 @@ class AD:
         AD object representing the result of self+other
         
         Example
-		-------
-		>>> x = AD(1,1,'x') 
+        -------
+        >>> x = AD(1,1,'x') 
         >>> y = AD(2,1,'y') 
         >>> z = AD(3,1,'z')
         >>> x+y+z
@@ -393,8 +393,8 @@ class AD:
         AD object representing the result of self+other
         
         Example
-		-------
-		>>> x = AD(1,1,'x') 
+        -------
+        >>> x = AD(1,1,'x') 
         >>> 2+x
         Numerical Value is:
         [[3.]], 
@@ -415,8 +415,8 @@ class AD:
         AD object representing the result of -self
         
         Example
-		-------
-		>>> x = AD(2,1,'x') 
+        -------
+        >>> x = AD(2,1,'x') 
         >>> -x
         Numerical Value is:
         [[-2.]], 
@@ -446,8 +446,8 @@ class AD:
         AD object representing the result of self-other
         
         Example
-		-------
-		>>> x = AD(1,1,'x') 
+        -------
+        >>> x = AD(1,1,'x') 
         >>> y = AD(2,1,'y') 
         >>> y-x
         Numerical Value is:
@@ -473,8 +473,8 @@ class AD:
         AD object representing the result of other-self
         
         Example
-		-------
-		>>> x = AD(1,1,'x') 
+        -------
+        >>> x = AD(1,1,'x') 
         >>> 4-x
         Numerical Value is:
         [[3.]], 
@@ -510,7 +510,7 @@ class AD:
         [[2. 1.]], 
         Name is:
         ['x', 'y']
-        
+
         >>> x = AD(1,1,'x') 
         >>> x*2
         Numerical Value is:
