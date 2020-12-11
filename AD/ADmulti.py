@@ -38,7 +38,7 @@ class AD:
     Examples
     ==========
     # Scalar input (x)
-	>>> x = AD(2,'x') 
+	>>> x = AD(2,1,'x') 
     >>> f = 7*x + 0.3
     >>> f
 	Numerical Value is:
@@ -137,7 +137,43 @@ class AD:
         Returns
         -------
         AD object representing a variable or a function, with the corresponding derivatives and variable names.
-        """
+        
+		Examples
+		--------
+		# Scalar input (x)
+		>>> x = AD(2,1,'x') 
+		>>> x
+		Numerical Value is:
+		[[2.]], 
+		Jacobian is:
+		[[1.]], 
+		Name is:
+		['x']
+
+		# Vector input (x,y) 
+		>>> x = AD(2,1,'x') 
+		>>> y = AD(3,1,'y') 
+		>>> f = 5*x + 4*y + 0.5
+		>>> f
+		Numerical Value is:
+		[[22.5]], 
+		Jacobian is:
+		[[5. 4.]], 
+		Name is:
+		['x', 'y']
+
+		# Vector input (x,y) and Vector output (f1,f2,f3)
+		>>> x = AD(2,1,'x') 
+		>>> y = AD(3,1,'y') 
+		>>> f = AD([5*x+4*y+0.5, 43*x, 7]) #f1,f2,f3 = 5*x+4*y+0.5, 43*x, 7
+		>>> f
+		Numerical Value is:
+		[22.5, 86.0, 7], 
+		Jacobian is:
+		[[5.0, 4.0], [43.0, 0], [0, 0]], 
+		Name is:
+		['x', 'y']
+		"""
         self.val = None
         self.der = None
         self.name = None
@@ -150,7 +186,7 @@ class AD:
                 except AttributeError:
                     continue  # if just list names never has anything appended
             # unique_names = set(np.asarray(names).flatten())  # reference
-            unique_names = list(set(np.array(np.concatenate(names, axis=0 )))) # reference
+            unique_names = list(set(np.array(np.concatenate(names, axis=0))))  # reference
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
@@ -249,6 +285,29 @@ class AD:
         Returns
         -------
         AD object with self.der and self.name in the desired order.
+		
+		Example
+		-------
+		>>> x = AD(2,1,'x') 
+		>>> y = AD(3,1,'y') 
+		>>> z = AD(4,1,'z') 
+		>>> f = AD([5*x+4*y+3*z, x*y*z])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0], 
+		Jacobian is:
+		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]], 
+		Name is:
+		['x', 'z', 'y']
+		
+		>>> f.sort(['x', 'y', 'z'])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0], 
+		Jacobian is:
+		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]], 
+		Name is:
+		['x', 'y', 'z']
         """
         if not isinstance(order, list) and not isinstance(order, np.ndarray):
             raise TypeError('Order should be an array-like composed of strings')
@@ -256,14 +315,17 @@ class AD:
             if not isinstance(string, str):
                 raise TypeError('Order should only be composed of strings')
         if self.name == order:
-            return
-        final_derivative = self.der.copy()
-        for i, variable in enumerate(order):
-            index = self.name.index(variable)
-            derivative = self.der[:, index]
-            final_derivative[:, i] = derivative
-        self.der = final_derivative
+            return self
+        
+        for i in range(len(self.der)):
+            final_derivative_i = self.der[i].copy()
+            for j, variable in enumerate(order):
+                index = self.name.index(variable)
+                derivative = self.der[i][index].copy()
+                final_derivative_i[j] = derivative
+            self.der[i] = final_derivative_i
         self.name = order
+        return self
 
     def __add__(self, other):
         """
@@ -547,6 +609,13 @@ class AD:
                     new_der = n.der[:, index_2] * math.log(value_base) * new_val
                     derivative = np.concatenate((derivative, new_der), axis=1)
             return AD(new_val, derivative, new_names)
+
+
+
+
+    # todo: do we need that ?
+    def update_value(self, vector_list):
+        return AD(vector_list, self.der, self.name)
 
 
     def __lt__(self, other):
