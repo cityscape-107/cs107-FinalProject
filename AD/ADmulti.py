@@ -315,25 +315,17 @@ class AD:
             if not isinstance(string, str):
                 raise TypeError('Order should only be composed of strings')
         if self.name == order:
-            return
+            return self
         
-	for i in range(len(self.der)):
+        for i in range(len(self.der)):
             final_derivative_i = self.der[i].copy()
             for j, variable in enumerate(order):
                 index = self.name.index(variable)
-                #print('index:', index)
-                #print('\nindex, i, j: ', index, i, j)
-                #print('self.der:', self.der)
                 derivative = self.der[i][index].copy()
-                #print('self.der:', self.der)
-                #print('derivative', derivative)
-                #print('self.der:', self.der)
                 final_derivative_i[j] = derivative
-                #print('self.der:', self.der)
-                #print('final derivative:', final_derivative_i)
-                #print('self.der:', self.der)
             self.der[i] = final_derivative_i
         self.name = order
+        return self
 
     def __add__(self, other):
         """
