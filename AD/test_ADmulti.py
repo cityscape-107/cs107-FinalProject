@@ -810,3 +810,44 @@ def test_sort_same():
 
 
     
+
+
+
+def test_rpow_1():
+    x=AD(2,3,'x')
+    z=2**x
+    assert z.val==4
+    assert z.der==4*np.log(2)*3
+
+def test_rpow_2():
+    x=AD(1,1,'x')
+    y=AD(2,3,'z')
+    z=[x,y]
+    with pytest.raises(TypeError):
+        y=2**z
+
+def test_rpow_3():
+    x=AD(1,1,'x')
+    with pytest.raises(ValueError):
+        y=(-2)**x
+
+def test_rpow_4():
+    x=AD(-1,1,'x')
+    with pytest.raises(ZeroDivisionError):
+        y=(0)**x
+
+def test_sqrt():
+    x=AD(0,1,'x')
+    with pytest.raises(ValueError):
+        y=x.sqrt()
+
+def test_sqrt1():
+    x=AD(-1,1,'x')
+    with pytest.raises(ValueError):
+        y=x.sqrt()    
+
+def test_sqrt2():
+    x=AD(10,3,'x')
+    y=x.sqrt()
+    assert y.val==np.sqrt(10)
+    assert y.der==0.5*3*10**(-0.5)
