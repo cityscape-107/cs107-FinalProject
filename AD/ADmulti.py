@@ -210,12 +210,12 @@ class AD:
                         AD_jacobian.append(0)
                     # print('...', AD_jacobian)
                 global_jacobian.append(AD_jacobian)
-            #if len(unique_names) != 0:
-            self.val = global_value
-            self.der = global_jacobian
+            # if len(unique_names) != 0:
+            self.val = np.array(global_value)
+            self.der = np.array(global_jacobian)
             self.name = unique_names
-            #else:
-                #self.val = np.array(value).reshape(len(value), 1)
+            # else:
+            # self.val = np.array(value).reshape(len(value), 1)
 
         if self.val is None:
             if isinstance(value, float) or isinstance(value, int):
@@ -362,15 +362,15 @@ class AD:
             name = names_1
         else:
             if isinstance(other, np.ndarray):
-                if other.shape!=self.val.shape:
+                if other.shape != self.val.shape:
                     raise ValueError('Cannot add arrays of different size')
                 else:
                     for v in other:
-                        if not isinstance(v,int) and not isinstance(v,float):
+                        if not isinstance(v, int) and not isinstance(v, float):
                             raise ValueError('Array entries must be int or float')
                         else:
                             value = self.val + other
-            elif isinstance(other,int) or isinstance(other, float):
+            elif isinstance(other, int) or isinstance(other, float):
                 value = self.val + other
             else:
                 raise ValueError('Other must be an array, AD, int or float')
@@ -644,11 +644,7 @@ class AD:
         new_der = der * np.log(value) * new_value
         return AD(new_value, new_der, name)
 
-    # todo: do we need that ?
-    def update_value(self, vector_list):
-        return AD(vector_list, self.der, self.name)
-
-    def __lt__(self, other):
+    def __lt__(self, other):  # todo: check in the vector case
         """
         Perform "less than" comparison on an AD object.
 
@@ -878,7 +874,7 @@ class AD:
         der = 1 / self.val
         return AD(val, der, self.name)
 
-    def sinh(self): #hyperbolic sin
+    def sinh(self):  # hyperbolic sin
         """
         Compute the hyperbolic sine of an AD object.
 
@@ -886,14 +882,14 @@ class AD:
         -------
         AD object representing the result of sinh(self)
         """
-        #d/dx (sinh x) = cosh x
-        #sinh x = (e^x - e^(-x))/2  range (-inf, inf)
-        #val = np.multiply(.5, (np.exp(self.val) - np.exp(np.multiply(-1, self.val))))
+        # d/dx (sinh x) = cosh x
+        # sinh x = (e^x - e^(-x))/2  range (-inf, inf)
+        # val = np.multiply(.5, (np.exp(self.val) - np.exp(np.multiply(-1, self.val))))
         val = np.sinh(self.val)
         der = np.cosh(self.val) * self.der
         return AD(val, der, self.name)
 
-    def cosh(self): #hyperbolic cos
+    def cosh(self):  # hyperbolic cos
         """
         Compute the hyperbolic cosine of an AD object.
 
@@ -901,14 +897,14 @@ class AD:
         -------
         AD object representing the result of cosh(self)
         """
-        #d/dx (cosh x) = sinh x
-        #cosh x = (e^x + e^(-x))/2  range (-inf, inf)
-        #val = np.multiply(.5, (np.exp(self.val) + np.exp(np.multiply(-1, self.val))))
+        # d/dx (cosh x) = sinh x
+        # cosh x = (e^x + e^(-x))/2  range (-inf, inf)
+        # val = np.multiply(.5, (np.exp(self.val) + np.exp(np.multiply(-1, self.val))))
         val = np.cosh(self.val)
         der = np.sinh(self.val) * self.der
         return AD(val, der, self.name)
 
-    def tanh(self): #hyperbolic tan
+    def tanh(self):  # hyperbolic tan
         """
         Compute the hyperbolic tangent of an AD object.
 
@@ -916,10 +912,10 @@ class AD:
         -------
         AD object representing the result of tanh(self)
         """
-        #d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
-        #tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
+        # d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
+        # tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
         val = np.tanh(self.val)
-        der = (1/np.power(np.cosh(self.val), 2))* self.der
+        der = (1 / np.power(np.cosh(self.val), 2)) * self.der
         return AD(val, der, self.name)
 
     def arcsin(self):
@@ -930,11 +926,11 @@ class AD:
         -------
         AD object representing the result of arcsin(self)
         """
-        if ((self.val <= -1) or (self.val>=1)):
+        if ((self.val <= -1) or (self.val >= 1)):
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
-        #der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
-        der = self.der*((1 - self.val**2)**(-0.5))
+        # der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
+        der = self.der * ((1 - self.val ** 2) ** (-0.5))
         return AD(val, der, self.name)
 
     def arccos(self):
@@ -945,11 +941,11 @@ class AD:
         -------
         AD object representing the result of arccos(self)
         """
-        if ((self.val <= -1) or (self.val>=1)):
+        if ((self.val <= -1) or (self.val >= 1)):
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arccos(self.val)
-        #der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
-        der = -self.der*((1 - self.val**2)**(-0.5))
+        # der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
+        der = -self.der * ((1 - self.val ** 2) ** (-0.5))
         return AD(val, der, self.name)
 
     def arctan(self):
@@ -961,7 +957,7 @@ class AD:
         AD object representing the result of arctan(self)
         """
         val = np.arctan(self.val)
-        der = self.der*(1 + self.val**2)**(-1)
+        der = self.der * (1 + self.val ** 2) ** (-1)
         return AD(val, der, self.name)
 
     def logistic(self):

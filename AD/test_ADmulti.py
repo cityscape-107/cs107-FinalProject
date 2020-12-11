@@ -14,10 +14,12 @@ def test_der_array():
     assert x.val == [1]
     assert x.der == [1]
 
+
 def test_der_list():
     x = AD(1, [1], 'x')
     assert x.val == [1]
     assert x.der == [1]
+
 
 def test_invalid_val():
     with pytest.raises(TypeError):
@@ -40,21 +42,17 @@ def test_add_constant():
     assert z.name == ['x']
 
 
-#HERE
+# HERE
 def test_add_constant_to_vec():
     x = AD(1, 1, 'x')
     y = AD(3, 1, 'y')
     w = AD([x + y, y - x])
     with pytest.raises(TypeError):
         w + 2
-    #print(z)
-    #assert z.val == [3]
-    #np.testing.assert_array_equal(z.der, np.array([1]).reshape(1, -1))
-    #assert z.name == ['x']
-
-
-
-
+    # print(z)
+    # assert z.val == [3]
+    # np.testing.assert_array_equal(z.der, np.array([1]).reshape(1, -1))
+    # assert z.name == ['x']
 
 
 def test_radd_constant():
@@ -174,6 +172,7 @@ def test_mul_last():
     assert v.name == ['x', 'y']
     assert v.val == [6]
 
+
 """
         except AttributeError:  # one of the coefficients of other is None, it is a constant
             if isinstance(other, np.ndarray):
@@ -196,7 +195,6 @@ def test_mul_vec():
     assert w.val == np.dot(x.val,a)
     assert w.der == np.dot(x.der,a)
 """
-
 
 
 # Rmul
@@ -750,7 +748,7 @@ def test_logistic():
     assert z.der == [3 * np.exp(-2) * (1 + np.exp(-2)) ** (-2)]
 
 
-#Sort testing
+# Sort testing
 
 """
 >>> x = AD(2,1,'x')
@@ -776,34 +774,39 @@ def test_logistic():
 
 """
 
+
 def test_sort_type_err():
     x = AD(-2, 1, 'x')
     y = AD(1, 7, 'y')
-    z=x+y
+    z = x + y
     with pytest.raises(TypeError):
         z.sort(1)
+
 
 def test_beug():
     x = AD(1, 1, 'x')
     y = AD(2, 1, 'y')
-    f1 = AD([10*x, 10*y])
-    f2 = AD([3*x, 3*y])
-    z = f1+f2
+    f1 = AD([10 * x, 10 * y])
+    f2 = AD([3 * x, 3 * y])
+    z = f1 + f2
     np.testing.assert_array_equal(z.val, np.array([13, 26]).reshape(2, 1))
     np.testing.assert_array_equal(z.sort(order=['x', 'y']).der, np.array([[13, 0], [0, 13]]))
+
 
 def test_sort_type_err2():
     x = AD(-2, 1, 'x')
     y = AD(1, 7, 'y')
-    z=x+y
+    z = x + y
     with pytest.raises(TypeError):
         z.sort([1])
+
 
 def test_sort_same():
     x = AD(-2, 1, 'x')
     y = AD(1, 7, 'y')
-    z=x+y
-    z.sort(['x','y'])
-    assert z.name==['x','y']
+    z = x + y
+    z.sort(['x', 'y'])
+    assert z.name == ['x', 'y']
 
 
+    
