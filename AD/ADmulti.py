@@ -984,7 +984,23 @@ class AD:
 
         Returns
         -------
-        AD object representing the result of self == other
+        Boolean representing the result of self == other
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = x+y
+        >>> v = 2*(x+y)
+        >>> v == u, v/2 == u
+        (False, True)
+        
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = AD([x+y, x+y])
+        >>> v = AD([x+y, x+y])
+        >>> v == u
+        True
         """
         if isinstance(other, AD):
 
@@ -1014,6 +1030,22 @@ class AD:
         Returns
         -------
         AD object representing the result of self != other
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = x+y
+        >>> v = 2*(x+y)
+        >>> v != u, v/2 != u
+        (True, False)
+        
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = AD([x+y, x+y])
+        >>> v = AD([x+y, x+y])
+        >>> v != u
+        False
         """
         return not self.__eq__(other)
 
@@ -1024,6 +1056,30 @@ class AD:
         Returns
         -------
         AD object representing the result of tan(self)
+        
+        Examples
+        --------
+        >>> x = AD(np.pi/4,1,'x') 
+        >>> x.tan()
+        Numerical Value is:
+        [[1.]], 
+        Jacobian is:
+        [[2.]], 
+        Name is:
+        ['x']
+        
+        >>> x = AD(np.pi/4,1,'x') 
+        >>> y = AD(np.pi/4,1,'y')
+        >>> z = AD([x,y])
+        >>> z.sin()
+        Numerical Value is:
+        [[1.]
+         [1.]], 
+        Jacobian is:
+        [[2. 0.]
+         [0. 2.]], 
+        Name is:
+        ['x', 'y']
         """
         nonpoints = map(lambda x: ((x / np.pi) - 0.5) % 1 == 0.00, self.val)
         if any(nonpoints):
@@ -1040,6 +1096,30 @@ class AD:
         Returns
         -------
         AD object representing the result of sin(self)
+        
+        Examples
+        --------
+        >>> x = AD(np.pi/4,1,'x') 
+        >>> x.sin()
+        Numerical Value is:
+        [[0.70710678]], 
+        Jacobian is:
+        [[0.70710678]], 
+        Name is:
+        ['x']
+        
+        >>> x = AD(np.pi/4,1,'x') 
+        >>> y = AD(np.pi/4,1,'y')
+        >>> z = AD([x,y])
+        >>> z.sin()
+        Numerical Value is:
+        [[0.70710678]
+         [0.70710678]], 
+        Jacobian is:
+        [[0.70710678 0.        ]
+         [0.         0.70710678]], 
+        Name is:
+        ['x', 'y']
         """
         val = np.sin(self.val)
         der = np.cos(self.val) * self.der
@@ -1052,6 +1132,30 @@ class AD:
         Returns
         -------
         AD object representing the result of cos(self)
+        
+        Examples
+        --------
+        >>> x = AD(np.pi/4,1,'x') 
+        >>> x.cos()
+        Numerical Value is:
+        [[0.70710678]], 
+        Jacobian is:
+        [[-0.70710678]], 
+        Name is:
+        ['x']
+        
+        >>> x = AD(np.pi/4,1,'x') 
+        >>> y = AD(np.pi/4,1,'y')
+        >>> z = AD([x,y])
+        >>> z.cos()
+        Numerical Value is:
+        [[0.70710678]
+         [0.70710678]], 
+        Jacobian is:
+        [[-0.70710678 -0.        ]
+         [-0.         -0.70710678]], 
+        Name is:
+        ['x', 'y']
         """
         val = np.cos(self.val)
         der = -np.sin(self.val) * self.der
@@ -1064,6 +1168,30 @@ class AD:
         Returns
         -------
         AD object representing the result of exp(self)
+        
+        Examples
+        --------
+        >>> x = x = AD(2,1,'x') 
+        >>> x.exp() 
+        Numerical Value is:
+        [[7.3890561]], 
+        Jacobian is:
+        [[7.3890561]], 
+        Name is:
+        ['x']
+
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(3,1,'y') 
+        >>> z = AD([x,y])
+        >>> z.exp()
+        Numerical Value is:
+        [[ 7.3890561 ]
+         [20.08553692]], 
+        Jacobian is:
+        [[ 7.3890561   0.        ]
+         [ 0.         20.08553692]], 
+        Name is:
+        ['x', 'y']
         """
         val = np.exp(self.val)
         der = np.multiply(np.exp(self.val), self.der)
@@ -1076,7 +1204,12 @@ class AD:
         Returns
         -------
         AD object representing the result of ln(self)
-        """
+        
+	Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+	"""
         if self.val <= 0:
             raise ValueError("Cannot take natural log of zero or negative values")
         val = np.log(self.val)
