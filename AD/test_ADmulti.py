@@ -751,4 +751,7 @@ def test_beug():
     f1 = AD([10*x, 10*y])
     f2 = AD([3*x, 3*y])
     z = f1+f2
+    np.testing.assert_array_equal(z.val, np.array([13, 26]).reshape(2, 1))
+    np.testing.assert_array_equal(z.sort(order=['x', 'y']).der, np.array([[13, 0], [0, 13]]))
+
 
