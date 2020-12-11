@@ -12,8 +12,6 @@ def NTRF(init_vals, tol=1e-10, iters=2000, path_freq=1):
     i=0   
     while i < iters:        
         
-        # WARNING
-        # TODO: MAKE SURE AD object.der and AD object.val outputs ordered results
         xn1=xn-np.dot(np.linalg.pinv(_function(vals).der),_function(vals).val)
         xn=xn1
               
@@ -47,7 +45,10 @@ def _function(init_vals):
     f = x1*2 + x2
     g = x1 - x2*2 + 2
     v = AD([f,g])
-    
+
+    # user choose to sort the value and jacobian output in the order that is
+    # corresponding to their functions
+    v.sort(['x1','x2'])
     return v
 
 
