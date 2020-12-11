@@ -150,7 +150,7 @@ class AD:
                 except AttributeError:
                     continue  # if just list names never has anything appended
             # unique_names = set(np.asarray(names).flatten())  # reference
-            unique_names = list(set(np.array(np.concatenate(names, axis=0 )))) # reference
+            unique_names = list(set(np.array(np.concatenate(names, axis=0))))  # reference
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
@@ -547,6 +547,13 @@ class AD:
                     new_der = n.der[:, index_2] * math.log(value_base) * new_val
                     derivative = np.concatenate((derivative, new_der), axis=1)
             return AD(new_val, derivative, new_names)
+
+
+
+
+    # todo: do we need that ?
+    def update_value(self, vector_list):
+        return AD(vector_list, self.der, self.name)
 
 
     def __lt__(self, other):
