@@ -11,14 +11,13 @@ def test_invalid_der():
 
 def test_der_array():
     x = AD(1, np.array([1]), 'x')
-<<<<<<< HEAD
-    assert x.val==[1]
-    assert x.der==[1]
-=======
     assert x.val == [1]
     assert x.der == [1]
 
->>>>>>> 087cd4455b85cc086ab690200ee22458fb8219fa
+def test_der_list():
+    x = AD(1, [1], 'x')
+    assert x.val == [1]
+    assert x.der == [1]
 
 def test_invalid_val():
     with pytest.raises(TypeError):
@@ -39,6 +38,23 @@ def test_add_constant():
     assert z.val == [3]
     np.testing.assert_array_equal(z.der, np.array([1]).reshape(1, -1))
     assert z.name == ['x']
+
+
+#HERE
+def test_add_constant_to_vec():
+    x = AD(1, 1, 'x')
+    y = AD(3, 1, 'y')
+    w = AD([x + y, y - x])
+    with pytest.raises(TypeError):
+        w + 2
+    #print(z)
+    #assert z.val == [3]
+    #np.testing.assert_array_equal(z.der, np.array([1]).reshape(1, -1))
+    #assert z.name == ['x']
+
+
+
+
 
 
 def test_radd_constant():
@@ -157,6 +173,30 @@ def test_mul_last():
     v = z * w
     assert v.name == ['x', 'y']
     assert v.val == [6]
+
+"""
+        except AttributeError:  # one of the coefficients of other is None, it is a constant
+            if isinstance(other, np.ndarray):
+                if len(other.shape) > 1:
+                    new_value = np.dot(self.val, other)
+                    derivative = np.dot(self.der, other)
+                    name = self.name
+                    return AD(new_value, derivative, name)
+            new_value = self.val * other
+            derivative = self.der * other
+            name = self.name
+        return AD(new_value, derivative, name)
+
+
+def test_mul_vec():
+    x = AD(np.array([1,2]), np.array([1,2]), 'x')
+    a=np.array([[1,2],[3,4]])
+    w = x*a
+    assert w.name == ['x']
+    assert w.val == np.dot(x.val,a)
+    assert w.der == np.dot(x.der,a)
+"""
+
 
 
 # Rmul
@@ -346,12 +386,8 @@ def test_lt_equal():
     y = AD(1, 1, 'y')
     assert (x < y) == False
 
-<<<<<<< HEAD
-#gt
-=======
 
 # gt
->>>>>>> 087cd4455b85cc086ab690200ee22458fb8219fa
 
 def test_gt_values():
     x = AD(7, 1, 'x')
@@ -556,12 +592,7 @@ def test_log():
     assert z.der == [1 / 0.5]
 
 
-<<<<<<< HEAD
-
-#Testing sine
-=======
 # Testing sine
->>>>>>> 087cd4455b85cc086ab690200ee22458fb8219fa
 def test_sin():
     x = AD(0.5, 1, 'x')
     z = x.sin()
@@ -589,8 +620,6 @@ def test_tan_inf():
     x = AD(np.pi / 2, 1, 'x')
     with pytest.raises(ValueError):
         x.tan()
-<<<<<<< HEAD
-=======
 
 
 #    def sinh(self): #hyperbolic sin
@@ -635,30 +664,26 @@ def test_tanh():
 
 """
      def arcsin(self):
-        if ((self.val <= -1) or (self.val>=1)): 
+        if ((self.val <= -1) or (self.val>=1)):
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
         der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         return AD(val, der, self.name)
-
     def arccos(self):
-        if ((self.val <= -1) or (self.val>=1)): 
+        if ((self.val <= -1) or (self.val>=1)):
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arccos(self.val)
         der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         return AD(val, der, self.name)
-
     def arctan(self):
         val = np.arctan(self.val)
         der = (1/(1 + np.power(self.val, 2))) * self.der
         return AD(val, der, self.name)
-
-    def logistic(self): 
+    def logistic(self):
        #assuming logistic function = sigmoid function = 1/(1+e^(-x))
-        val = 1/(1 + np.exp(-self.val)) 
+        val = 1/(1 + np.exp(-self.val))
         der = np.multiply(val, (1-val))
         return AD(val, der, self.name)
-
 """
 
 
@@ -719,4 +744,51 @@ def test_logistic():
     z = x.logistic()
     assert z.val == [1 / (1 + np.exp(-2))]
     assert z.der == [3 * np.exp(-2) * (1 + np.exp(-2)) ** (-2)]
->>>>>>> 087cd4455b85cc086ab690200ee22458fb8219fa
+
+
+#Sort testing
+
+"""
+>>> x = AD(2,1,'x')
+		>>> y = AD(3,1,'y')
+		>>> z = AD(4,1,'z')
+		>>> f = AD([5*x+4*y+3*z, x*y*z])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0],
+		Jacobian is:
+		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]],
+		Name is:
+		['x', 'z', 'y']
+
+		>>> f.sort(['x', 'y', 'z'])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0],
+		Jacobian is:
+		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]],
+		Name is:
+		['x', 'y', 'z']
+
+"""
+
+def test_sort_type_err():
+    x = AD(-2, 1, 'x')
+    y = AD(1, 7, 'y')
+    z=x+y
+    with pytest.raises(TypeError):
+        z.sort(1)
+
+def test_sort_type_err2():
+    x = AD(-2, 1, 'x')
+    y = AD(1, 7, 'y')
+    z=x+y
+    with pytest.raises(TypeError):
+        z.sort([1])
+
+def test_sort_same():
+    x = AD(-2, 1, 'x')
+    y = AD(1, 7, 'y')
+    z=x+y
+    z.sort(['x','y'])
+    assert z.name==['x','y']
