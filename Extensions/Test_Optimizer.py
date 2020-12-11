@@ -405,5 +405,3 @@ def test_batch_size_3():
     optimal_point = adam.global_optimizer
     assert len(optimal_point) == 20
     assert np.abs(adam.trace_values[-1]) < 1e-5
-
-
