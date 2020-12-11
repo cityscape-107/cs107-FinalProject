@@ -23,7 +23,7 @@ def NTRF(init_vals, tol=1e-10, iters=2000, path_freq=1):
         cache=np.array(_function(vals).val)
         
         # users can choose to record path
-        # by default, it records path every 50 iterations
+        # by default, it records path every 1 iterations
         if i % path_freq == 0:
             path.append(list(cache))
 
