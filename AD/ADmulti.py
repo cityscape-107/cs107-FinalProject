@@ -38,10 +38,10 @@ class AD:
     Examples
     ==========
     # Scalar input (x)
-	>>> x = AD(2,1,'x')
+    >>> x = AD(2,1,'x')
     >>> f = 7*x + 0.3
     >>> f
-	Numerical Value is:
+    Numerical Value is:
     [[14.3]],
     Jacobian is:
     [[7.]],
@@ -138,40 +138,40 @@ class AD:
         -------
         AD object representing a variable or a function, with the corresponding derivatives and variable names.
 
-		Examples
-		--------
-		# Scalar input (x)
-		>>> x = AD(2,1,'x')
-		>>> x
-		Numerical Value is:
-		[[2.]],
-		Jacobian is:
-		[[1.]],
-		Name is:
-		['x']
-		# Vector input (x,y)
-		>>> x = AD(2,1,'x')
-		>>> y = AD(3,1,'y')
-		>>> f = 5*x + 4*y + 0.5
-		>>> f
-		Numerical Value is:
-		[[22.5]],
-		Jacobian is:
-		[[5. 4.]],
-		Name is:
-		['x', 'y']
-		# Vector input (x,y) and Vector output (f1,f2,f3)
-		>>> x = AD(2,1,'x')
-		>>> y = AD(3,1,'y')
-		>>> f = AD([5*x+4*y+0.5, 43*x, 7]) #f1,f2,f3 = 5*x+4*y+0.5, 43*x, 7
-		>>> f
-		Numerical Value is:
-		[22.5, 86.0, 7],
-		Jacobian is:
-		[[5.0, 4.0], [43.0, 0], [0, 0]],
-		Name is:
-		['x', 'y']
-		"""
+        Examples
+        --------
+        # Scalar input (x)
+        >>> x = AD(2,1,'x')
+        >>> x
+        Numerical Value is:
+        [[2.]],
+        Jacobian is:
+        [[1.]],
+        Name is:
+        ['x']
+        # Vector input (x,y)
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
+        >>> f = 5*x + 4*y + 0.5
+        >>> f
+        Numerical Value is:
+        [[22.5]],
+        Jacobian is:
+        [[5. 4.]],
+        Name is:
+        ['x', 'y']
+        # Vector input (x,y) and Vector output (f1,f2,f3)
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
+        >>> f = AD([5*x+4*y+0.5, 43*x, 7]) #f1,f2,f3 = 5*x+4*y+0.5, 43*x, 7
+        >>> f
+        Numerical Value is:
+        [22.5, 86.0, 7],
+        Jacobian is:
+        [[5.0, 4.0], [43.0, 0], [0, 0]],
+        Name is:
+        ['x', 'y']
+        """
         self.val = None
         self.der = None
         self.name = None
@@ -287,30 +287,29 @@ class AD:
 
         Returns
         -------
-        AD object with self.der and self.name in the desired order.
+        AD object with self.val, self.der and self.name in the desired order.
 
-		Example
-		-------
-		>>> x = AD(2,1,'x')
-		>>> y = AD(3,1,'y')
-		>>> z = AD(4,1,'z')
-		>>> f = AD([5*x+4*y+3*z, x*y*z])
-		>>> print(f)
-		Numerical Value is:
-		[34.0, 24.0],
-		Jacobian is:
-		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]],
-		Name is:
-		['x', 'z', 'y']
-
-		>>> f.sort(['x', 'y', 'z'])
-		>>> print(f)
-		Numerical Value is:
-		[34.0, 24.0],
-		Jacobian is:
-		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]],
-		Name is:
-		['x', 'y', 'z']
+        Example
+        -------
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
+        >>> z = AD(4,1,'z')
+        >>> f = AD([5*x+4*y+3*z, x*y*z])
+        >>> print(f)
+        >>> f.sort(['x', 'y', 'z'])
+        >>> print(f)
+        Numerical Value is:
+        [34.0, 24.0],
+        Jacobian is:
+        [[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]],
+        Name is:
+        ['x', 'z', 'y']
+        Numerical Value is:
+        [34.0, 24.0],
+        Jacobian is:
+        [[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]],
+        Name is:
+        ['x', 'y', 'z']
         """
         if not isinstance(order, list) and not isinstance(order, np.ndarray):
             raise TypeError('Order should be an array-like composed of strings')
@@ -342,6 +341,27 @@ class AD:
         Returns
         -------
         AD object representing the result of self+other
+        
+        Example
+		-------
+		>>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> z = AD(3,1,'z')
+        >>> x+y+z
+        Numerical Value is:
+        [[6.]], 
+        Jacobian is:
+        [[1. 1. 1.]], 
+        Name is:
+        ['x', 'y', 'z']
+        >>> v = AD([x+y+z, x+2])
+        >>> v
+        Numerical Value is:
+        [6.0, 3.0], 
+        Jacobian is:
+        [[1.0, 1.0, 1.0], [1.0, 0, 0]], 
+        Name is:
+        ['x', 'z', 'y']
         """
         if isinstance(other, AD):
             names_1 = self.name.copy()
@@ -391,6 +411,16 @@ class AD:
         Returns
         -------
         AD object representing the result of self+other
+        Example
+        -------
+        >>> x = AD(1,1,'x') 
+        >>> 2+x
+        Numerical Value is:
+        [[3.]], 
+        Jacobian is:
+        [[1.]], 
+        Name is:
+        ['x']
         """
         new_var = AD(self.val, self.der, self.name)  # create a new variable
         return new_var.__add__(other)
@@ -402,6 +432,17 @@ class AD:
         Returns
         -------
         AD object representing the result of -self
+
+        Example
+        -------
+        >>> x = AD(2,1,'x') 
+        >>> -x
+        Numerical Value is:
+        [[-2.]], 
+        Jacobian is:
+        [[-1.]], 
+        Name is:
+        ['x']
         """
         val = -self.val.copy()
         der = -self.der.copy()
@@ -422,6 +463,18 @@ class AD:
         Returns
         -------
         AD object representing the result of self-other
+
+        Example
+        -------
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> y-x
+        Numerical Value is:
+        [[1.]], 
+        Jacobian is:
+        [[ 1. -1.]], 
+        Name is:
+        ['y', 'x']
         """
         return self.__add__(-other)
 
@@ -437,6 +490,17 @@ class AD:
         Returns
         -------
         AD object representing the result of other-self
+        
+        Example
+        -------
+        >>> x = AD(1,1,'x') 
+        >>> 4-x
+        Numerical Value is:
+        [[3.]], 
+        Jacobian is:
+        [[-1.]], 
+        Name is:
+        ['x']
         """
         return -(self.__sub__(other))
 
@@ -453,6 +517,27 @@ class AD:
         Returns
         -------
         AD object representing the result of self*other
+        
+        Examples
+        --------
+        >>> x = AD(1,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> x*y
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[2. 1.]], 
+        Name is:
+        ['x', 'y']
+        
+        >>> x = AD(1,1,'x') 
+        >>> x*2
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[2.]], 
+        Name is:
+        ['x']
         """
         try:
             names_1 = self.name.copy()
@@ -509,6 +594,18 @@ class AD:
         Returns
         -------
         AD object representing the result of other*self
+        
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> 2*x
+        Numerical Value is:
+        [[4.]], 
+        Jacobian is:
+        [[2.]], 
+        Name is:
+        ['x']
         """
         return AD(self.val, self.der, self.name).__mul__(other)
 
@@ -524,6 +621,27 @@ class AD:
         Returns
         -------
         AD object representing the result of self/other
+        
+        Examples
+        --------
+        >>> x = AD(4,1,'x') 
+        >>> x/2
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[0.5]], 
+        Name is:
+        ['x']
+        
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(4,1,'y')
+        >>> y/x
+        Numerical Value is:
+        [[2.]], 
+        Jacobian is:
+        [[ 1. -2.]], 
+        Name is:
+        ['y', 'x']
         """
         try:
             names_1 = self.name
@@ -567,6 +685,17 @@ class AD:
         Returns
         -------
         AD object representing the result of other/self
+        
+        Examples
+        --------
+        >>> x = AD(10,1,'x') 
+        >>> 2/x
+        Numerical Value is:
+        [[0.2]], 
+        Jacobian is:
+        [[-0.02]], 
+        Name is:
+        ['x']
         """
         if self.val == 0 or self.val == np.array([0]):
             raise ZeroDivisionError
@@ -587,6 +716,17 @@ class AD:
         Returns
         -------
         AD object representing the result of self**other
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> x**3
+        Numerical Value is:
+        [[8.]], 
+        Jacobian is:
+        [[12.]], 
+        Name is:
+        ['x']
         """
         if isinstance(n, float) or isinstance(n, int):  # duck typing fails here because of the raised exception
             float(n)  # n is an int/float
@@ -659,7 +799,23 @@ class AD:
 
         Returns
         -------
-        AD object representing the result of self < other
+        Boolean representing the result of self < other
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = x+y
+        >>> v = 2*(x+y)
+        >>> u < v
+        True
+        
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = AD([x+y, x+y])
+        >>> v = AD([x+y, 2*(x+y)])
+        >>> u < v
+        True
         """
 
         if isinstance(other, AD):
@@ -708,7 +864,24 @@ class AD:
 
         Returns
         -------
-        AD object representing the result of self > other
+        Boolean representing the result of self > other
+        
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = x+y
+        >>> v = 2*(x+y)
+        >>> v > u
+        True
+        
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = AD([x+y, x+y])
+        >>> v = AD([x+y, 2*(x+y)])
+        >>> v > u
+        True
         """
         if isinstance(other, AD):
             return other.__lt__(self)
@@ -729,7 +902,23 @@ class AD:
 
         Returns
         -------
-        AD object representing the result of self <= other
+        Boolean representing the result of self <= other
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = x+y
+        >>> v = 2*(x+y)
+        >>> u <= v , u <= v/2 
+        (True, True)
+        
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = AD([x+y, x+y])
+        >>> v = AD([x+y, 2*(x+y)])
+        >>> u <= v
+        True
         """
         if isinstance(other, AD):
 
@@ -757,7 +946,23 @@ class AD:
 
         Returns
         -------
-        AD object representing the result of self >= other
+        Boolean representing the result of self >= other
+        
+        Examples
+        --------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = x+y
+        >>> v = 2*(x+y)
+        >>> v >= u, v/2 >= u
+        (True, True)
+        
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(2,1,'y') 
+        >>> u = AD([x+y, x+y])
+        >>> v = AD([x+y, 2*(x+y)])
+        >>> v >= u
+        True
         """
         # raises an error when the two objects do not have the same attributes
         if isinstance(other, AD):
