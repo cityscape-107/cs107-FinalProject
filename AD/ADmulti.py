@@ -3,9 +3,167 @@ import numpy as np
 
 
 class AD:
+    """
+    This class is used to represent functions (and their variables) for automatic differentiation. 
+    In order to get the derivative of a function with respect to a specific variable, that variable must be initialized as an AD object before performing any operation in which this variable is involved. 
+    
+    Vector functions are also initialized as an AD object.
+    
+    ...
+    
+    Parameters
+    ==========
+    value : int, float, np.ndarray or list
+        Values or functions used to construct a new variable or function object:
+          - if value is int or float or np.ndarray         --> variable or scalar function
+          - if value is list(int, float, AD or np.ndarray) --> vector function
+    
+    der : int, float, np.ndarray or list, optional
+        Derivatives with respect to each of the variables of a function (default is 0).
+        This parameter is only needed when instantiating variables and not for functions.
+        
+    name : str, optional
+        Names of the variables (default is 'x'). 
+        This parameter is only needed when instantiating variables and not for functions.
+            
+    Attributes
+    ==========
+    val : np.ndarray (scalar functions) or list (vector functions)
+        Value(s) of the variable(s) where the functions are evaluated.
+    der : np.ndarray (scalar functions) or list (vector functions)
+        Jacobian: Derivative(s) with respect to each of the variable(s)
+    name : list of strings
+        Name(s) of the variable(s)
+    
+    Examples
+    ==========
+    # Scalar input (x)
+    >>> x = AD(2,1,'x')
+    >>> f = 7*x + 0.3
+    >>> f
+    Numerical Value is:
+    [[14.3]],
+    Jacobian is:
+    [[7.]], 
+    Name is:
+    ['x']
+    
+    # Vector input (x,y) 
+    >>> x = AD(2,1,'x') 
+    >>> y = AD(3,1,'y') 
+    >>> f = 5*x + 4*y + 0.5
+    >>> f
+    Numerical Value is:
+    [[22.5]], 
+    Jacobian is:
+    [[5. 4.]], 
+    Name is:
+    ['x', 'y']
+    
+    # Vector input (x,y) and Vector output (f1,f2,f3)
+    >>> x = AD(2,1,'x') 
+    >>> y = AD(3,1,'y') 
+    >>> f = AD([5*x+4*y+0.5, 43*x, 7]) #f1,f2,f3 = 5*x+4*y+0.5, 43*x, 7
+    >>> f
+    Numerical Value is:
+    [22.5, 86.0, 7], 
+    Jacobian is:
+    [[5.0, 4.0], [43.0, 0], [0, 0]], 
+    Name is:
+    ['x', 'y']
+    
+    
+    Methods
+    ==========
+    # AD object-related methods
+    __init__(self, value, der=0, name='x'):  Constructs the necessary attributes of an AD object representing a variable or a function.
+    __repr__(self):  Return the canonical string representation of the object.
+    sort(self, order):  Sort the derivatives and variable names of an AD object by the specified order.       
+    
+    # Basic operations
+    __add__(self, other):  Perform addition on an AD object.        
+    __radd__(self, other):  Perform reverse addition on an AD object.        
+    __neg__(self):  Perform negation on AD objects.        
+    __sub__(self, other):  Perform subtraction on an AD object.        
+    __rsub__(self, other):  Perform reverse subtraction on an AD object.        
+    __mul__(self, other):  Perform multiplication on an AD object.        
+    __rmul__(self, other):  Perform reverse multiplication on an AD object.        
+    __truediv__(self, other):  Perform true division on an AD object.        
+    __rtruediv__(self, other):  Perform reverse true division on an AD object.        
+    __pow__(self, n):  Raise an AD object to the power of n.        
+    
+    # Comparisons
+    __lt__(self, other):  Perform "less than" comparison on an AD object.        
+    __gt__(self, other):  Perform "greater omparison on an AD object.        
+    __le__(self, other):  Perform "less or equal than" comparison on an AD object.        
+    __ge__(self, other):  Perform "greater or equal than" comparison on an AD object.        
+    __eq__(self, other):  Perform "equality" comparison on an AD object.        
+    __ne__(self, other):  Perform "inequality" comparison on an AD object.        
+    
+    # Elementary functions
+    tan(self):  Compute the tangent of an AD object.        
+    sin(self):  Compute the sine of an AD object.        
+    cos(self):  Compute the cosine of an AD object.        
+    exp(self):  Compute the exponential of an AD object.        
+    ln(self):  Compute the natural logarithm of an AD object.        
+    sinh(self):  Compute the hyperbolic sine of an AD object.        
+    cosh(self):  Compute the hyperbolic cosine of an AD object.        
+    tanh(self):  Compute the hyperbolic tangent of an AD object.        
+    arcsin(self):  Compute the arcsine (inverse of sine) of an AD object.        
+    arccos(self):  Compute the arccosine (inverse of cosine) of an AD object.       
+    arctan(self):  Compute the arctangent (inverse of tangent) of an AD object.       
+    logistic(self):   Apply the sigmoid function to an AD object, defined as: sigmoid(x) =  1/(1+e**(-x))
+    """
 
-    def __init__(self, value, der=0, name='x'):  # changed from der=[0]
+    def __init__(self, value, der=0, name='x'):
+        """
+        Constructs the necessary attributes of an AD object representing a variable or a function.
+        
+        Parameters
+        ----------
+        value : int, float, np.ndarray or list
+            Values or functions used to construct a new variable or function object 
+              - if value is int or float or np.ndarray         --> scalar function 
+              - if value is list(int, float, AD or np.ndarray) --> vector function
+        
+        der : int, float, np.ndarray or list, optional
+            Derivatives with respect to each of the variables of a function (default is 0).
+            This parameter is only needed when instantiating variables and not for functions.
+            
+        name : str, optional
+            Names of the variables (default is 'x'). 
+            This parameter is only needed when instantiating variables and not for functions.
+        
+        Returns
+        -------
+        AD object representing a variable or a function, with the corresponding derivatives and variable names.
+        
+        Examples
+        --------
+        # Scalar input (x)
+        # >>> x = AD(2,1,'x')
+        # >>> x
+        Numerical Value is:
+        [[2.]],
+        Jacobian is:
+        [[1.]],
+        Name is:
+        ['x']
 
+        # Vector input (x,y)
+        # >>> x = AD(2,1,'x')
+        # >>> y = AD(3,1,'y')
+        # >>> f = 5*x + 4*y + 0.5
+        # >>> f
+        Numerical Value is:
+        [[22.5]],
+        Jacobian is:
+        [[5. 4.]],
+        Name is:
+        ['x', 'y']
+
+
+        """
         self.val = None
         self.der = None
         self.name = None
@@ -82,12 +240,100 @@ class AD:
                 self.name = [name]
 
     def __repr__(self):
+        """
+        Get a string representation of the AD object. It prints:
+           - the values where the function is evaluated (self.val) 
+           - the Jacobian (self.der)
+           - the names of the function variables (self.name)
+        
+        Returns
+        -------
+        String representing the AD object's values, Jacobian and variable names.
+        
+        Example
+        -------
+        #>>> x = AD(2,1,'x')
+        #>>> y = AD(3,1,'y')
+        #>>> f = AD([5*x+4*y+0.5, 11*x*y])
+        #>>> f
+        Numerical Value is:
+        [22.5, 66.0], 
+        Jacobian is:
+        [[5.0, 4.0], [33.0, 22.0]], 
+        Name is:
+        ['x', 'y']
+        """
         val = self.val
         der = self.der
         name = self.name
         return 'Numerical Value is:\n{}, \nJacobian is:\n{}, \nName is:\n{}'.format(val, der, name)
 
+    def sort(self, order):
+        """
+        Sort the derivatives and variable names of an AD object by the specified order.       
+        
+        Parameters
+        ----------
+        order : list(str)
+            Names of the variables in the desired order.
+        
+        Returns
+        -------
+        AD object with self.der and self.name in the desired order.
+
+        Example
+        -------
+        # >>> x = AD(2,1,'x')
+        # >>> y = AD(3,1,'y')
+        # >>> z = AD(4,1,'z')
+        # >>> f = AD([5*x+4*y+3*z, x*y*z])
+        # >>> print(f)
+        Numerical Value is:
+        [34.0, 24.0],
+        Jacobian is:
+        [[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]],
+        Name is:
+        ['x', 'z', 'y']
+        #>>> f.sort(['x', 'y', 'z'])
+        #>>> print(f)
+        Numerical Value is:
+        [34.0, 24.0],
+        Jacobian is:
+        [[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]],
+        Name is:
+        ['x', 'y', 'z']
+        """
+        if not isinstance(order, list) and not isinstance(order, np.ndarray):
+            raise TypeError('Order should be an array-like composed of strings')
+        for string in order:
+            if not isinstance(string, str):
+                raise TypeError('Order should only be composed of strings')
+        if self.name == order:
+            return self
+
+        for i in range(len(self.der)):
+            final_derivative_i = self.der[i].copy()
+            for j, variable in enumerate(order):
+                index = self.name.index(variable)
+                derivative = self.der[i][index].copy()
+                final_derivative_i[j] = derivative
+            self.der[i] = final_derivative_i
+        self.name = order
+        return self
+
     def __add__(self, other):
+        """
+        Perform addition on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values to be added to self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self+other
+        """
         try:
             names_1 = self.name.copy()
             names_2 = other.name
@@ -95,7 +341,6 @@ class AD:
             derivative = self.der.copy()
             for i, name_2 in enumerate(names_2):
                 if name_2 in names_1:
-                    print(name_2)
                     index_1 = names_1.index(name_2)
                     if not isinstance(derivative, np.ndarray):
                         derivative = np.array(derivative)
@@ -113,10 +358,29 @@ class AD:
         return AD(value, derivative, name)
 
     def __radd__(self, other):
+        """
+        Perform reverse addition on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values to be added to self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self+other
+        """
         new_var = AD(self.val, self.der, self.name)  # create a new variable
         return new_var.__add__(other)
 
     def __neg__(self):
+        """
+        Perform negation on AD objects.        
+            
+        Returns
+        -------
+        AD object representing the result of -self
+        """
         val = -self.val.copy()
         der = -self.der.copy()
         name = self.name
@@ -125,13 +389,49 @@ class AD:
         # overloading the '-' operator
 
     def __sub__(self, other):
+        """
+        Perform subtraction on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values to be subtracted from self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self-other
+        """
         return self.__add__(-other)
 
     def __rsub__(self, other):
+        """
+        Perform reverse subtraction on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values from which self will be subtracted.
+        
+        Returns
+        -------
+        AD object representing the result of other-self
+        """
         return -(self.__sub__(other))
 
     # overloading the '*' operator
     def __mul__(self, other):
+        """
+        Perform multiplication on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values multiplying self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self*other
+        """
         try:
             names_1 = self.name.copy()
             names_2 = other.name.copy()
@@ -176,9 +476,33 @@ class AD:
         return AD(new_value, derivative, name)
 
     def __rmul__(self, other):
+        """
+        Perform reverse multiplication on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values to be multiplied by self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of other*self
+        """
         return AD(self.val, self.der, self.name).__mul__(other)
 
     def __truediv__(self, other):  # todo: check for forbidden values
+        """
+        Perform true division on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values dividing self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self/other
+        """
         try:
             names_1 = self.name
             names_2 = other.name
@@ -210,6 +534,18 @@ class AD:
         return AD(new_value, derivative, name)
 
     def __rtruediv__(self, other):
+        """
+        Perform reverse true division on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Values to be divided by self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of other/self
+        """
         if self.val == 0 or self.val == np.array([0]):
             raise ZeroDivisionError
         new_val = other / self.val
@@ -218,6 +554,18 @@ class AD:
         return AD(new_val, new_der, names)
 
     def __pow__(self, n):
+        """
+        Raise an AD object to the power of n.        
+        
+        Parameters
+        ----------
+        n : int, float or AD
+            Exponent to which self will be raised. Self is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self**other
+        """
         if isinstance(n, float) or isinstance(n, int):  # duck typing fails here because of the raised exception
             float(n)  # n is an int/float
             value = self.val.copy()
@@ -271,32 +619,27 @@ class AD:
         der = self.der
         name = self.name
         new_value = other ** value
-        new_der = der*np.log(value)*new_value
+        new_der = der * np.log(value) * new_value
         return AD(new_value, new_der, name)
-
-
-
-    def sort(self, order):
-        if not isinstance(order, list) and not isinstance(order, np.ndarray):
-            raise TypeError('Order should be an array-like composed of strings')
-        for string in order:
-            if not isinstance(string, str):
-                raise TypeError('Order should only be composed of strings')
-        if self.name == order:
-            return
-        final_derivative = self.der.copy()
-        for i, variable in enumerate(order):
-            index = self.name.index(variable)
-            derivative = self.der[:, index]
-            final_derivative[:, i] = derivative
-        self.der = final_derivative
-        self.name = order
 
     # todo: do we need that ?
     def update_value(self, vector_list):
         return AD(vector_list, self.der, self.name)
 
     def __lt__(self, other):
+        """
+        Perform "less than" comparison on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Value to compare with self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self < other
+        """
+
         if isinstance(other, AD):
 
             # Error if object don't have same dim.
@@ -315,6 +658,18 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __gt__(self, other):
+        """
+        Perform "greater than" comparison on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Value to compare with self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self > other
+        """
         if isinstance(other, AD):
             return other.__lt__(self)
         else:
@@ -324,7 +679,18 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __le__(self, other):
-
+        """
+        Perform "less or equal than" comparison on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Value to compare with self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self <= other
+        """
         if isinstance(other, AD):
             if len(self.name) != len(other.name):
                 raise AttributeError('Incoherent dimension input')
@@ -339,6 +705,20 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __ge__(self, other):
+
+        """
+        Perform "greater or equal than" comparison on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Value to compare with self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self >= other
+        """
+        # raises an error when the two objects do not have the same attributes
         if isinstance(other, AD):
             return other.__le__(self)
         else:
@@ -348,7 +728,18 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __eq__(self, other):
-
+        """
+        Perform "equality" comparison on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Value to compare with self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self == other
+        """
         if isinstance(other, AD):
 
             if len(self.name) != len(other.name):
@@ -365,9 +756,28 @@ class AD:
                 raise AttributeError('Incoherent dimension input')
 
     def __ne__(self, other):
+        """
+        Perform "inequality" comparison on an AD object.        
+        
+        Parameters
+        ----------
+        other : int, float, np.ndarray, list or AD
+            Value to compare with self, which is an AD object.
+        
+        Returns
+        -------
+        AD object representing the result of self != other
+        """
         return not self.__eq__(other)
 
     def tan(self):
+        """
+        Compute the tangent of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of tan(self)
+        """
         nonpoints = map(lambda x: ((x / np.pi) - 0.5) % 1 == 0.00, self.val)
         if any(nonpoints):
             raise ValueError("Math error, Tangent cannot handle i*0.5pi ")
@@ -377,64 +787,157 @@ class AD:
         return AD(val, der, self.name)
 
     def sin(self):
+        """
+        Compute the sine of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of sin(self)
+        """
         val = np.sin(self.val)
         der = np.cos(self.val) * self.der
         return AD(val, der, self.name)
 
     def cos(self):
+        """
+        Compute the cosine of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of cos(self)
+        """
         val = np.cos(self.val)
         der = -np.sin(self.val) * self.der
         return AD(val, der, self.name)
 
     def exp(self):
+        """
+        Compute the exponential of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of exp(self)
+        """
         val = np.exp(self.val)
         der = np.multiply(np.exp(self.val), self.der)
         return AD(val, der, self.name)
 
     def ln(self):
+        """
+        Compute the natural logarithm of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of ln(self)
+        """
         if self.val <= 0:
             raise ValueError("Cannot take natural log of zero or negative values")
         val = np.log(self.val)
         der = 1 / self.val
         return AD(val, der, self.name)
 
-    def sinh(self): #hyperbolic sin
+    def sinh(self):  # hyperbolic sin
+
+        """
+        Compute the hyperbolic sine of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of sinh(self)
+        """
+        # d/dx (sinh x) = cosh x
+        # sinh x = (e^x - e^(-x))/2  range (-inf, inf)
+        # val = np.multiply(.5, (np.exp(self.val) - np.exp(np.multiply(-1, self.val))))
         val = np.sinh(self.val)
-        der = np.cosh(self.val) * self.der 
+        der = np.cosh(self.val) * self.der
         return AD(val, der, self.name)
 
-    def cosh(self): #hyperbolic cos
+    def cosh(self):  # hyperbolic cos
+
+        """
+        Compute the hyperbolic cosine of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of cosh(self)
+        """
+        # d/dx (cosh x) = sinh x
+        # cosh x = (e^x + e^(-x))/2  range (-inf, inf)
+        # val = np.multiply(.5, (np.exp(self.val) + np.exp(np.multiply(-1, self.val))))
         val = np.cosh(self.val)
-        der = np.sinh(self.val) * self.der 
+        der = np.sinh(self.val) * self.der
         return AD(val, der, self.name)
 
-    def tanh(self):
+    def tanh(self):  # hyperbolic tan
+        """
+        Compute the hyperbolic tangent of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of tanh(self)
+        """
+        # d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
+        # tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
         val = np.tanh(self.val)
-        der = (1/np.power(np.cosh(self.val), 2))* self.der
+        der = (1 / np.power(np.cosh(self.val), 2)) * self.der
         return AD(val, der, self.name)
 
     def arcsin(self):
-        if ((self.val <= -1) or (self.val>=1)): 
+        """
+        Compute the arcsine (inverse of sine) of an AD object.        
+        
+        Returns
+        -------
+        AD object representing the result of arcsin(self)
+        """
+        if (self.val <= -1) or (self.val >= 1):
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
-        der = self.der*((1 - self.val**2)**(-0.5))
+        der = self.der * ((1 - self.val ** 2) ** (-0.5))
         return AD(val, der, self.name)
 
     def arccos(self):
-        if ((self.val <= -1) or (self.val>=1)): 
+        """
+        Compute the arccosine (inverse of cosine) of an AD object.       
+        
+        Returns
+        -------
+        AD object representing the result of arccos(self)
+        """
+        if ((self.val <= -1) or (self.val >= 1)):
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arccos(self.val)
-        der = -self.der*((1 - self.val**2)**(-0.5))
+        der = -self.der * ((1 - self.val ** 2) ** (-0.5))
         return AD(val, der, self.name)
 
     def arctan(self):
+        """
+        Compute the arctangent (inverse of tangent) of an AD object.       
+        
+        Returns
+        -------
+        AD object representing the result of arctan(self)
+        """
         val = np.arctan(self.val)
-        der = self.der*(1 + self.val**2)**(-1)
+        der = self.der * (1 + self.val ** 2) ** (-1)
         return AD(val, der, self.name)
 
-    def logistic(self): 
-        val = 1/(1 + np.exp(-self.val))
-        der = self.der* np.exp(-self.val)/((1 + np.exp(-self.val))**2)
+    def logistic(self):
+        val = 1 / (1 + np.exp(-self.val))
+        """
+        Apply the sigmoid function to an AD object. 
+        
+        The sigmoid function of x is defined as:
+            
+            sigmoid(x) =  1/(1+e**(-x))
+        
+        Returns
+        -------
+        AD object representing the result of sigmoid(self)
+        """
+        # assuming logistic function = sigmoid function = 1/(1+e^(-x))
+        val = 1 / (1 + np.exp(-self.val))
+        der = self.der * np.exp(-self.val) / ((1 + np.exp(-self.val)) ** 2)
         return AD(val, der, self.name)
 
     def sqrt(self):
@@ -443,9 +946,5 @@ class AD:
         new_val = np.sqrt(self.val.copy())
         if self.val == 0:
             raise ValueError('The derivative of the square root can only be computed for strictly positive numbers')
-        new_der = 1/2*self.der*(self.val**-0.5)
+        new_der = 1 / 2 * self.der * (self.val ** -0.5)
         return AD(new_val, new_der, self.name.copy())
-
-
-
-
