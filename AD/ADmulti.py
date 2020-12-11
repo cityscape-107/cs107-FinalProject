@@ -38,7 +38,7 @@ class AD:
     Examples
     ==========
     # Scalar input (x)
-	>>> x = AD(2,'x') 
+	>>> x = AD(2,1,'x') 
     >>> f = 7*x + 0.3
     >>> f
 	Numerical Value is:
@@ -137,7 +137,43 @@ class AD:
         Returns
         -------
         AD object representing a variable or a function, with the corresponding derivatives and variable names.
-        """
+        
+		Examples
+		--------
+		# Scalar input (x)
+		>>> x = AD(2,1,'x') 
+		>>> x
+		Numerical Value is:
+		[[2.]], 
+		Jacobian is:
+		[[1.]], 
+		Name is:
+		['x']
+
+		# Vector input (x,y) 
+		>>> x = AD(2,1,'x') 
+		>>> y = AD(3,1,'y') 
+		>>> f = 5*x + 4*y + 0.5
+		>>> f
+		Numerical Value is:
+		[[22.5]], 
+		Jacobian is:
+		[[5. 4.]], 
+		Name is:
+		['x', 'y']
+
+		# Vector input (x,y) and Vector output (f1,f2,f3)
+		>>> x = AD(2,1,'x') 
+		>>> y = AD(3,1,'y') 
+		>>> f = AD([5*x+4*y+0.5, 43*x, 7]) #f1,f2,f3 = 5*x+4*y+0.5, 43*x, 7
+		>>> f
+		Numerical Value is:
+		[22.5, 86.0, 7], 
+		Jacobian is:
+		[[5.0, 4.0], [43.0, 0], [0, 0]], 
+		Name is:
+		['x', 'y']
+		"""
         self.val = None
         self.der = None
         self.name = None
@@ -249,6 +285,29 @@ class AD:
         Returns
         -------
         AD object with self.der and self.name in the desired order.
+		
+		Example
+		-------
+		>>> x = AD(2,1,'x') 
+		>>> y = AD(3,1,'y') 
+		>>> z = AD(4,1,'z') 
+		>>> f = AD([5*x+4*y+3*z, x*y*z])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0], 
+		Jacobian is:
+		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]], 
+		Name is:
+		['x', 'z', 'y']
+		
+		>>> f.sort(['x', 'y', 'z'])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0], 
+		Jacobian is:
+		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]], 
+		Name is:
+		['x', 'y', 'z']
         """
         if not isinstance(order, list) and not isinstance(order, np.ndarray):
             raise TypeError('Order should be an array-like composed of strings')
@@ -257,12 +316,23 @@ class AD:
                 raise TypeError('Order should only be composed of strings')
         if self.name == order:
             return
-        final_derivative = self.der.copy()
-        for i, variable in enumerate(order):
-            index = self.name.index(variable)
-            derivative = self.der[:, index]
-            final_derivative[:, i] = derivative
-        self.der = final_derivative
+        
+	for i in range(len(self.der)):
+            final_derivative_i = self.der[i].copy()
+            for j, variable in enumerate(order):
+                index = self.name.index(variable)
+                #print('index:', index)
+                #print('\nindex, i, j: ', index, i, j)
+                #print('self.der:', self.der)
+                derivative = self.der[i][index].copy()
+                #print('self.der:', self.der)
+                #print('derivative', derivative)
+                #print('self.der:', self.der)
+                final_derivative_i[j] = derivative
+                #print('self.der:', self.der)
+                #print('final derivative:', final_derivative_i)
+                #print('self.der:', self.der)
+            self.der[i] = final_derivative_i
         self.name = order
 
     def __add__(self, other):
