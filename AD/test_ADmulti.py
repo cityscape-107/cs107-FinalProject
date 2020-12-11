@@ -14,6 +14,10 @@ def test_der_array():
     assert x.val == [1]
     assert x.der == [1]
 
+def test_der_list():
+    x = AD(1, [1], 'x')
+    assert x.val == [1]
+    assert x.der == [1]
 
 def test_invalid_val():
     with pytest.raises(TypeError):
@@ -34,6 +38,23 @@ def test_add_constant():
     assert z.val == [3]
     np.testing.assert_array_equal(z.der, np.array([1]).reshape(1, -1))
     assert z.name == ['x']
+
+
+#HERE
+def test_add_constant_to_vec():
+    x = AD(1, 1, 'x')
+    y = AD(3, 1, 'y')
+    w = AD([x + y, y - x])
+    with pytest.raises(TypeError):
+        w + 2
+    #print(z)
+    #assert z.val == [3]
+    #np.testing.assert_array_equal(z.der, np.array([1]).reshape(1, -1))
+    #assert z.name == ['x']
+
+
+
+
 
 
 def test_radd_constant():
@@ -152,6 +173,30 @@ def test_mul_last():
     v = z * w
     assert v.name == ['x', 'y']
     assert v.val == [6]
+
+"""
+        except AttributeError:  # one of the coefficients of other is None, it is a constant
+            if isinstance(other, np.ndarray):
+                if len(other.shape) > 1:
+                    new_value = np.dot(self.val, other)
+                    derivative = np.dot(self.der, other)
+                    name = self.name
+                    return AD(new_value, derivative, name)
+            new_value = self.val * other
+            derivative = self.der * other
+            name = self.name
+        return AD(new_value, derivative, name)
+
+
+def test_mul_vec():
+    x = AD(np.array([1,2]), np.array([1,2]), 'x')
+    a=np.array([[1,2],[3,4]])
+    w = x*a
+    assert w.name == ['x']
+    assert w.val == np.dot(x.val,a)
+    assert w.der == np.dot(x.der,a)
+"""
+
 
 
 # Rmul
@@ -619,30 +664,30 @@ def test_tanh():
 
 """
      def arcsin(self):
-        if ((self.val <= -1) or (self.val>=1)): 
+<<<<<<< HEAD
+        if ((self.val <= -1) or (self.val>=1)):
+=======
+        if ((self.val <= -1) or (self.val>=1)):
+>>>>>>> 047d296ced50bbfd965aff22291a23cda76c6b63
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
         der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         return AD(val, der, self.name)
-
     def arccos(self):
-        if ((self.val <= -1) or (self.val>=1)): 
+        if ((self.val <= -1) or (self.val>=1)):
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arccos(self.val)
         der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         return AD(val, der, self.name)
-
     def arctan(self):
         val = np.arctan(self.val)
         der = (1/(1 + np.power(self.val, 2))) * self.der
         return AD(val, der, self.name)
-
-    def logistic(self): 
+    def logistic(self):
        #assuming logistic function = sigmoid function = 1/(1+e^(-x))
-        val = 1/(1 + np.exp(-self.val)) 
+        val = 1/(1 + np.exp(-self.val))
         der = np.multiply(val, (1-val))
         return AD(val, der, self.name)
-
 """
 
 
@@ -705,45 +750,38 @@ def test_logistic():
     assert z.der == [3 * np.exp(-2) * (1 + np.exp(-2)) ** (-2)]
 
 
-def test_rpow_1():
-    x = AD(2, 3, 'x')
-    z = 2**x
-    assert z.val == 4
-    assert z.der == 4*np.log(2)*3
+#Sort testing
 
-def test_rpow_2():
-    x = AD(1, 1, 'x')
-    y = AD(2, 3, 'z')
-    z = [x, y]
+"""
+>>> x = AD(2,1,'x')
+		>>> y = AD(3,1,'y')
+		>>> z = AD(4,1,'z')
+		>>> f = AD([5*x+4*y+3*z, x*y*z])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0],
+		Jacobian is:
+		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]],
+		Name is:
+		['x', 'z', 'y']
+
+		>>> f.sort(['x', 'y', 'z'])
+		>>> print(f)
+		Numerical Value is:
+		[34.0, 24.0],
+		Jacobian is:
+		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]],
+		Name is:
+		['x', 'y', 'z']
+
+"""
+
+def test_sort_type_err():
+    x = AD(-2, 1, 'x')
+    y = AD(1, 7, 'y')
+    z=x+y
     with pytest.raises(TypeError):
-        y = 2 ** z
-
-def test_rpow_3():
-    x = AD(1, 1, 'x')
-    with pytest.raises(ValueError):
-        y = (-2) ** x
-
-def test_rpow_4():
-    x = AD(-1, 1, 'x')
-    with pytest.raises(ZeroDivisionError):
-        y = (0) ** x
-
-
-def test_sqrt():
-    x = AD(0, 1, 'x')
-    with pytest.raises(ValueError):
-        y = x.sqrt()
-
-def test_sqrt_1():
-    x = AD(-1, 1, 'x')
-    with pytest.raises(ValueError):
-        y = x.sqrt()
-
-def test_sqrt_2():
-    x = AD(10, 3, 'x')
-    y = x.sqrt()
-    assert y.val == np.sqrt(10)
-    assert y.der == 0.5*3*10**-0.5
+        z.sort(1)
 
 def test_beug():
     x = AD(1, 1, 'x')
@@ -753,5 +791,19 @@ def test_beug():
     z = f1+f2
     np.testing.assert_array_equal(z.val, np.array([13, 26]).reshape(2, 1))
     np.testing.assert_array_equal(z.sort(order=['x', 'y']).der, np.array([[13, 0], [0, 13]]))
+
+def test_sort_type_err2():
+    x = AD(-2, 1, 'x')
+    y = AD(1, 7, 'y')
+    z=x+y
+    with pytest.raises(TypeError):
+        z.sort([1])
+
+def test_sort_same():
+    x = AD(-2, 1, 'x')
+    y = AD(1, 7, 'y')
+    z=x+y
+    z.sort(['x','y'])
+    assert z.name==['x','y']
 
 
