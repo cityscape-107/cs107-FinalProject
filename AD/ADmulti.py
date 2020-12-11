@@ -4,7 +4,7 @@ import numpy as np
 
 class AD:
     """
-    Class to represent functions (and their variables) for automatic differentiation. 
+    This class is used to represent functions (and their variables) for automatic differentiation. 
     In order to get the derivative of a function with respect to a specific variable, that variable must be initialized as an AD object before performing any operation in which this variable is involved. 
     
     Vector functions are also initialized as an AD object.
@@ -12,32 +12,75 @@ class AD:
     ...
     
     Parameters
-    ----------
+    ==========
     value : int, float, np.ndarray or list
-        Values or functions used to construct a new variable or function object 
-          - if value is int or float or np.ndarray         --> scalar function 
+        Values or functions used to construct a new variable or function object:
+          - if value is int or float or np.ndarray         --> variable or scalar function
           - if value is list(int, float, AD or np.ndarray) --> vector function
     
     der : int, float, np.ndarray or list, optional
         Derivatives with respect to each of the variables of a function (default is 0).
-    
+        This parameter is only needed when instantiating variables and not for functions.
+        
     name : str, optional
         Names of the variables (default is 'x'). 
         This parameter is only needed when instantiating variables and not for functions.
             
     Attributes
-    ----------
+    ==========
     val : np.ndarray (scalar functions) or list (vector functions)
-        value(s) of the variable(s) where the functions are evaluated
+        Value(s) of the variable(s) where the functions are evaluated.
     der : np.ndarray (scalar functions) or list (vector functions)
-        derivative(s) with respect to each of the variable(s)
+        Jacobian: Derivative(s) with respect to each of the variable(s)
     name : list of strings
-        name(s) of the variable(s)
-        
+        Name(s) of the variable(s)
+    
+    Examples
+    ==========
+    # Scalar input (x)
+	>>> x = AD(2,'x') 
+    >>> f = 7*x + 0.3
+    >>> f
+	Numerical Value is:
+    [[14.3]], 
+    Jacobian is:
+    [[7.]], 
+    Name is:
+    ['x']
+    
+    # Vector input (x,y) 
+    >>> x = AD(2,1,'x') 
+    >>> y = AD(3,1,'y') 
+    >>> f = 5*x + 4*y + 0.5
+    >>> f
+    Numerical Value is:
+    [[22.5]], 
+    Jacobian is:
+    [[5. 4.]], 
+    Name is:
+    ['x', 'y']
+    
+    # Vector input (x,y) and Vector output (f1,f2,f3)
+    >>> x = AD(2,1,'x') 
+    >>> y = AD(3,1,'y') 
+    >>> f = AD([5*x+4*y+0.5, 43*x, 7]) #f1,f2,f3 = 5*x+4*y+0.5, 43*x, 7
+    >>> f
+    Numerical Value is:
+    [22.5, 86.0, 7], 
+    Jacobian is:
+    [[5.0, 4.0], [43.0, 0], [0, 0]], 
+    Name is:
+    ['x', 'y']
+    
+    
     Methods
-    ----------
+    ==========
+    # AD object-related methods
     __init__(self, value, der=0, name='x'):  Constructs the necessary attributes of an AD object representing a variable or a function.
     __repr__(self):  Return the canonical string representation of the object.
+    sort(self, order):  Sort the derivatives and variable names of an AD object by the specified order.       
+    
+    # Basic operations
     __add__(self, other):  Perform addition on an AD object.        
     __radd__(self, other):  Perform reverse addition on an AD object.        
     __neg__(self):  Perform negation on AD objects.        
@@ -48,24 +91,27 @@ class AD:
     __truediv__(self, other):  Perform true division on an AD object.        
     __rtruediv__(self, other):  Perform reverse true division on an AD object.        
     __pow__(self, n):  Raise an AD object to the power of n.        
-    sort(self, order):  Sort the derivatives and variable names of an AD object by the specified order.       
+    
+    # Comparisons
     __lt__(self, other):  Perform "less than" comparison on an AD object.        
     __gt__(self, other):  Perform "greater omparison on an AD object.        
     __le__(self, other):  Perform "less or equal than" comparison on an AD object.        
     __ge__(self, other):  Perform "greater or equal than" comparison on an AD object.        
     __eq__(self, other):  Perform "equality" comparison on an AD object.        
     __ne__(self, other):  Perform "inequality" comparison on an AD object.        
+    
+    # Elementary functions
     tan(self):  Compute the tangent of an AD object.        
     sin(self):  Compute the sine of an AD object.        
     cos(self):  Compute the cosine of an AD object.        
     exp(self):  Compute the exponential of an AD object.        
     ln(self):  Compute the natural logarithm of an AD object.        
     sinh(self):  Compute the hyperbolic sine of an AD object.        
-    def cosh(self):  Compute the hyperbolic cosine of an AD object.        
+    cosh(self):  Compute the hyperbolic cosine of an AD object.        
     tanh(self):  Compute the hyperbolic tangent of an AD object.        
     arcsin(self):  Compute the arcsine (inverse of sine) of an AD object.        
     arccos(self):  Compute the arccosine (inverse of cosine) of an AD object.       
-    def arctan(self):  Compute the arctangent (inverse of tangent) of an AD object.       
+    arctan(self):  Compute the arctangent (inverse of tangent) of an AD object.       
     logistic(self):   Apply the sigmoid function to an AD object, defined as: sigmoid(x) =  1/(1+e**(-x))
     """
     
@@ -82,14 +128,15 @@ class AD:
         
         der : int, float, np.ndarray or list, optional
             Derivatives with respect to each of the variables of a function (default is 0).
-        
+            This parameter is only needed when instantiating variables and not for functions.
+            
         name : str, optional
             Names of the variables (default is 'x'). 
             This parameter is only needed when instantiating variables and not for functions.
         
         Returns
         -------
-        AD object representing a variable or a function.
+        AD object representing a variable or a function, with the corresponding derivatives and variable names.
         """
         self.val = None
         self.der = None
@@ -163,12 +210,60 @@ class AD:
 
     def __repr__(self):
         """
-        Return the canonical string representation of the object.
+        Get a string representation of the AD object. It prints:
+           - the values where the function is evaluated (self.val) 
+           - the Jacobian (self.der)
+           - the names of the function variables (self.name)
+        
+        Returns
+        -------
+        String representing the AD object's values, Jacobian and variable names.
+        
+        Example
+        -------
+        >>> x = AD(2,1,'x') 
+        >>> y = AD(3,1,'y') 
+        >>> f = AD([5*x+4*y+0.5, 11*x*y])
+        >>> f   
+        Numerical Value is:
+        [22.5, 66.0], 
+        Jacobian is:
+        [[5.0, 4.0], [33.0, 22.0]], 
+        Name is:
+        ['x', 'y']
         """
         val = self.val
         der = self.der
         name = self.name
         return 'Numerical Value is:\n{}, \nJacobian is:\n{}, \nName is:\n{}'.format(val, der, name)
+
+    def sort(self, order):
+        """
+        Sort the derivatives and variable names of an AD object by the specified order.       
+        
+        Parameters
+        ----------
+        order : list(str)
+            Names of the variables in the desired order.
+        
+        Returns
+        -------
+        AD object with self.der and self.name in the desired order.
+        """
+        if not isinstance(order, list) and not isinstance(order, np.ndarray):
+            raise TypeError('Order should be an array-like composed of strings')
+        for string in order:
+            if not isinstance(string, str):
+                raise TypeError('Order should only be composed of strings')
+        if self.name == order:
+            return
+        final_derivative = self.der.copy()
+        for i, variable in enumerate(order):
+            index = self.name.index(variable)
+            derivative = self.der[:, index]
+            final_derivative[:, i] = derivative
+        self.der = final_derivative
+        self.name = order
 
     def __add__(self, other):
         """
@@ -453,34 +548,6 @@ class AD:
                     derivative = np.concatenate((derivative, new_der), axis=1)
             return AD(new_val, derivative, new_names)
 
-
-    def sort(self, order):
-        """
-        Sort the derivatives and variable names of an AD object by the specified order.       
-        
-        Parameters
-        ----------
-        order : list(str)
-            Names of the variables in the desired order.
-        
-        Returns
-        -------
-        AD object with self.der and self.name in the desired order.
-        """
-        if not isinstance(order, list) and not isinstance(order, np.ndarray):
-            raise TypeError('Order should be an array-like composed of strings')
-        for string in order:
-            if not isinstance(string, str):
-                raise TypeError('Order should only be composed of strings')
-        if self.name == order:
-            return
-        final_derivative = self.der.copy()
-        for i, variable in enumerate(order):
-            index = self.name.index(variable)
-            derivative = self.der[:, index]
-            final_derivative[:, i] = derivative
-        self.der = final_derivative
-        self.name = order
 
     def __lt__(self, other):
         """
