@@ -184,7 +184,10 @@ class AD:
                 except AttributeError:
                     continue  # if just list names never has anything appended
             # unique_names = set(np.asarray(names).flatten())  # reference
-            unique_names = list(set(np.array(np.concatenate(names, axis=0))))  # reference
+            try:
+                unique_names = list(set(np.array(np.concatenate(names, axis=0))))  # reference
+            except ValueError:
+                unique_names = set(np.asarray(names).flatten())
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
@@ -231,6 +234,8 @@ class AD:
                 der = np.array(der).reshape(len(der), 1)
             elif isinstance(der, np.ndarray) and der.shape[0] == 1:
                 der = der.reshape(der.shape[0], -1)
+            elif isinstance(der, np.ndarray) and len(der.shape) == 2:
+                der = der
             else:
                 raise TypeError(f'Derivative should be int or float and not {type(der)}')
 
@@ -341,11 +346,15 @@ class AD:
         if isinstance(other, AD):
             names_1 = self.name.copy()
             names_2 = other.name
-            value = self.val + other.val
+            value = np.array(self.val) + np.array(other.val)
             derivative = self.der.copy()
             for i, name_2 in enumerate(names_2):
                 if name_2 in names_1:
                     index_1 = names_1.index(name_2)
+                    if not isinstance(derivative, np.ndarray):
+                        derivative = np.array(derivative)
+                    if not isinstance(other.der, np.ndarray):
+                        other.der = np.array(other.der)
                     derivative[:, index_1] = derivative[:, index_1] + other.der[:, i]
                 else:
                     derivative = np.concatenate((derivative, other.der[:, i].reshape(-1, 1)), axis=1)
@@ -621,13 +630,23 @@ class AD:
                     derivative = np.concatenate((derivative, new_der), axis=1)
             return AD(new_val, derivative, new_names)
 
-
-
+    def __rpow__(self, other):
+        value = self.val
+        if value < 0 and other == 0:
+            raise ZeroDivisionError
+        if other < 0:
+            raise ValueError('Inconsistent value found for the base')
+        if not len(value) == 1:
+            raise TypeError('Inconsistent dimensions found')
+        der = self.der
+        name = self.name
+        new_value = other ** value
+        new_der = der * np.log(value) * new_value
+        return AD(new_value, new_der, name)
 
     # todo: do we need that ?
-    #def update_value(self, vector_list):
-        #return AD(vector_list, self.der, self.name)
-
+    def update_value(self, vector_list):
+        return AD(vector_list, self.der, self.name)
 
     def __lt__(self, other):
         """
@@ -717,8 +736,6 @@ class AD:
             # Error if object don't have same dim.
             if len(self.name) != len(other.name):
                 raise AttributeError('Incoherent dimension input')
-
-            # < acts on scalars and vector
             if self.val <= other.val:
                 return True
             else:
@@ -770,7 +787,6 @@ class AD:
             if len(self.name) != len(other.name):
                 raise AttributeError('Incoherent dimension input')
 
-            # < acts on scalars and vector
             if self.val == other.val:
                 return True
             else:
@@ -960,10 +976,16 @@ class AD:
         -------
         AD object representing the result of sigmoid(self)
         """
-        #assuming logistic function = sigmoid function = 1/(1+e^(-x))
-        val = 1/(1 + np.exp(-self.val))
-        der = self.der* np.exp(-self.val)/((1 + np.exp(-self.val))**2)
+        # assuming logistic function = sigmoid function = 1/(1+e^(-x))
+        val = 1 / (1 + np.exp(-self.val))
+        der = self.der * np.exp(-self.val) / ((1 + np.exp(-self.val)) ** 2)
         return AD(val, der, self.name)
 
-    # add log to other basesimport math
-# this is where we are going to work on creating the new class
+    def sqrt(self):
+        if self.val < 0:
+            raise ValueError('Square root should only be considered for positive numbers')
+        new_val = np.sqrt(self.val.copy())
+        if self.val == 0:
+            raise ValueError('The derivative of the square root can only be computed for strictly positive numbers')
+        new_der = 1 / 2 * self.der * (self.val ** -0.5)
+        return AD(new_val, new_der, self.name.copy())

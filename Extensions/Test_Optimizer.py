@@ -319,28 +319,28 @@ def test_opt():
     np.testing.assert_allclose(opt.global_optimizer, np.array([0, 0, 0]), atol=1e-3)
 
 
-# todo: debug simulated annealing
-"""
-def test_sa():
+def test_opt():
     f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
-    adam_sa = Adam(f, random_restarts=10, tuning=True, quadratic_matrix=np.eye(3))
-    adam_sa.descent()
-    adam = Adam(f, random_restarts=10)
-    adam.descent()
-    print(adam_sa.global_optimizer)
-    print(adam.global_optimizer)
-    assert np.sum(np.array(adam_sa.global_optimizer)**2) < np.sum(np.array(adam.global_optimizer)**2)
-"""
+    opt = Optimizer(f)
+    opt.descent()
+    print(opt)
+    np.testing.assert_allclose(opt.global_optimizer, np.array([0, 0, 0]), atol=1e-3)
 
 
 def test_3_opt():
     f = lambda x, y, z: x ** 2 + y ** 2 + (z - 2) ** 2
     adam = Adam(f, random_restarts=10)
+    print(adam)
     adam.descent()
+    print(adam)
     opt_sgd = sgd(f, random_restarts=10)
+    print(opt_sgd)
     opt_sgd.descent()
+    print(opt_sgd)
     rms = RMSProp(f, random_restarts=10)
+    print(rms)
     rms.descent()
+    print(rms)
     np.testing.assert_allclose(adam.global_optimizer, opt_sgd.global_optimizer, atol=1e-3)
     np.testing.assert_allclose(adam.global_optimizer, rms.global_optimizer, atol=1e-3)
     np.testing.assert_allclose(adam.global_optimizer, np.array([0, 0, 2]), atol=1e-3)
@@ -378,6 +378,30 @@ def test_vector_3():
     assert len(optimal_point) == 10
     assert np.abs(adam.trace_values[-1]) < 1e-5
 
-# batch_size = 32
-# input vector : 1000
-# randomly select 64 coordinates amongst the 1000
+def test_vector_edge():
+    f = lambda v: np.sum(v ** 2)
+    adam = Adam(f, random_restarts=10, dimensions=1)
+    adam.descent()
+    optimal_point = adam.global_optimizer
+    assert len(optimal_point) == 1
+    assert np.abs(adam.trace_values[-1]) < 1e-5
+
+
+def test_batch_size_1():
+    f = lambda v: np.sum(v**2)
+    with pytest.raises(ValueError):
+        adam = Adam(f, dimensions=1, batch_size=3)
+
+def test_batch_size_2():
+    f = lambda v: np.sum(v ** 2)
+    with pytest.raises(ValueError):
+        adam = Adam(f, dimensions=1, batch_size=3.5)
+
+
+def test_batch_size_3():
+    f = lambda v: np.sum((v-2)**2)
+    adam = Adam(f, dimensions=20, batch_size=3)
+    adam.descent()
+    optimal_point = adam.global_optimizer
+    assert len(optimal_point) == 20
+    assert np.abs(adam.trace_values[-1]) < 1e-5

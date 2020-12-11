@@ -664,7 +664,11 @@ def test_tanh():
 
 """
      def arcsin(self):
+<<<<<<< HEAD
         if ((self.val <= -1) or (self.val>=1)):
+=======
+        if ((self.val <= -1) or (self.val>=1)):
+>>>>>>> 047d296ced50bbfd965aff22291a23cda76c6b63
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
         der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der

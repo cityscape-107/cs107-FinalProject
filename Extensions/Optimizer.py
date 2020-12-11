@@ -14,9 +14,12 @@ class Optimizer:
     way these optimizers differ is the way the updates are performed, and whether they include momentum
     control or second moment of the gradient control."""
 
-    def __init__(self, f, max_iter=1e6, init_points=None, dimensions=0, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
+    def __init__(self, f, max_iter=1e6, init_points=None, dimensions=0, batch_size=0, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
                  step_size=1e-3, epsilon=1e-8, tuning=False, quadratic_matrix=None, max_epochs=10, verbose=0):
-        """f: function, takes arbitrary number of scalar inputs, or a vector input.
+        """Initializes an object of the class Optimizer, allowing to optimize a function based on a descent method you chose.
+        INPUTS
+        =======
+        f: function, takes arbitrary number of scalar inputs, or a vector input.
             The function we wish to minimize
         init_points: list, optional, default value is None
             The initial points from which you want to perform your descent. If it not specified by the user,
@@ -25,6 +28,9 @@ class Optimizer:
         dimensions: int, default value is 0
             This allow the optimizer to understand that the input is a vector, and the user specifies the size of the vector
             he wishes to get back from the optimizer. Is not necessary when init_points is input.
+        batch_size: int, default value is 0
+            This parameter allow to perform stochastic gradient descent, ie gradient computation based on a subset of the data
+            and not based on the entire data. This value should be ess that the size of your input array
         max_iter: int, optional, default value is 1e6
             The max number of updates you wish to perform during your descent algorithm
         tolerance: int, optional, default value is 1e-6
@@ -54,7 +60,37 @@ class Optimizer:
             The higher the better
         verbose: integer, optional, default value is 0
             Value between 0 and 2 describing the amount of information we wish to be print during the optimization
-            algorithm, for debugging issues"""
+            algorithm, for debugging issues
+
+        RETURNS
+        ========
+        An instance of the class Optimizer
+
+        EXAMPLES
+        =========
+        Without sampling and when specifying initialization points
+        >>> f = lambda x : x
+        >>> max_iter = 10
+        >>> init_points = [1]
+        >>> tolerance = 1
+        >>> random_restarts = 2
+        >>> beta_1 = 0.5
+        >>> beta_2 = 0.1
+        >>> step_size = 1e-2
+        >>> epsilon = 1e-4
+        >>> tuning = False
+        >>> verbose = 0
+        >>> opt = Optimizer(f=f, max_iter=max_iter, init_points=init_points, tolerance=tolerance, random_restarts=random_restarts, beta_1=beta_1, beta_2=beta_2, step_size=step_size, epsilon=epsilon, tuning=tuning, verbose=verbose)
+        Without sampling, just specifying the function and without specifying input points
+        >>> f = lambda x : x
+        >>> opt = Optimizer(f=f)
+        With sampling, specifying the quadratic matrix of the quadratic form
+        >>> f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
+        >>> opt = Optimizer(f, quadratic_matrix=np.eye(3), tuning=True)
+        With sampling, specifying the quadratic matrix of the quadratic form with verbose in order to debug
+        >>> f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
+        >>> opt = Optimizer(f, quadratic_matrix=np.eye(3), tuning=True, verbose=2)
+        """
         self.init_function = f
         self.trace_values = []
         self.trace_gradients = []
@@ -68,10 +104,17 @@ class Optimizer:
             init_points = [init_points]
         if init_points is not None and not isinstance(init_points, list):
             raise TypeError('Initial points should be a list')
+        if not isinstance(batch_size, int):
+            raise ValueError('Batch Size should be an integer')
+        if not isinstance(dimensions, int):
+            raise ValueError('Dimension should be an integer')
         if init_points is None:
             self.dimension = dimensions
-            if self.dimension > 2:
+            if self.dimension > 0:
                 self.vectorize = True
+                if batch_size > 0 and batch_size > dimensions:
+                    raise ValueError('Your batch size should be smaller than your input size')
+                self.batch_size = batch_size
             else:
                 self.vectorize = False
         if init_points is not None:
@@ -83,6 +126,9 @@ class Optimizer:
                     f(np.array(init_points))
                     self.vectorize = True
                     self.dimension = len(init_points)
+                    if batch_size > 0 and batch_size > self.dimension:
+                        raise ValueError('Your batch size should be smaller than your input size')
+                    self.batch_size = batch_size
                 except TypeError:
                     raise ValueError('Please enter valid input points')
         self.init = init_points
@@ -163,12 +209,12 @@ class Optimizer:
 
         EXAMPLES
         =========
-        # >>> f = lambda x: x**2+y**2+(z-2)**2
-        # >>> sgd = sgd(f)
-        # >>> init = sgd.produce_random_points()
-        [-1.4738622, 1.0198161, -0.2515112]"""
+        >>> f = lambda x: x**2+y**2+(z-2)**2
+        >>> opt = Optimizer(f)
+        >>> init = opt.produce_random_points()
+        >>> [-1.4738622, 1.0198161, -0.2515112]"""
         if self.vectorize:
-            if self.dimension > 2:  # the user did not specify any input points
+            if self.dimension > 0:  # the user did not specify any input points
                 dimensionality = self.dimension
                 sample_produced = np.random.multivariate_normal(np.zeros(dimensionality), np.eye(dimensionality))
         else:
@@ -192,8 +238,10 @@ class Optimizer:
 
         EXAMPLES
         =========
-        # >>> f = lambda x: x**2+y**2+(z-2)**2
-        # >>> acc = adam_gd(f, random_restarts=10)
+        >>> f = lambda x: x**2+y**2+(z-2)**2
+        >>> adam = Adam(f, random_restarts=10)
+        >>> adam.descent()
+        >>> print(adam.global_optimizer)
         [-3.1341273654385723e-06, 1.9563233193181366e-59, 1.9998541875049667]"""
         accumulator = []
         final_values = []
@@ -204,7 +252,7 @@ class Optimizer:
                 init_point = self.produce_random_points()
             if self.sampling:
                 init_point = self.annealing(init_point)
-            w = [AD(init_point[i], 1, name=names[i]) for i in range(len(init_point))] # w should be an AD variable
+            w = [AD(init_point[i], 1, name='w'+str(i)) for i in range(len(init_point))] # w should be an AD variable
             if self.vectorize:
                 w = np.array(w)
             m = 0
@@ -257,28 +305,28 @@ class Optimizer:
 
     def annealing(self, init_point):
         """ This function allows to produce points inside regions of importance in the optimization landscape of f.
-            It enables to tune the initialized points entered by the user, or it allows to produce good points when the user
-            did not input any initialized points. This allows to accelerate the optimization algorithm.
-            For now, it only supports quadratic functions.
-            INPUTS
-            =======
-            self: an instance of optimizer class
-            init_point: the initial point, produced via self.produce_random_points() or input by user
+        It enables to tune the initialized points entered by the user, or it allows to produce good points when the user
+        did not input any initialized points. This allows to accelerate the optimization algorithm.
+        For now, it only supports quadratic functions.
+        INPUTS
+        =======
+        self: an instance of optimizer class
+        init_point: the initial point, produced via self.produce_random_points() or input by user
 
-            RETURNS
-            ========
-            accumulator[-1][-1]: list of values
-               Has the form (x, y, z) where this point is the best point found accross the different epochs based
-               on random sampling based on simulated annealing.
+        RETURNS
+        ========
+        accumulator[-1][-1]: list of values
+           Has the form (x, y, z) where this point is the best point found accross the different epochs based
+           on random sampling based on simulated annealing.
 
-            EXAMPLES
-            =========
-            # >>> f = lambda x: x**2+y**2+(z-2)**2
-            # >>> adam = Adam(f, random_restarts=10)
-            # >>> init_point = adam.produce_random_points()
-            # >>> init_point = adam.annealing(init_point)
-            # >>> adam.init = init_point    #todo: check if this thing work
-            # >>> adam.descent()"""
+        EXAMPLES
+        =========
+        >>> f = lambda x: x**2+y**2+(z-2)**2
+        >>> adam = Adam(f, random_restarts=10)
+        >>> init_point = adam.produce_random_points()
+        >>> init_point = adam.annealing(init_point)
+        >>> adam.init = init_point
+        >>> adam.descent()"""
         if self.covariance is None:
             raise ValueError('You must enter your quadratic form matrix in order to perform efficient sampling')
 
@@ -306,9 +354,6 @@ class Optimizer:
                 new_cost = self.init_function(*new_solution)
                 alpha = min(1, np.exp((old_cost - new_cost) / temp))
                 if (new_cost < old_cost) or (np.random.uniform() < alpha):
-                    # print('new', new_cost, 'old', old_cost)
-                    # print('Acceptance probability', alpha)
-                    # print('new solution', new_solution)
                     accepted += 1
                     accumulator.append([temp, new_solution, new_cost])
 
@@ -316,7 +361,6 @@ class Optimizer:
                     old_solution = new_solution
 
                 else:
-                    # Keep the old stuff
                     accumulator.append([temp, old_solution, old_cost])
         if self.verbose == 2:
             if accepted * 1. / total < 0.1:
@@ -337,14 +381,18 @@ class Adam(Optimizer):
     """
     This Adam class inherits the Optimizer class, leveraging the default values we defined for the parameters beta1 and
     beta2, which were, for the sake of simplicity, (since the users use mostly adam) the coefficients for the adam optimizer.
+    EXAMPLES
+    =========
+    >>> f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
+    >>> opt = Adam(f)
     """
 
     def __str__(self):
-        if self.vectorize:
-            final_value = self.init_function(np.array(self.global_optimizer))
-        else:
-            final_value = self.init_function(*self.global_optimizer)
         if self.global_optimizer:
+            if self.vectorize:
+                final_value = self.init_function(np.array(self.global_optimizer))
+            else:
+                final_value = self.init_function(*self.global_optimizer)
             return 'Adam optimizer, which found an optimal weight point of ' + str(
                 self.global_optimizer) + ' the value of the objective function at this point is ' + str(
                 final_value)
@@ -356,6 +404,10 @@ class sgd(Optimizer):
     """
     This sgd class inherits the Optimizer class, redefining the values for beta1 and beta2. For sgd, we do not want
     to leverage momentum, we just want to perform classic gradient descent, with a smaller batch size (addendum to be done later on).
+    EXAMPLES
+    =========
+    >>> f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
+    >>> opt = sgd(f)
     """
 
     def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
@@ -365,6 +417,7 @@ class sgd(Optimizer):
                                   step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0)
         self.beta1 = 0
         self.beta2 = 0
+
 
     def __str__(self):
         if self.global_optimizer:
@@ -380,6 +433,10 @@ class RMSProp(Optimizer):
     This RMSprop class inherits the Optimizer class, redefining the values for beta1. For RMSProp, we do not
     want to put momentum on the gradient update, but which to have an adaptive learning rate depending on the
     accumulated squared gradients until then
+     EXAMPLES
+    =========
+    >>> f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
+    >>> opt = RMSProp(f)
     """
 
     def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
@@ -396,5 +453,3 @@ class RMSProp(Optimizer):
                 self.init_function(*self.global_optimizer))
         else:
             return 'RMSProp optimizer, not yet fitted'
-
-
