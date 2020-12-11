@@ -18,7 +18,7 @@ class AD:
                 except AttributeError:
                     continue  # if just list names never has anything appended
             # unique_names = set(np.asarray(names).flatten())  # reference
-            unique_names = list(set(np.array(np.concatenate(names, axis=0 )))) # reference
+            unique_names = list(set(np.array(np.concatenate(names, axis=0))))  # reference
             global_value = []  # vector of values
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
@@ -266,6 +266,10 @@ class AD:
             final_derivative[:, i] = derivative
         self.der = final_derivative
         self.name = order
+
+    # todo: do we need that ?
+    def update_value(self, vector_list):
+        return AD(vector_list, self.der, self.name)
 
     def __lt__(self, other):
         if isinstance(other, AD):

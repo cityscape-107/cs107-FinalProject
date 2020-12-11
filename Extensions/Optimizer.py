@@ -5,7 +5,7 @@ import math
 
 names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
          'w']
-
+# todo: names inside the class and initialize with numbers a1
 
 
 class Optimizer:
@@ -14,7 +14,7 @@ class Optimizer:
     way these optimizers differ is the way the updates are performed, and whether they include momentum
     control or second moment of the gradient control."""
 
-    def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
+    def __init__(self, f, max_iter=1e6, init_points=None, dimensions=0, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
                  step_size=1e-3, epsilon=1e-8, tuning=False, quadratic_matrix=None, max_epochs=10, verbose=0):
         """f: function, takes arbitrary number of scalar inputs, or a vector input.
             The function we wish to minimize
@@ -22,6 +22,9 @@ class Optimizer:
             The initial points from which you want to perform your descent. If it not specified by the user,
             the algorithm will create some. By default, these points are drawn from a multivariate gaussian centered
             at the origin of the input space.
+        dimensions: int, default value is 0
+            This allow the optimizer to understand that the input is a vector, and the user specifies the size of the vector
+            he wishes to get back from the optimizer. Is not necessary when init_points is input.
         max_iter: int, optional, default value is 1e6
             The max number of updates you wish to perform during your descent algorithm
         tolerance: int, optional, default value is 1e-6
@@ -65,11 +68,23 @@ class Optimizer:
             init_points = [init_points]
         if init_points is not None and not isinstance(init_points, list):
             raise TypeError('Initial points should be a list')
+        if init_points is None:
+            self.dimension = dimensions
+            if self.dimension > 2:
+                self.vectorize = True
+            else:
+                self.vectorize = False
         if init_points is not None:
             try:
                 f(*init_points)
-            except:
-                raise ValueError('Please enter valid input points')
+                self.vectorize = False
+            except TypeError:
+                try:
+                    f(np.array(init_points))
+                    self.vectorize = True
+                    self.dimension = len(init_points)
+                except TypeError:
+                    raise ValueError('Please enter valid input points')
         self.init = init_points
         if not isinstance(tolerance, float) and not isinstance(tolerance, int):
             raise TypeError('Tolerance should be an integer or a float')
@@ -152,22 +167,15 @@ class Optimizer:
         # >>> sgd = sgd(f)
         # >>> init = sgd.produce_random_points()
         [-1.4738622, 1.0198161, -0.2515112]"""
-        n_args = len(inspect.getargspec(self.init_function).args)
-        test_dim_input = np.ones(n_args).reshape(n_args, 1)
-        for i in range(0, 100):
-            try:
-                self.init_function(*test_dim_input)
-                break
-            except:
-                print('hey')
-                try:
-                    self.init_function(np.array(*test_dim_input))
-                    break
-                except:
-                    test_dim_input = np.concatenate((test_dim_input, np.ones(n_args)), axis=1)
-                    continue
-        dimensionality = len(test_dim_input)
-        sample_produced = np.random.multivariate_normal(np.zeros(dimensionality), np.eye(dimensionality))
+        if self.vectorize:
+            if self.dimension > 2:  # the user did not specify any input points
+                dimensionality = self.dimension
+                sample_produced = np.random.multivariate_normal(np.zeros(dimensionality), np.eye(dimensionality))
+        else:
+            n_args = len(inspect.getargspec(self.init_function).args)
+            test_dim_input = np.ones(n_args).reshape(n_args, 1)
+            dimensionality = len(test_dim_input)
+            sample_produced = np.random.multivariate_normal(np.zeros(dimensionality), np.eye(dimensionality))
         return sample_produced
 
     def descent(self):
@@ -189,18 +197,23 @@ class Optimizer:
         [-3.1341273654385723e-06, 1.9563233193181366e-59, 1.9998541875049667]"""
         accumulator = []
         final_values = []
-        for i in range(self.restarts):
-            try:
-                init_point = self.init[i]
-            except TypeError:
+        for _ in range(self.restarts):
+            if self.init:
+                init_point = self.init
+            else:
                 init_point = self.produce_random_points()
             if self.sampling:
                 init_point = self.annealing(init_point)
-            w = [AD(init_point[i], 1, name=names[i]) for i in range(len(init_point))]  # w should be an AD variable
+            w = [AD(init_point[i], 1, name=names[i]) for i in range(len(init_point))] # w should be an AD variable
+            if self.vectorize:
+                w = np.array(w)
             m = 0
             v = 0  # same as tf
             for t in range(1, int(self.max_iter)):
-                AD_function = self.init_function(*w)
+                if not self.vectorize:
+                    AD_function = self.init_function(*w)
+                else:
+                    AD_function = self.init_function(w)
                 self.trace_values.append(AD_function.val)
                 gradient = AD_function.der
                 self.trace_gradients.append(gradient)
@@ -223,7 +236,10 @@ class Optimizer:
                 self.trace.append(w)
             self.num_iterations.append(t)
             final_value = [float(w.val) for w in w]
-            accumulator.append(self.init_function(*final_value))
+            if not self.vectorize:
+                accumulator.append(self.init_function(*final_value))
+            else:
+                accumulator.append(self.init_function(np.array(final_value)))
             final_values.append(final_value)
             if self.verbose >= 2:
                 print('Descent algorithm performed, the optimal point found is ' + str(
@@ -324,10 +340,14 @@ class Adam(Optimizer):
     """
 
     def __str__(self):
+        if self.vectorize:
+            final_value = self.init_function(np.array(self.global_optimizer))
+        else:
+            final_value = self.init_function(*self.global_optimizer)
         if self.global_optimizer:
             return 'Adam optimizer, which found an optimal weight point of ' + str(
                 self.global_optimizer) + ' the value of the objective function at this point is ' + str(
-                self.init_function(*self.global_optimizer))
+                final_value)
         else:
             return 'Adam optimizer, not yet fitted'
 
