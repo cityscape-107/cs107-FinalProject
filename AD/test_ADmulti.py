@@ -601,7 +601,7 @@ def test_le_different_dim():
     y = AD(3, 1, 'y')
     z = AD(4, 1, 'z')
     w = x + y
-    assert  (w <= z) == True
+    assert (w <= z) == True
 
 
 def test_le_different_dim2():
@@ -640,7 +640,7 @@ def test_ge_different_dim2():
     x = AD(1, 1, 'x')
     y = AD(3, 1, 'y')
     w = AD([x + y, y - x])
-    assert (w >= 7)==False
+    assert (w >= 7) == False
 
 
 def test_ge_values_w_const():
@@ -1049,3 +1049,16 @@ def test_second():
 def test_third():
     x = np.array([3])
     print(type(x))
+
+
+def test_add_constant_to_vec_1():
+    x = AD(1, 1, 'x')
+    a = AD(1, 1, 'a')
+    y = AD(3, 2, 'b')
+    z = AD(1, 1, 'c')
+    e = [y, z]
+    print('y=', y)
+    print([type(v) for v in np.array([1, 1]).reshape(2, 1)])
+    w = AD([x + a, y - a]) + np.array([1, 1]).reshape(2, 1)
+    print(w.val.shape)
+    print('w=', w)

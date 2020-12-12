@@ -388,11 +388,11 @@ class Adam(Optimizer):
     >>> f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
     >>> opt = Adam(f)
     """
-    def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
-                 step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0):
-        super(Adam, self).__init__(f, max_iter=max_iter, init_points=init_points, tolerance=1e-6, random_restarts=2, beta_1=0.9,
+    def __init__(self, f, max_iter=1e6, init_points=None, dimensions=0, batch_size=0, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
+                 step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0, quadratic_matrix=None):
+        super(Adam, self).__init__(f, max_iter=max_iter, init_points=init_points, dimensions=dimensions,tolerance=1e-6, random_restarts=2, beta_1=0.9,
                                       beta_2=0.999,
-                                      step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0)
+                                      step_size=1e-3, epsilon=1e-8, tuning=tuning, verbose=0, quadratic_matrix=quadratic_matrix)
     def __str__(self):
         if self.global_optimizer:
             if self.vectorize:
@@ -416,11 +416,11 @@ class sgd(Optimizer):
     >>> opt = sgd(f)
     """
 
-    def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
-                 step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0):
-        super(sgd, self).__init__(f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9,
+    def __init__(self, f, max_iter=1e6, init_points=None, dimensions=0, batch_size=0, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
+                 step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0, quadratic_matrix=None):
+        super(sgd, self).__init__(f, max_iter=1e6, init_points=init_points, dimensions=dimensions, tolerance=1e-6, random_restarts=2, beta_1=0.9,
                                   beta_2=0.999,
-                                  step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0)
+                                  step_size=1e-3, epsilon=1e-8, tuning=tuning, verbose=0, quadratic_matrix=quadratic_matrix)
         self.beta1 = 0
         self.beta2 = 0
 
@@ -445,11 +445,11 @@ class RMSProp(Optimizer):
     >>> opt = RMSProp(f)
     """
 
-    def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
-                 step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0):
-        super(RMSProp, self).__init__(f, max_iter=max_iter, init_points=init_points, tolerance=1e-6, random_restarts=2, beta_1=0.9,
+    def __init__(self, f, max_iter=1e6, init_points=None, dimensions=0, batch_size=0, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
+                 step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0, quadratic_matrix=None):
+        super(RMSProp, self).__init__(f, max_iter=max_iter, init_points=init_points, dimensions=dimensions, tolerance=1e-6, random_restarts=2, beta_1=0.9,
                                       beta_2=0.999,
-                                      step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0)
+                                      step_size=1e-3, epsilon=1e-8, tuning=tuning, verbose=0, quadratic_matrix=quadratic_matrix)
         self.beta1 = 0
 
     def __str__(self):
