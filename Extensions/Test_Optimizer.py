@@ -152,7 +152,6 @@ def test_init_quad_value_error():
     init_points = [1, 2]
     sampling = True
     cov_matrix = np.array([1, 2])
-    print(len(cov_matrix.shape))
     with pytest.raises(ValueError):
         opt = Optimizer(f=f, tuning=sampling, init_points=init_points, quadratic_matrix=cov_matrix)
 
@@ -162,7 +161,6 @@ def test_init_quad_value_error_2():
     init_points = [1, 2]
     sampling = True
     cov_matrix = np.eye(3)
-    print(len(cov_matrix.shape))
     with pytest.raises(ValueError):
         opt = Optimizer(f=f, tuning=sampling, init_points=init_points, quadratic_matrix=cov_matrix)
 
@@ -216,7 +214,6 @@ def test_produce_random_sample():
     f = lambda x: x ** 2
     Opt = Optimizer(f)
     init_points = Opt.produce_random_points()
-    print(init_points)
     assert init_points.shape[0] == 1
 
 
@@ -239,7 +236,6 @@ def test_descent_1():
     opt = Optimizer(f)
     opt.descent()
     optimal_point = opt.global_optimizer
-    print(optimal_point)
     assert abs(optimal_point[0]) < 1e-3
     assert abs(optimal_point[1]) < 1e-3
     assert abs(optimal_point[2] - 2) < 1e-3
@@ -319,28 +315,21 @@ def test_opt():
     np.testing.assert_allclose(opt.global_optimizer, np.array([0, 0, 0]), atol=1e-3)
 
 
-def test_opt():
+def test_opt_2():
     f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
     opt = Optimizer(f)
     opt.descent()
-    print(opt)
     np.testing.assert_allclose(opt.global_optimizer, np.array([0, 0, 0]), atol=1e-3)
 
 
 def test_3_opt():
     f = lambda x, y, z: x ** 2 + y ** 2 + (z - 2) ** 2
     adam = Adam(f, random_restarts=10)
-    print(adam)
     adam.descent()
-    print(adam)
     opt_sgd = sgd(f, random_restarts=10)
-    print(opt_sgd)
     opt_sgd.descent()
-    print(opt_sgd)
     rms = RMSProp(f, random_restarts=10)
-    print(rms)
     rms.descent()
-    print(rms)
     np.testing.assert_allclose(adam.global_optimizer, opt_sgd.global_optimizer, atol=1e-3)
     np.testing.assert_allclose(adam.global_optimizer, rms.global_optimizer, atol=1e-3)
     np.testing.assert_allclose(adam.global_optimizer, np.array([0, 0, 2]), atol=1e-3)
@@ -360,6 +349,7 @@ def test_vector_1():
     adam.descent()
     assert len(adam.global_optimizer) == 2
     assert np.abs(adam.trace_values[-1]) < 1e-5
+
 
 
 def test_vector_2():
