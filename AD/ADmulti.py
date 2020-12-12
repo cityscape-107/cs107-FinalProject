@@ -107,6 +107,7 @@ class AD:
     cos(self):  Compute the cosine of an AD object.
     exp(self):  Compute the exponential of an AD object.
     ln(self):  Compute the natural logarithm of an AD object.
+    ln_base(self):  Compute the base-specific logarithm of an AD object.
     sinh(self):  Compute the hyperbolic sine of an AD object.
     cosh(self):  Compute the hyperbolic cosine of an AD object.
     tanh(self):  Compute the hyperbolic tangent of an AD object.
@@ -114,6 +115,7 @@ class AD:
     arccos(self):  Compute the arccosine (inverse of cosine) of an AD object.
     arctan(self):  Compute the arctangent (inverse of tangent) of an AD object.
     logistic(self):   Apply the sigmoid function to an AD object, defined as: sigmoid(x) =  1/(1+e**(-x))
+    sqrt(self): Compute the square root of an AD object.
     """
 
     def __init__(self, value, der=0, name='x'):
@@ -343,8 +345,8 @@ class AD:
         AD object representing the result of self+other
         
         Example
-		-------
-		>>> x = AD(1,1,'x') 
+        -------
+        >>> x = AD(1,1,'x') 
         >>> y = AD(2,1,'y') 
         >>> z = AD(3,1,'z')
         >>> x+y+z
@@ -405,7 +407,8 @@ class AD:
                     raise ValueError('Cannot add arrays of different size')
                 else:
                     for v in other:
-                        if not isinstance(v, int) and not isinstance(v, float):
+                        if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
+                                           np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
                             raise ValueError('Array entries must be int or float')
                     else:
                         value = self.val + other
@@ -666,8 +669,9 @@ class AD:
         else:  # one of the coefficients of other is None, it is a constant
             if isinstance(other, np.ndarray):
                 for value in other:
-                    if not isinstance(value, float) or not isinstance(value, int):
-                        raise TypeError('Arrays must contain only integers or float')
+                    if type(value) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
+                                           np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
+                            raise TypeError('Arrays must contain only integers or float')
                 if self.val.shape[1] == other.shape[0] or self.val.shape == other.shape:
                     new_value = np.dot(self.val, other)
                     derivative = np.dot(self.der, other)
@@ -1422,7 +1426,7 @@ class AD:
         Returns
         -------
         AD object representing the result of ln(self)
-	
+        
         Examples
         --------
         >>> x = x = AD(2,1,'x') 
@@ -1437,15 +1441,15 @@ class AD:
         >>> x = AD(2,1,'x') 
         >>> y = AD(3,1,'y') 
         >>> z = AD([x,y])
-        >>> z.exp()
-        # Numerical Value is:
-        # [[ 7.3890561 ]
-        #  [20.08553692]], 
-        # Jacobian is:
-        # [[ 7.3890561   0.        ]
-        #  [ 0.         20.08553692]], 
-        # Name is:
-        # ['x', 'y']
+        >>> z.ln()
+        Numerical Value is:
+        [[0.69314718]
+         [1.09861229]], 
+        Jacobian is:
+        [[0.5        0.        ]
+         [0.         0.33333333]], 
+        Name is:
+        ['x', 'y']
         """
 
         for val in self.val:
@@ -1457,8 +1461,37 @@ class AD:
 
 
     def ln_base(self, base):
-        if not isinstance(base, int):
-            raise ValueError('You cannot compute the logarithm in a non-integer base')
+        """
+        Compute the base-specific logarithm of an AD object.
+
+        Returns
+        -------
+        AD object representing the result of ln_base(self)
+        
+        Examples
+        --------
+        >>> x = x = AD(8,1,'x') 
+        >>> x.ln_base(2) 
+        Numerical Value is:
+        [[3.]], 
+        Jacobian is:
+        [[0.18033688]], 
+        Name is:
+        ['x']
+        
+        >>> x = AD(8,1,'x') 
+        >>> y = AD(32,1,'y') 
+        >>> z = AD([x*y,y])
+        >>> z.ln_base(2)
+        Numerical Value is:
+        [[8.]
+         [5.]], 
+        Jacobian is:
+        [[0.18033688 0.36067376]
+         [0.         0.04508422]], 
+        Name is:
+        ['x', 'y']
+        """
         return self.ln()/np.log(base)
 
 
