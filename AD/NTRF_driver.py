@@ -12,9 +12,7 @@ def NTRF(init_vals, tol=1e-10, iters=2000, path_freq=1):
     i=0   
     while i < iters:        
         
-        # WARNING
-        # TODO: MAKE SURE AD object.der and AD object.val outputs ordered results
-        xn1=xn-np.dot(np.linalg.pinv(_function(vals).der),_function(vals).val)
+        xn1=xn-np.dot(np.linalg.pinv(_function(vals).der),_function(vals).val.flatten())
         xn=xn1
 
         for q in range(len(vals)):            
