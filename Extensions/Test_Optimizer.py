@@ -387,17 +387,6 @@ def test_vector_edge():
     assert np.abs(adam.trace_values[-1]) < 1e-5
 
 
-def test_batch_size_1():
-    f = lambda v: np.sum(v**2)
-    with pytest.raises(ValueError):
-        adam = Adam(f, dimensions=1, batch_size=3)
-
-def test_batch_size_2():
-    f = lambda v: np.sum(v ** 2)
-    with pytest.raises(ValueError):
-        adam = Adam(f, dimensions=1, batch_size=3.5)
-
-
 def test_batch_size_3():
     f = lambda v: np.sum((v-2)**2)
     adam = Adam(f, dimensions=20, batch_size=3)
@@ -405,3 +394,4 @@ def test_batch_size_3():
     optimal_point = adam.global_optimizer
     assert len(optimal_point) == 20
     assert np.abs(adam.trace_values[-1]) < 1e-5
+

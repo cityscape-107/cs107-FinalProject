@@ -26,6 +26,7 @@ class AD:
         Names of the variables (default is 'x').
         This parameter is only needed when instantiating variables and not for functions.
 
+
     Attributes
     ==========
     val : np.ndarray (scalar functions) or list (vector functions)
@@ -195,7 +196,6 @@ class AD:
             global_jacobian = []  # matrix of derivatives, every derivative of the list should be one row
             for AD_function in value:
                 try:
-                    # print('The value we are appending is ', AD_function.val)
                     global_value.append(AD_function.val[0][0])
                 except AttributeError:
                     global_value.append(AD_function)  # constant
@@ -203,24 +203,15 @@ class AD:
                 AD_jacobian = []
                 for var in unique_names:
                     try:
-                        # print('We are looking for ', var)
-                        # print('Inside', AD_function.name)
                         index = AD_function.name.index(var)  # ['x', 'y'] vs ['y', 'x']
-                        # print('It is ', index)
-                        # print('The derivative of the AD var is ', AD_function.der)
                         AD_jacobian.append(AD_function.der[0][index])
                     except:
                         AD_jacobian.append(0)
-                    # print('...', AD_jacobian)
                 global_jacobian.append(AD_jacobian)
 
-
-            # if len(unique_names) != 0:
             self.val = np.array(global_value).reshape(-1, 1)
             self.der = np.array(global_jacobian)
             self.name = unique_names
-            # else:
-            # self.val = np.array(value).reshape(len(value), 1)
 
         if self.val is None:
             if isinstance(value, float) or isinstance(value, int):
@@ -394,10 +385,6 @@ class AD:
             for i, name_2 in enumerate(names_2):
                 if name_2 in names_1:
                     index_1 = names_1.index(name_2)
-                    #     if not isinstance(derivative, np.ndarray):
-                      #  derivative = np.array(derivative)
-                    #  if not isinstance(other.der, np.ndarray):
-                      #   other.der = np.array(other.der)
                     derivative[:, index_1] = derivative[:, index_1] + other.der[:, i]
                 else:
                     derivative = np.concatenate((derivative, other.der[:, i].reshape(-1, 1)), axis=1)
@@ -499,8 +486,6 @@ class AD:
         name = self.name
         return AD(val, der, name)
 
-        # overloading the '-' operator
-
     def __sub__(self, other):
         """
         Perform subtraction on an AD object.
@@ -578,7 +563,7 @@ class AD:
         >>> y = AD(3,1,'y')
         >>> z = AD([10*x, 100*y])
         >>> 2-z
-       Numerical Value is:
+        Numerical Value is:
         [[ -18.]
          [-298.]],
         Jacobian is:
@@ -645,45 +630,21 @@ class AD:
             new_names = names_1 + [name for name in other.name if name not in names_1]
             derivative = self.der.copy()
             for name in new_names:
-                # print('Current name', name)
-                # print('List of names for 1',names_1)
-                # print('List of names for 2', names_2)
                 if name in names_1 and name in names_2:
                     index_1 = names_1.index(name)
                     index_2 = names_2.index(name)
                     new_der = self.val.copy() * other.der[:, index_2] + self.der[:, index_1] * other.val
                     derivative[:, index_1] = new_der
                 if name in names_1 and name not in names_2:
-                    # print('I am here')
                     index_1 = names_1.index(name)
                     new_der = self.der[:, index_1] * other.val
-                    # print(new_der)
                     derivative[:, index_1] = new_der
-                    # print(derivative)
                 if name in names_2 and name not in names_1:
-                    # print('Now I am here')
                     index_2 = names_2.index(name)
                     new_der = self.val * other.der[:, index_2]
-                    # print(new_der)
-                    # print('Before the update', derivative)
                     derivative = np.concatenate((derivative, new_der), axis=1)
             name = new_names
-        else:  # one of the coefficients of other is None, it is a constant
-            #if isinstance(other, np.ndarray):
-                #for value in other.flatten():
-                    #if type(value) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
-                                           #np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
-                            #raise TypeError('Arrays must contain only integers or float')
-                #if self.val.shape[1] == other.shape[0] or self.val.shape == other.shape:
-
-                    #new_value = np.dot(self.val, other)
-                    #print('self.der.shape',self.der.shape)
-                    #derivative = np.dot(self.der, other)
-
-                    #print('Here3!')
-                    #name = self.name
-                #else:
-                    #raise ValueError('Input dimension mismatch')
+        else:
             if isinstance(other, int) or isinstance(other, float):
                 new_value = self.val * other
                 derivative = self.der * other
@@ -788,17 +749,16 @@ class AD:
                     raise ZeroDivisionError
             new_value = self.val / other.val  # numpy array multiplication
             new_names = names_1 + [name for name in other.name if
-                                   name not in names_1]  # we should raise an error when dividing by 0
+                                   name not in names_1]
             derivative = self.der.copy()
             for name in new_names:
                 if name in names_1 and name in names_2:
                     index_1 = names_1.index(name)
                     index_2 = names_2.index(name)
                     new_der = (self.der[:, index_1] * other.val - other.der[:,
-                                                                  index_2] * self.val) / other.val ** 2  # with scalars
+                                                                  index_2] * self.val) / other.val ** 2
                     derivative[:, index_1] = new_der
                 if name in names_1 and name not in names_2:
-                    # print('I am here')
                     index_1 = names_1.index(name)
                     new_der = self.der[:, index_1] / other.val
                     derivative[:, index_1] = new_der
@@ -808,18 +768,6 @@ class AD:
                     derivative = np.concatenate((derivative, new_der), axis=1)
             name = new_names
         else:
-            #if isinstance(other, np.ndarray):
-                #if other.shape != self.val.shape:
-                    #raise TypeError('Input dimension mismatch')
-               # for v in other.flatten():
-                    #if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
-                                       #np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
-                       # raise TypeError('Array entries must be int or float')
-               # if np.min(np.abs(other)) == 0:
-                    #raise ZeroDivisionError
-               # new_value = self.val / other
-                #derivative = self.der / other
-               # name = self.name
             if isinstance(other, int) or isinstance(other, float):
                 if other == 0:
                     raise ZeroDivisionError
@@ -887,7 +835,6 @@ class AD:
         names = self.name
         return AD(new_val, new_der, names)
 
-
     def __pow__(self, n):
         """
         Raise an AD object to the power of n.
@@ -939,39 +886,27 @@ class AD:
             value = self.val.copy()
             derivative = self.der.copy()
             names = self.name
-            #Taking sqrt of neg
-            print('Value=', value)
-            print('n=',n)
-            print('(value < 0).any() = ', (value < 0).any())
             if (value < 0).any() and 0 < n < 1:
                 raise ValueError('Illegal value and exponent')
-
             if (value == 0).any() and n < 1:
                 raise ZeroDivisionError
-
-            if (value==0).any() and ((n==1) or (n==0)):
+            if (value == 0).any() and ((n == 1) or (n == 0)):
                 raise ZeroDivisionError
-
             new_val = value ** n
             for i, name in enumerate(names):
                 derivative[:, i] = n * self.der[:, i] * value ** (n - 1)
             return AD(new_val, derivative, names)
-
         elif isinstance(n, AD):  # n is an AD object
             value_base = self.val
             value_exponent = n.val
             if not self.val.shape == n.val.shape:
                 raise TypeError("Incoherent dimensions")
-                #for v in n.val.flatten():
-                #    if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
-                #                       np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
-                #        raise TypeError('Array entries must be int or float')
             for val_base, val_exponent in zip(value_base, value_exponent):
                 if val_base < 0 and 0 < val_exponent < 1:
                     raise ValueError('Illegal value and exponent')
                 if val_base == 0 and val_exponent < 0:
                     raise ZeroDivisionError
-                if val_base == 0 and ((val_exponent==1) or (val_exponent==0)):
+                if val_base == 0 and ((val_exponent == 1) or (val_exponent == 0)):
                     raise ZeroDivisionError
             new_val = value_base ** value_exponent
             names_1 = self.name
@@ -982,7 +917,7 @@ class AD:
                 if name in names_1 and name in names_2:
                     index_2 = names_2.index(name)
                     new_der = (n.der[:, index_2] * np.log(value_base) + value_exponent * derivative[:,
-                                                                                           i] / value_base) * new_val
+                                                                                         i] / value_base) * new_val
                     derivative[:, i] = new_der
                 if name in names_1 and name not in names_2:
                     index_1 = names_1.index(name)
@@ -995,7 +930,6 @@ class AD:
             return AD(new_val, derivative, new_names)
         else:
             raise TypeError('Invalid Input Type for the exponent')
-
 
     def __rpow__(self, other):
         """
@@ -1043,24 +977,9 @@ class AD:
             name = self.name
             new_value = other ** value
             new_der = der * np.log(other) * new_value
-        #elif isinstance(other, np.ndarray):
-            #if other.shape != value.shape:
-                #raise ValueError('Invalid dimension')
-            #for val in other:
-                #if not isinstance(val, int) and not isinstance(val, float):
-                    #raise TypeError('Invalid input type')
-                #if val < 0:
-                    #raise ValueError('Inconsistent value found for the base')
-                #if val == 0 and np.min(value) == 0:
-                    #raise ZeroDivisionError
-            #der = self.der
-            #name = self.name
-            #new_value = other ** value
-            #new_der = der * np.log(value) * new_value
         else:
             raise TypeError('Invalid input type')
         return AD(new_value, new_der, name)
-
 
     def __lt__(self, other):
         """
@@ -1106,8 +1025,6 @@ class AD:
         else:
             raise TypeError('Invalid input type')
 
-
-
     def __gt__(self, other):
         """
         Perform "greater than" comparison on an AD object.
@@ -1148,7 +1065,6 @@ class AD:
         else:
             raise TypeError('Invalid input type')
 
-
     def __eq__(self, other):
         """
         Perform "equality" comparison on an AD object.
@@ -1184,7 +1100,6 @@ class AD:
         """
         return not bool(self.__lt__(other)) and not bool(self.__gt__(other))
 
-
     def __le__(self, other):
         """
         Perform "less or equal than" comparison on an AD object.
@@ -1218,9 +1133,7 @@ class AD:
         True
 
         """
-        print('Eq', bool(self.__eq__(other)))
-        print('Le', bool(self.__lt__(other)))
-        return (bool(self.__lt__(other)) or bool(self.__eq__(other)))
+        return bool(self.__lt__(other)) or bool(self.__eq__(other))
 
     def __ge__(self, other):
         """
@@ -1258,8 +1171,6 @@ class AD:
         # raises an error when the two objects do not have the same attributes
         return self.__gt__(other) or self.__eq__(other)
 
-
-
     def __ne__(self, other):
         """
         Perform "inequality" comparison on an AD object.
@@ -1290,7 +1201,6 @@ class AD:
         False
         """
         return not self.__eq__(other)
-
 
     def tan(self):
         """
@@ -1330,7 +1240,6 @@ class AD:
         val = np.tan(self.val)
         der = np.multiply(1 / np.power(np.cos(self.val), 2), self.der)
         return AD(val, der, self.name)
-
 
     def sin(self):
         """
@@ -1436,11 +1345,7 @@ class AD:
         Name is:
         ['x', 'y']
         """
-        #val = np.exp(self.val)
-        #der = np.multiply(np.exp(self.val), self.der)
-        #return AD(val, der, self.name) # return np.exp(1)**self
         return self.__rpow__(np.exp(1))
-
 
     def ln(self):
         """
@@ -1482,7 +1387,6 @@ class AD:
         der = self.der / self.val
         return AD(val, der, self.name)
 
-
     def ln_base(self, base):
         """
         Compute the base-specific logarithm of an AD object.
@@ -1515,8 +1419,7 @@ class AD:
         Name is:
         ['x', 'y']
         """
-        return self.ln()/np.log(base)
-
+        return self.ln() / np.log(base)
 
     def sinh(self):  # hyperbolic sin
         """
@@ -1550,9 +1453,6 @@ class AD:
         Name is:
         ['x', 'y']
         """
-        # d/dx (sinh x) = cosh x
-        # sinh x = (e^x - e^(-x))/2  range (-inf, inf)
-        # val = np.multiply(.5, (np.exp(self.val) - np.exp(np.multiply(-1, self.val))))
         val = np.sinh(self.val)
         der = np.cosh(self.val) * self.der
         return AD(val, der, self.name)
@@ -1589,13 +1489,9 @@ class AD:
         Name is:
         ['x', 'y']
         """
-        # d/dx (cosh x) = sinh x
-        # cosh x = (e^x + e^(-x))/2  range (-inf, inf)
-        # val = np.multiply(.5, (np.exp(self.val) + np.exp(np.multiply(-1, self.val))))
         val = np.cosh(self.val)
         der = np.sinh(self.val) * self.der
         return AD(val, der, self.name)
-
 
     def tanh(self):  # hyperbolic tan
         """
@@ -1620,7 +1516,7 @@ class AD:
         >>> y = AD(3,1,'y')
         >>> z = AD([x,y])
         >>> z.tanh()
-       Numerical Value is:
+        Numerical Value is:
         [[0.96402758]
          [0.99505475]],
         Jacobian is:
@@ -1629,13 +1525,9 @@ class AD:
         Name is:
         ['x', 'y']
         """
-        # d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
-        # tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
         val = np.tanh(self.val)
         der = (1 / np.power(np.cosh(self.val), 2)) * self.der
-        # return self.sinh()/self.cosh()
         return AD(val, der, self.name)
-
 
     def arcsin(self):
         """
@@ -1669,13 +1561,11 @@ class AD:
         Name is:
         ['x', 'y']
         """
-        if ((self.val <= -1).any() or (self.val>=1).any()):
-           raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
+        if (self.val <= -1).any() or (self.val >= 1).any():
+            raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arcsin(self.val)
-        # der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         der = self.der * ((1 - self.val ** 2) ** (-0.5))
         return AD(val, der, self.name)
-
 
     def arccos(self):
         """
@@ -1712,10 +1602,8 @@ class AD:
         if (self.val <= -1).any() or (self.val >= 1).any():
             raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
         val = np.arccos(self.val)
-        # der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
         der = -self.der * ((1 - self.val ** 2) ** (-0.5))
         return AD(val, der, self.name)
-
 
     def arctan(self):
         """
@@ -1753,7 +1641,6 @@ class AD:
         der = self.der * (1 + self.val ** 2) ** (-1)
         return AD(val, der, self.name)
 
-
     def logistic(self):
         """
         Apply the sigmoid function to an AD object.
@@ -1790,11 +1677,9 @@ class AD:
         Name is:
         ['x', 'y']
         """
-        # assuming logistic function = sigmoid function = 1/(1+e^(-x))
         val = 1 / (1 + np.exp(-self.val))
         der = self.der * np.exp(-self.val) / ((1 + np.exp(-self.val)) ** 2)
         return AD(val, der, self.name)
-
 
     def sqrt(self):
         """
@@ -1828,12 +1713,4 @@ class AD:
         Name is:
         ['x', 'y']
         """
-
-        # if (self.val < 0).any():
-          #  raise ValueError('Square root should only be considered for positive numbers')
-        # new_val = np.sqrt(self.val.copy())
-        # if (self.val == 0).any():
-          #  raise ValueError('The derivative of the square root can only be computed for strictly positive numbers')
-        # new_der = 1 / 2 * self.der * (self.val ** -0.5)
-        #  return AD(new_val, new_der, self.name)
         return self.__pow__(0.5)
