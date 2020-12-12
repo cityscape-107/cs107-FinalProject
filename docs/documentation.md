@@ -177,6 +177,7 @@ Cityscape-107/
                         __init__.py
                         ADmulti.py
                         test_ADmulti.py
+                        ex_driver.py
 
                 optimization/ #extension 
                         __init__.py
@@ -189,7 +190,6 @@ Cityscape-107/
                         documentation.md
 
                 examples/
-                        ex_driver.py
                         NTRF_driver.py
                         ...
 
