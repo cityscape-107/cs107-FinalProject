@@ -29,9 +29,7 @@ def test_invalid_val():
 def test_names():
     x = AD(1, 1, 'x1')
     z = 2 * x
-    print(z)
     v = x - z
-    print(v)
 
 
 def test_add_constant():
@@ -123,10 +121,8 @@ def test_order():
     y = AD(2, 2, 'y')
     z = y + x
     z.sort(['x', 'y'])
-    print(z)
 
 
-# Subtraction
 
 def test_sub():
     x = AD(1, 1, 'x')
@@ -158,7 +154,7 @@ def test_rsub_c():
     assert z.der == [-2]
 
 
-def test_rsub_c():
+def test_rsub_d():
     y = AD(2, 2, 'y')
     z = -2 - y
     assert z.val == [-4]
@@ -172,33 +168,7 @@ def test_mul():
     assert z.val == [2]
     np.testing.assert_array_equal(z.der, np.array([2, 2]).reshape(1, -1))
 
-"""
-def test_mul_array():
-    x = AD(1, 1, 'x')
-    y=np.array([1])
-    z = x * y
-    assert z.val == [1]
 
-
-def test_mul_array2():
-    x = AD(1, 1, 'x')
-    y = AD(2, 2, 'y')
-    w = AD([x + y, y - x]) #[[3],[1]]
-    a = np.array([1,2]).reshape(1,2)
-
-    print('w', w.val.shape)
-    print('a', a.shape)
-
-    z = w * a
-    print('z:', z)
-    assert z.val == [[3],[2]]
-
-def test_mul_array_mismatch():
-    x = AD(1, 1, 'x')
-    y=np.array([1,2,3])
-    with pytest.raises(ValueError):
-        x * y
-"""
 def test_mul_array_str():
     x = AD(1, 1, 'x')
     y=np.array(['1'])
@@ -206,7 +176,7 @@ def test_mul_array_str():
         x * y
 
 
-def test_mul_c1():  # todo: same
+def test_mul_c1():
     x = AD(1, 1, 'x')
     y = AD(2, 2, 'y')
     z = x * y + 4
@@ -241,31 +211,6 @@ def test_mul_last():
     v = z * w
     assert v.name == ['x', 'y']
     assert v.val == [6]
-
-
-"""
-        except AttributeError:  # one of the coefficients of other is None, it is a constant
-            if isinstance(other, np.ndarray):
-                if len(other.shape) > 1:
-                    new_value = np.dot(self.val, other)
-                    derivative = np.dot(self.der, other)
-                    name = self.name
-                    return AD(new_value, derivative, name)
-            new_value = self.val * other
-            derivative = self.der * other
-            name = self.name
-        return AD(new_value, derivative, name)
-def test_mul_vec():
-    x = AD(np.array([1,2]), np.array([1,2]), 'x')
-    a=np.array([[1,2],[3,4]])
-    w = x*a
-    assert w.name == ['x']
-    assert w.val == np.dot(x.val,a)
-    assert w.der == np.dot(x.der,a)
-"""
-
-
-# Rmul
 
 def test_rmul():
     x = AD(1, 1, 'x')
@@ -477,22 +422,13 @@ def test_multi_dim():
     y = AD(2, 3, 'y')
     z = AD(1, 7, 'z')
     v = AD([x * y, y + z, z + x])
-    print(v)
 
 
 def test_multi_dim_2():
     x = AD(1, 4, 'x')
     y = AD(2, 3, 'y')
     z = AD(1, 7, 'z')
-    print('1 x value is', x)
-    print(x * y)
-    print(y + z)
-    print(z + x)
-    print('y value is', y)
-    print('2 x value is', x)
-    print(x + y)
     v = AD([x * y, y + z, z + x, 4, x + y, x + y])
-    print(v)
 
 
 # Operations
@@ -618,7 +554,6 @@ def test_le_values_w_const():
     assert (x <= 1) == False
 
 
-# ge
 def test_ge_values():
     x = AD(2, 1, 'x')
     y = AD(3, 1, 'y')
@@ -687,7 +622,6 @@ def test_ne_values():
     x = AD(2, 1, 'x')
     y = AD(3, 1, 'y')
     z = AD(3, 1, 'z')
-    # print(y!=x)
     assert (y != x) == True
     assert (x != y) == True
     assert (z != y) == False
@@ -715,9 +649,6 @@ def test_ne_values_w_const():
     assert (x != 3) == True
 
 
-# Functions
-# Testing exp
-
 def test_exp():
     x = AD(0.5, 1, 'x')
     z = x.exp()
@@ -744,14 +675,8 @@ def test_log():
     assert z.val == [np.log(0.5)]
     assert z.der == [1 / 0.5]
 
-def test_log10():
-    x = AD(10., 1., 'x')
-    z = x.ln_base(10.)
-    #assert z.val == [np.log10(10.)],6)
-    #assert z.der == np.around([np.log10(10.) / np.log(10.)],6)
 
 
-# Testing sine
 def test_sin():
     x = AD(0.5, 1, 'x')
     z = x.sin()
@@ -759,7 +684,6 @@ def test_sin():
     assert z.der == [np.cos(0.5)]
 
 
-# Testing cosine
 def test_cos():
     x = AD(0.5, 1, 'x')
     z = x.cos()
@@ -767,7 +691,6 @@ def test_cos():
     assert z.der == [-np.sin(0.5)]
 
 
-# Testing tan
 def test_tan():
     x = AD(0.5, 1, 'x')
     z = x.tan()
@@ -781,14 +704,6 @@ def test_tan_inf():
         x.tan()
 
 
-#    def sinh(self): #hyperbolic sin
-# d/dx (sinh x) = cosh x
-# sinh x = (e^x - e^(-x))/2  range (-inf, inf)
-# val = np.multiply(.5, (np.exp(self.val) - np.exp(np.multiply(-1, self.val))))
-# val = np.sinh(self.val)
-# der = np.cosh(self.val) * self.der
-# return AD(val, der, self.name)
-
 def test_sinh():
     x = AD(0.5, 1, 'x')
     z = x.sinh()
@@ -799,7 +714,6 @@ def test_sinh():
 def test_cosh():
     x = AD(0.5, 1, 'x')
     z = x.cosh()
-    print(z)
     assert z.val == [np.cosh(0.5)]
     assert z.der == [np.sinh(0.5) * (1)]
 
@@ -807,54 +721,14 @@ def test_cosh():
 def test_tanh():
     x = AD(0.5, 1, 'x')
     z = x.tanh()
-    print(z)
     assert z.val == [np.tanh(0.5)]
     assert z.der == [(1 / np.cosh(0.5) ** 2) * (1)]
 
-
-"""
-        def tanh(self): #hyperbolic tan
-        #d/dx (tanh x) = (sech x)^2 = 1/((cosh x)^2)
-        #tanh x = (e^x - e^(-x)) / (e^x + e^(-x))       range (-inf, inf)
-        val = np.tanh(self.val)
-        der = np.multiply((1/np.power(np.cosh(self.val), 2)), self.der)
-        return AD(val, der, self.name)
-"""
-
-"""
-     def arcsin(self):
-<<<<<<< HEAD
-        if ((self.val <= -1) or (self.val>=1)):
-=======
-        if ((self.val <= -1) or (self.val>=1)):
->>>>>>> 047d296ced50bbfd965aff22291a23cda76c6b63
-            raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
-        val = np.arcsin(self.val)
-        der = (1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
-        return AD(val, der, self.name)
-    def arccos(self):
-        if ((self.val <= -1) or (self.val>=1)):
-            raise ValueError("Cannot take derivative of arcsin of value outside of range (-1, 1)")
-        val = np.arccos(self.val)
-        der = -(1/(np.sqrt(1 - np.power(self.val, 2)))) * self.der
-        return AD(val, der, self.name)
-    def arctan(self):
-        val = np.arctan(self.val)
-        der = (1/(1 + np.power(self.val, 2))) * self.der
-        return AD(val, der, self.name)
-    def logistic(self):
-       #assuming logistic function = sigmoid function = 1/(1+e^(-x))
-        val = 1/(1 + np.exp(-self.val))
-        der = np.multiply(val, (1-val))
-        return AD(val, der, self.name)
-"""
 
 
 def test_arcsin():
     x = AD(0.5, 3, 'x')
     z = x.arcsin()
-    print('x=', x)
-    print(z)
     assert z.val == [np.arcsin(0.5)]
     # np.testing.assert_array_equal(z.der, np.array([-3/np.sqrt(1 - 0.5**2)]))
     assert z.der == [3 * (1 - 0.5 ** 2) ** (-0.5)]
@@ -875,8 +749,6 @@ def test_arcsin_val_err_2():
 def test_arccos():
     x = AD(0.5, 3, 'x')
     z = x.arccos()
-    print('x=', x)
-    print(z)
     assert z.val == [np.arccos(0.5)]
     # np.testing.assert_array_equal(z.der, np.array([-3/np.sqrt(1 - 0.5**2)]))
     assert z.der == [-3 * (1 - 0.5 ** 2) ** (-0.5)]
@@ -897,7 +769,6 @@ def test_arccos_p1():
 def test_arctan():
     x = AD(0.5, 3, 'x')
     z = x.arctan()
-    print(z)
     assert z.val == [np.arctan(0.5)]
     assert z.der == [3 * (1 + 0.5 ** 2) ** (-1)]
 
@@ -909,29 +780,6 @@ def test_logistic():
     assert z.der == [3 * np.exp(-2) * (1 + np.exp(-2)) ** (-2)]
 
 
-# Sort testing
-
-"""
->>> x = AD(2,1,'x')
-		>>> y = AD(3,1,'y')
-		>>> z = AD(4,1,'z')
-		>>> f = AD([5*x+4*y+3*z, x*y*z])
-		>>> print(f)
-		Numerical Value is:
-		[34.0, 24.0],
-		Jacobian is:
-		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]],
-		Name is:
-		['x', 'z', 'y']
-		>>> f.sort(['x', 'y', 'z'])
-		>>> print(f)
-		Numerical Value is:
-		[34.0, 24.0],
-		Jacobian is:
-		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]],
-		Name is:
-		['x', 'y', 'z']
-"""
 
 
 def test_sort_type_err():
@@ -996,14 +844,12 @@ def test_rpow_4():
 def test_rpow_array():
     x = AD(2, 3, 'x')
     z = np.array([2,2,3,4]) ** x
-    print('zzzzzzzzzzz',z)
     assert z[0].val == 4
     assert z[0].der == 4 * np.log(2) * 3
 
 def test_rpow_arr():
     x = AD(2, 3, 'x')
     z = np.array([2,2,3,4]) ** x
-    print('zzzzzzzzzzz',z)
 test_rpow_arr()
 
 def test_sqrt():
@@ -1025,16 +871,13 @@ def test_sqrt2():
     assert y.der == 0.5 * 3 * 10 ** (-0.5)
 
 
-def test_david():
-    print(np.array([[1, 1],
-                    [1, 1]]) + 8)
+
 
 
 def test_order_paul():
     x = AD(1, 1, 'x')
     y = AD(2, 2, 'y')
     z = x + y
-    print(z)
     z.sort(['x', 'y'])
 
 
@@ -1042,13 +885,10 @@ def test_second():
     x = AD(2, 1, 'x')
     y = AD(3, 1, 'y')
     z = AD([x, y])
-    print(z.ln())
-    print(type(z.val))
 
 
 def test_third():
     x = np.array([3])
-    print(type(x))
 
 
 def test_add_constant_to_vec_1():
@@ -1057,8 +897,4 @@ def test_add_constant_to_vec_1():
     y = AD(3, 2, 'b')
     z = AD(1, 1, 'c')
     e = [y, z]
-    print('y=', y)
-    print([type(v) for v in np.array([1, 1]).reshape(2, 1)])
     w = AD([x + a, y - a]) + np.array([1, 1]).reshape(2, 1)
-    print(w.val.shape)
-    print('w=', w)
