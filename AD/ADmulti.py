@@ -1004,9 +1004,9 @@ class AD:
 
         Returns
         -------
-<<<<<<< HEAD
+
         AD object representing the result of self >= other
-=======
+
         Boolean representing the result of self == other
         
         Examples
@@ -1024,7 +1024,7 @@ class AD:
         >>> v = AD([x+y, x+y])
         >>> v == u
         True
->>>>>>> 3c11952d3fcb34d3cad487d07a60f83f72125ba2
+
         """
         # raises an error when the two objects do not have the same attributes
         return self.__gt__(other) or self.__eq__(other)
@@ -1220,21 +1220,23 @@ class AD:
         Returns
         -------
         AD object representing the result of ln(self)
-<<<<<<< HEAD
-        """
-        for val in self.val:
-            if val <= 0:
-                raise ValueError("Cannot take natural log of zero or negative values")
-=======
-        
+	
+	        
 	Examples
         --------
         >>> x = AD(2,1,'x') 
         >>> y = AD(2,1,'y') 
 	"""
+
+
+        for val in self.val:
+            if val <= 0:
+                raise ValueError("Cannot take natural log of zero or negative values")
+
+
         if self.val <= 0:
             raise ValueError("Cannot take natural log of zero or negative values")
->>>>>>> 3c11952d3fcb34d3cad487d07a60f83f72125ba2
+
         val = np.log(self.val)
         der = self.der / self.val
         return AD(val, der, self.name)
