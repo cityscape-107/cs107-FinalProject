@@ -75,6 +75,49 @@ def test_add_c():
     assert z.name == ['x', 'y']
 
 
+def test_add_2_vec():
+    x = AD(1, 1, 'x')
+    y = AD(2, 2, 'y')
+    w = AD([x + y, y - x])
+    z = np.array([1.0,2.0]).reshape(2,1)
+    q= w + z
+    np.testing.assert_array_equal(q.val, np.array([[4.0], [3.0]]))
+
+
+def test_add_vec_str():
+    x = AD(1, 1, 'x')
+    y = AD(2, 2, 'y')
+    w = AD([x + y, y - x])
+    z = np.array(['x',2.0]).reshape(2,1)
+    with pytest.raises(TypeError):
+        w+z
+
+
+def test_add_2_vec_diff_dim():
+    x = AD(1, 1, 'x')
+    y = AD(2, 2, 'y')
+    w = AD([x + y, y - x])
+    z = np.array([1.0,2.0,3.0])
+    with pytest.raises(ValueError):
+        w + z
+
+
+def test_add_2_vec_str():
+    x = AD(1, 1, 'x')
+    y = AD(2, 2, 'y')
+    w = AD([x + y, y - x])
+    z = np.array(['a','b'])
+    with pytest.raises(ValueError):
+        q = w + z
+
+def test_add_list():
+    x = AD(1, 1, 'x')
+    y = AD(2, 2, 'y')
+    w = AD([x + y, y - x])
+    z = [1,2]
+    with pytest.raises(ValueError):
+        w + z
+
 def test_order():
     x = AD(1, 1, 'x')
     y = AD(2, 2, 'y')
@@ -129,6 +172,39 @@ def test_mul():
     assert z.val == [2]
     np.testing.assert_array_equal(z.der, np.array([2, 2]).reshape(1, -1))
 
+"""
+def test_mul_array():
+    x = AD(1, 1, 'x')
+    y=np.array([1])
+    z = x * y
+    assert z.val == [1]
+
+
+def test_mul_array2():
+    x = AD(1, 1, 'x')
+    y = AD(2, 2, 'y')
+    w = AD([x + y, y - x]) #[[3],[1]]
+    a = np.array([1,2]).reshape(1,2)
+
+    print('w', w.val.shape)
+    print('a', a.shape)
+
+    z = w * a
+    print('z:', z)
+    assert z.val == [[3],[2]]
+
+def test_mul_array_mismatch():
+    x = AD(1, 1, 'x')
+    y=np.array([1,2,3])
+    with pytest.raises(ValueError):
+        x * y
+"""
+def test_mul_array_str():
+    x = AD(1, 1, 'x')
+    y=np.array(['1'])
+    with pytest.raises(TypeError):
+        x * y
+
 
 def test_mul_c1():  # todo: same
     x = AD(1, 1, 'x')
@@ -179,8 +255,6 @@ def test_mul_last():
             derivative = self.der * other
             name = self.name
         return AD(new_value, derivative, name)
-
-
 def test_mul_vec():
     x = AD(np.array([1,2]), np.array([1,2]), 'x')
     a=np.array([[1,2],[3,4]])
@@ -214,6 +288,8 @@ def test_div_c():
     z = x / 3
     assert z.val == [1]
     assert z.der == [4]
+
+
 
 
 def test_div_hard():  # we should cover the lines in rtruediv here
@@ -261,6 +337,37 @@ def test_true_div_zero():
     with pytest.raises(ZeroDivisionError):
         1 / x
 
+def test_true_div_zero_array():
+    x = AD(0, 3, 'x')
+    y = AD(0, 3, 'y')
+    z = AD([x,y])
+    with pytest.raises(ZeroDivisionError):
+        z / z
+
+
+def test_true_div_zero():
+    x = AD(5, 3, 'x')
+    with pytest.raises(ZeroDivisionError):
+        x / 0
+
+def test_true_div_string():
+    x = AD(5, 3, 'x')
+    with pytest.raises(TypeError):
+        x / '0'
+
+
+def test_rtrue_div_string():
+    x = AD(5, 3, 'x')
+    with pytest.raises(TypeError):
+        'o' / x
+
+
+def test_rtrue_div_zero_array():
+    x = AD(1, 3, 'x')
+    y = AD(0, 3, 'y')
+    z = AD([x,y])
+    with pytest.raises(ZeroDivisionError):
+        5 / z
 
 # Power
 def test_pow():
@@ -296,6 +403,11 @@ def test_pow_0_to_neg():
     with pytest.raises(ZeroDivisionError):
         z = x ** (-5)
 
+def test_pow_0_to_1():
+    x = AD(0, 1, 'x')
+    with pytest.raises(ZeroDivisionError):
+        x ** (1)
+
 
 def test_neg_pow_0_to_1():
     x = AD(-1, 1, 'x')
@@ -312,9 +424,52 @@ def test_fn_pow_neg():
 
 def test_fn_power_0():
     x = AD(0, 1, 'x')
+    with pytest.raises(ZeroDivisionError):
+        z = x ** 0
+
+def test_fn_power_0_base_neg_n():
+    x = AD(-1, -1, 'x')
+    y = AD(0, 1, 'y')
+    with pytest.raises(ZeroDivisionError):
+        y**x
+
+def test_fn_power_str():
+    x = AD(1, 1, 'x')
+    with pytest.raises(TypeError):
+        x**'st'
+
+def test_fn_rpower_str():
+    x = AD(1, 1, 'x')
+    y = 's'
+    with pytest.raises(TypeError):
+        y**x
+
+def test_fn_power_0AD():
+    x = AD(0, 1, 'x')
     n = AD(0, 1, 'n')
-    z = x ** n
-    assert z.val == 1
+
+    with pytest.raises(ZeroDivisionError):
+        z = x ** n
+
+def test_fn_power_array():
+    x = AD(0, 1, 'x')
+    y = AD(0, 1, 'x')
+    z = AD([x,y])
+    n = AD(0, 1, 'n')
+
+    with pytest.raises(TypeError):
+        w = z ** n
+
+
+def test_fn_power_array2():
+    x = AD(0, 1, 'x')
+    y = AD(0, 1, 'x')
+    z = AD([x,y])
+    n = AD(0, 1, 'n')
+
+    with pytest.raises(TypeError):
+        w = z ** n
+
 
 
 def test_multi_dim():
@@ -343,6 +498,18 @@ def test_multi_dim_2():
 # Operations
 
 # lt
+def test_lt_values_str():
+    x = AD(7, 1, 'x')
+    with pytest.raises(TypeError):
+       x < 'a'
+
+def test_lt_values_shape():
+    x = AD(7, 1, 'x')
+    y = AD(2, 1, 'y')
+    z = AD([x,y])
+    with pytest.raises(AttributeError):
+       x < z
+
 def test_lt_values():
     x = AD(2, 1, 'x')
     y = AD(3, 1, 'y')
@@ -378,6 +545,12 @@ def test_lt_equal():
 
 
 # gt
+
+def test_gt_values_str():
+    x = AD(7, 1, 'x')
+    with pytest.raises(TypeError):
+       x > 'a'
+
 
 def test_gt_values():
     x = AD(7, 1, 'x')
@@ -571,6 +744,12 @@ def test_log():
     assert z.val == [np.log(0.5)]
     assert z.der == [1 / 0.5]
 
+def test_log10():
+    x = AD(10., 1., 'x')
+    z = x.ln_base(10.)
+    #assert z.val == [np.log10(10.)],6)
+    #assert z.der == np.around([np.log10(10.) / np.log(10.)],6)
+
 
 # Testing sine
 def test_sin():
@@ -744,7 +923,6 @@ def test_logistic():
 		[[5.0, 3.0, 4.0], [12.0, 6.0, 8.0]],
 		Name is:
 		['x', 'z', 'y']
-
 		>>> f.sort(['x', 'y', 'z'])
 		>>> print(f)
 		Numerical Value is:
@@ -753,7 +931,6 @@ def test_logistic():
 		[[5.0, 4.0, 3.0], [12.0, 8.0, 6.0]],
 		Name is:
 		['x', 'y', 'z']
-
 """
 
 
@@ -811,16 +988,27 @@ def test_rpow_3():
     with pytest.raises(ValueError):
         y = (-2) ** x
 
-
 def test_rpow_4():
     x = AD(-1, 1, 'x')
     with pytest.raises(ZeroDivisionError):
         y = (0) ** x
 
+def test_rpow_array():
+    x = AD(2, 3, 'x')
+    z = np.array([2,2,3,4]) ** x
+    print('zzzzzzzzzzz',z)
+    assert z[0].val == 4
+    assert z[0].der == 4 * np.log(2) * 3
+
+def test_rpow_arr():
+    x = AD(2, 3, 'x')
+    z = np.array([2,2,3,4]) ** x
+    print('zzzzzzzzzzz',z)
+test_rpow_arr()
 
 def test_sqrt():
     x = AD(0, 1, 'x')
-    with pytest.raises(ValueError):
+    with pytest.raises(ZeroDivisionError):
         y = x.sqrt()
 
 

@@ -345,44 +345,44 @@ class AD:
         Returns
         -------
         AD object representing the result of self+other
-        
+
         Example
         -------
-        >>> x = AD(1,1,'x') 
-        >>> y = AD(2,1,'y') 
+        >>> x = AD(1,1,'x')
+        >>> y = AD(2,1,'y')
         >>> z = AD(3,1,'z')
         >>> x+y+z
         Numerical Value is:
-        [[6.]], 
+        [[6.]],
         Jacobian is:
-        [[1. 1. 1.]], 
+        [[1. 1. 1.]],
         Name is:
         ['x', 'y', 'z']
-        
-        >>> x = AD(1,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(1,1,'x')
+        >>> y = AD(2,1,'y')
         >>> z = AD(3,1,'z')
         >>> v = AD([x+y+z, x+2])
         >>> v
         Numerical Value is:
-        [6. 3.], 
+        [6. 3.],
         Jacobian is:
         [[1. 1. 1.]
-         [1. 0. 0.]], 
+         [1. 0. 0.]],
         Name is:
         ['x', 'z', 'y']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> f1 = AD([10*x, 10*y])
         >>> f2 = AD([x, y])
         >>> f1+f2+1000
         Numerical Value is:
         [[1022.]
-         [1033.]], 
+         [1033.]],
         Jacobian is:
         [[11.  0.]
-         [ 0. 11.]], 
+         [ 0. 11.]],
         Name is:
         ['x', 'y']
         """
@@ -437,25 +437,25 @@ class AD:
         AD object representing the result of self+other
         Example
         -------
-        >>> x = AD(1,1,'x') 
+        >>> x = AD(1,1,'x')
         >>> 2+x
         Numerical Value is:
-        [[3.]], 
+        [[3.]],
         Jacobian is:
-        [[1.]], 
+        [[1.]],
         Name is:
-        ['x']        
-        
-        >>> x = AD(1,1,'x') 
-        >>> y = AD(2,1,'y') 
+        ['x']
+
+        >>> x = AD(1,1,'x')
+        >>> y = AD(2,1,'y')
         >>> z = AD([x+y, x])
         >>> 40 + z
         Numerical Value is:
         [[43.]
-         [41.]], 
+         [41.]],
         Jacobian is:
         [[1. 1.]
-         [1. 0.]], 
+         [1. 0.]],
         Name is:
         ['x', 'y']
         """
@@ -472,25 +472,25 @@ class AD:
 
         Example
         -------
-        >>> x = AD(2,1,'x') 
+        >>> x = AD(2,1,'x')
         >>> -x
         Numerical Value is:
-        [[-2.]], 
+        [[-2.]],
         Jacobian is:
-        [[-1.]], 
+        [[-1.]],
         Name is:
         ['x']
-        
-        >> x = AD(2,1,'x') 
-        >> y = AD(3,1,'y') 
+
+        >> x = AD(2,1,'x')
+        >> y = AD(3,1,'y')
         >> z = AD([10*x, 100*y])
         >> -z
         Numerical Value is:
         [[ -20.]
-         [-300.]], 
+         [-300.]],
         Jacobian is:
         [[ -10.   -0.]
-         [  -0. -100.]], 
+         [  -0. -100.]],
         Name is:
         ['x', 'y']
         """
@@ -519,32 +519,32 @@ class AD:
         >>> x = AD(1,1,'x')
         >>> x-3
         Numerical Value is:
-        [[-2.]], 
+        [[-2.]],
         Jacobian is:
-        [[1.]], 
+        [[1.]],
         Name is:
         ['x']
-        
-        >>> x = AD(1,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(1,1,'x')
+        >>> y = AD(3,1,'y')
         >>> x-y
         Numerical Value is:
-        [[-2.]], 
+        [[-2.]],
         Jacobian is:
-        [[ 1. -1.]], 
+        [[ 1. -1.]],
         Name is:
         ['x', 'y']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([10*x, 100*y])
         >>> z-2
         Numerical Value is:
         [[ 18.]
-         [298.]], 
+         [298.]],
         Jacobian is:
         [[ 10.   0.]
-         [  0. 100.]], 
+         [  0. 100.]],
         Name is:
         ['x', 'y']
         """
@@ -562,28 +562,28 @@ class AD:
         Returns
         -------
         AD object representing the result of other-self
-        
+
         Example
         -------
-        >>> x = AD(1,1,'x') 
+        >>> x = AD(1,1,'x')
         >>> 4-x
         Numerical Value is:
-        [[3.]], 
+        [[3.]],
         Jacobian is:
-        [[-1.]], 
+        [[-1.]],
         Name is:
         ['x']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([10*x, 100*y])
         >>> 2-z
        Numerical Value is:
         [[ -18.]
-         [-298.]], 
+         [-298.]],
         Jacobian is:
         [[ -10.   -0.]
-         [  -0. -100.]], 
+         [  -0. -100.]],
         Name is:
         ['x', 'y']
         """
@@ -602,39 +602,39 @@ class AD:
         Returns
         -------
         AD object representing the result of self*other
-        
+
         Examples
         --------
-        >>> x = AD(1,1,'x') 
+        >>> x = AD(1,1,'x')
         >>> x*2
         Numerical Value is:
-        [[2.]], 
+        [[2.]],
         Jacobian is:
-        [[2.]], 
+        [[2.]],
         Name is:
         ['x']
-        
-        >>> x = AD(1,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(1,1,'x')
+        >>> y = AD(2,1,'y')
         >>> x*y
         Numerical Value is:
-        [[2.]], 
+        [[2.]],
         Jacobian is:
-        [[2. 1.]], 
+        [[2. 1.]],
         Name is:
         ['x', 'y']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> f1 = AD([10*x, 10*y])
         >>> f2 = AD([x, y])
         >>> f1*f2
         Numerical Value is:
         [[40.]
-         [90.]], 
+         [90.]],
         Jacobian is:
         [[40.  0.]
-         [ 0. 60.]], 
+         [ 0. 60.]],
         Name is:
         ['x', 'y']
         """
@@ -669,18 +669,22 @@ class AD:
                     derivative = np.concatenate((derivative, new_der), axis=1)
             name = new_names
         else:  # one of the coefficients of other is None, it is a constant
-            if isinstance(other, np.ndarray):
-                for value in other.flatten():
-                    if type(value) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
-                                           np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
-                            raise TypeError('Arrays must contain only integers or float')
-                if self.val.shape[1] == other.shape[0] or self.val.shape == other.shape:
-                    new_value = np.dot(self.val, other)
-                    derivative = np.dot(self.der, other)
-                    name = self.name
-                else:
-                    raise ValueError('Input dimension mismatch')
-            elif isinstance(other, int) or isinstance(other, float):
+            #if isinstance(other, np.ndarray):
+                #for value in other.flatten():
+                    #if type(value) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
+                                           #np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
+                            #raise TypeError('Arrays must contain only integers or float')
+                #if self.val.shape[1] == other.shape[0] or self.val.shape == other.shape:
+
+                    #new_value = np.dot(self.val, other)
+                    #print('self.der.shape',self.der.shape)
+                    #derivative = np.dot(self.der, other)
+
+                    #print('Here3!')
+                    #name = self.name
+                #else:
+                    #raise ValueError('Input dimension mismatch')
+            if isinstance(other, int) or isinstance(other, float):
                 new_value = self.val * other
                 derivative = self.der * other
                 name = self.name
@@ -700,29 +704,29 @@ class AD:
         Returns
         -------
         AD object representing the result of other*self
-        
-        
+
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
+        >>> x = AD(2,1,'x')
         >>> 2*x
         Numerical Value is:
-        [[4.]], 
+        [[4.]],
         Jacobian is:
-        [[2.]], 
+        [[2.]],
         Name is:
         ['x']
-        
-        >>> x = AD(1,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(1,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([x+y, x])
         >>> 2*z
         Numerical Value is:
         [[8.]
-         [2.]], 
+         [2.]],
         Jacobian is:
         [[2. 2.]
-         [2. 0.]], 
+         [2. 0.]],
         Name is:
         ['x', 'y']
         """
@@ -740,39 +744,39 @@ class AD:
         Returns
         -------
         AD object representing the result of self/other
-        
+
         Examples
         --------
-        >>> x = AD(4,1,'x') 
+        >>> x = AD(4,1,'x')
         >>> x/2
         Numerical Value is:
-        [[2.]], 
+        [[2.]],
         Jacobian is:
-        [[0.5]], 
+        [[0.5]],
         Name is:
         ['x']
-        
-        >>> x = AD(2,1,'x') 
+
+        >>> x = AD(2,1,'x')
         >>> y = AD(4,1,'y')
         >>> y/x
         Numerical Value is:
-        [[2.]], 
+        [[2.]],
         Jacobian is:
-        [[ 1. -2.]], 
+        [[ 1. -2.]],
         Name is:
         ['y', 'x']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> f1 = AD([10*x, 10*y])
         >>> f2 = AD([2, 1])
         >>> f1/f2
         Numerical Value is:
         [[10.]
-         [30.]], 
+         [30.]],
         Jacobian is:
         [[ 5.  0.]
-         [ 0. 10.]], 
+         [ 0. 10.]],
         Name is:
         ['x', 'y']
         """
@@ -804,19 +808,19 @@ class AD:
                     derivative = np.concatenate((derivative, new_der), axis=1)
             name = new_names
         else:
-            if isinstance(other, np.ndarray):
-                if other.shape != self.val.shape:
-                    raise TypeError('Input dimension mismatch')
-                for v in other.flatten():
-                    if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
-                                       np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
-                        raise TypeError('Array entries must be int or float')
-                if np.min(np.abs(other)) == 0:
-                    raise ZeroDivisionError
-                new_value = self.val / other
-                derivative = self.der / other
-                name = self.name
-            elif isinstance(other, int) or isinstance(other, float):
+            #if isinstance(other, np.ndarray):
+                #if other.shape != self.val.shape:
+                    #raise TypeError('Input dimension mismatch')
+               # for v in other.flatten():
+                    #if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
+                                       #np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
+                       # raise TypeError('Array entries must be int or float')
+               # if np.min(np.abs(other)) == 0:
+                    #raise ZeroDivisionError
+               # new_value = self.val / other
+                #derivative = self.der / other
+               # name = self.name
+            if isinstance(other, int) or isinstance(other, float):
                 if other == 0:
                     raise ZeroDivisionError
                 new_value = self.val / other
@@ -838,39 +842,39 @@ class AD:
         Returns
         -------
         AD object representing the result of other/self
-        
+
         Examples
         --------
-        >>> x = AD(10,1,'x') 
+        >>> x = AD(10,1,'x')
         >>> 2/x
         Numerical Value is:
-        [[0.2]], 
+        [[0.2]],
         Jacobian is:
-        [[-0.02]], 
+        [[-0.02]],
         Name is:
         ['x']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = x+y
         >>> 1/z
         Numerical Value is:
-        [[0.2]], 
+        [[0.2]],
         Jacobian is:
-        [[-0.04 -0.04]], 
+        [[-0.04 -0.04]],
         Name is:
         ['x', 'y']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([x, y])
         >>> 1/z
         Numerical Value is:
         [[0.5       ]
-         [0.33333333]], 
+         [0.33333333]],
         Jacobian is:
         [[-0.25       -0.        ]
-         [-0.         -0.11111111]], 
+         [-0.         -0.11111111]],
         Name is:
         ['x', 'y']
         """
@@ -896,36 +900,36 @@ class AD:
         Returns
         -------
         AD object representing the result of self**other
-        
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
+        >>> x = AD(2,1,'x')
         >>> x**3
         Numerical Value is:
-        [[8.]], 
+        [[8.]],
         Jacobian is:
-        [[12.]], 
+        [[12.]],
         Name is:
         ['x']
-        
-        >>> x = AD(2,1,'x') 
+
+        >>> x = AD(2,1,'x')
         >>> y = AD(3,1,'y')
         >>> x**y
         Numerical Value is:
-        [[8.]], 
+        [[8.]],
         Jacobian is:
-        [[12.          5.54517744]], 
+        [[12.          5.54517744]],
         Name is:
         ['x', 'y']
 
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = x+y
         >>> z**2
         Numerical Value is:
-        [[25.]], 
+        [[25.]],
         Jacobian is:
-        [[10. 10.]], 
+        [[10. 10.]],
         Name is:
         ['x', 'y']
 
@@ -935,10 +939,19 @@ class AD:
             value = self.val.copy()
             derivative = self.der.copy()
             names = self.name
-            if (value <= 0).any() and 0 < n < 1:
+            #Taking sqrt of neg
+            print('Value=', value)
+            print('n=',n)
+            print('(value < 0).any() = ', (value < 0).any())
+            if (value < 0).any() and 0 < n < 1:
                 raise ValueError('Illegal value and exponent')
-            if (value == 0).any() and n < 0:
+
+            if (value == 0).any() and n < 1:
                 raise ZeroDivisionError
+
+            if (value==0).any() and ((n==1) or (n==0)):
+                raise ZeroDivisionError
+
             new_val = value ** n
             for i, name in enumerate(names):
                 derivative[:, i] = n * self.der[:, i] * value ** (n - 1)
@@ -948,14 +961,17 @@ class AD:
             value_base = self.val
             value_exponent = n.val
             if not self.val.shape == n.val.shape:
-                for v in n.val.flatten():
-                    if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
-                                       np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
-                        raise TypeError('Array entries must be int or float')
+                raise TypeError("Incoherent dimensions")
+                #for v in n.val.flatten():
+                #    if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
+                #                       np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
+                #        raise TypeError('Array entries must be int or float')
             for val_base, val_exponent in zip(value_base, value_exponent):
                 if val_base < 0 and 0 < val_exponent < 1:
                     raise ValueError('Illegal value and exponent')
                 if val_base == 0 and val_exponent < 0:
+                    raise ZeroDivisionError
+                if val_base == 0 and ((val_exponent==1) or (val_exponent==0)):
                     raise ZeroDivisionError
             new_val = value_base ** value_exponent
             names_1 = self.name
@@ -993,30 +1009,31 @@ class AD:
         Returns
         -------
         AD object representing the result of other**self
-        
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
+        >>> x = AD(2,1,'x')
         >>> 3**x
         Numerical Value is:
-        [[9.]], 
+        [[9.]],
         Jacobian is:
-        [[6.23832463]], 
+        [[6.23832463]],
         Name is:
         ['x']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = x+y
         >>> 2**z
         Numerical Value is:
-        [[32.]], 
+        [[32.]],
         Jacobian is:
-        [[51.5020132 51.5020132]], 
+        [[51.5020132 51.5020132]],
         Name is:
         ['x', 'y']
         """
         value = self.val
+        print('type other:', type(other))
         if isinstance(other, int) or isinstance(other, float):
             if other < 0:
                 raise ValueError('Inconsistent value found for the base')
@@ -1026,20 +1043,20 @@ class AD:
             name = self.name
             new_value = other ** value
             new_der = der * np.log(other) * new_value
-        elif isinstance(other, np.ndarray):
-            if other.shape != value.shape:
-                raise ValueError('Invalid dimension')
-            for val in other:
-                if not isinstance(val, int) and not isinstance(val, float):
-                    raise TypeError('Invalid input type')
-                if val < 0:
-                    raise ValueError('Inconsistent value found for the base')
-                if val == 0 and np.min(value) == 0:
-                    raise ZeroDivisionError
-            der = self.der
-            name = self.name
-            new_value = other ** value
-            new_der = der * np.log(value) * new_value
+        #elif isinstance(other, np.ndarray):
+            #if other.shape != value.shape:
+                #raise ValueError('Invalid dimension')
+            #for val in other:
+                #if not isinstance(val, int) and not isinstance(val, float):
+                    #raise TypeError('Invalid input type')
+                #if val < 0:
+                    #raise ValueError('Inconsistent value found for the base')
+                #if val == 0 and np.min(value) == 0:
+                    #raise ZeroDivisionError
+            #der = self.der
+            #name = self.name
+            #new_value = other ** value
+            #new_der = der * np.log(value) * new_value
         else:
             raise TypeError('Invalid input type')
         return AD(new_value, new_der, name)
@@ -1057,18 +1074,18 @@ class AD:
         Returns
         -------
         Boolean representing the result of self < other
-        
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = x+y
         >>> v = 2*(x+y)
         >>> u < v
         True
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = AD([x+y, x+y])
         >>> v = AD([x+y, 2*(x+y)])
         >>> u < v
@@ -1103,19 +1120,19 @@ class AD:
         Returns
         -------
         Boolean representing the result of self > other
-        
-        
+
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = x+y
         >>> v = 2*(x+y)
         >>> v > u
         True
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = AD([x+y, x+y])
         >>> v = AD([x+y, 2*(x+y)])
         >>> v > u
@@ -1147,18 +1164,18 @@ class AD:
         AD object representing the result of self == other
 
         Boolean representing the result of self <= other
-        
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = x+y
         >>> v = 2*(x+y)
-        >>> u <= v , u <= v/2 
+        >>> u <= v , u <= v/2
         (True, True)
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = AD([x+y, x+y])
         >>> v = AD([x+y, 2*(x+y)])
         >>> u <= v
@@ -1183,18 +1200,18 @@ class AD:
         AD object representing the result of self <= other
 
         Boolean representing the result of self >= other
-        
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = x+y
         >>> v = 2*(x+y)
         >>> v >= u, v/2 >= u
         (True, True)
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = AD([x+y, x+y])
         >>> v = AD([x+y, 2*(x+y)])
         >>> v >= u
@@ -1220,18 +1237,18 @@ class AD:
         AD object representing the result of self >= other
 
         Boolean representing the result of self == other
-        
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = x+y
         >>> v = 2*(x+y)
         >>> v == u, v/2 == u
         (False, True)
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = AD([x+y, x+y])
         >>> v = AD([x+y, x+y])
         >>> v == u
@@ -1255,18 +1272,18 @@ class AD:
         Returns
         -------
         AD object representing the result of self != other
-        
+
         Examples
         --------
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = x+y
         >>> v = 2*(x+y)
         >>> v != u, v/2 != u
         (True, False)
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(2,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(2,1,'y')
         >>> u = AD([x+y, x+y])
         >>> v = AD([x+y, x+y])
         >>> v != u
@@ -1282,28 +1299,28 @@ class AD:
         Returns
         -------
         AD object representing the result of tan(self)
-        
+
         Examples
         --------
-        >>> x = AD(np.pi/4,1,'x') 
+        >>> x = AD(np.pi/4,1,'x')
         >>> x.tan()
         Numerical Value is:
-        [[1.]], 
+        [[1.]],
         Jacobian is:
-        [[2.]], 
+        [[2.]],
         Name is:
         ['x']
-        
-        >>> x = AD(np.pi/4,1,'x') 
+
+        >>> x = AD(np.pi/4,1,'x')
         >>> y = AD(np.pi/4,1,'y')
         >>> z = AD([x,y])
         >>> z.sin()
         Numerical Value is:
         [[1.]
-         [1.]], 
+         [1.]],
         Jacobian is:
         [[2. 0.]
-         [0. 2.]], 
+         [0. 2.]],
         Name is:
         ['x', 'y']
         """
@@ -1322,28 +1339,28 @@ class AD:
         Returns
         -------
         AD object representing the result of sin(self)
-        
+
         Examples
         --------
-        >>> x = AD(np.pi/4,1,'x') 
+        >>> x = AD(np.pi/4,1,'x')
         >>> x.sin()
         Numerical Value is:
-        [[0.70710678]], 
+        [[0.70710678]],
         Jacobian is:
-        [[0.70710678]], 
+        [[0.70710678]],
         Name is:
         ['x']
-        
-        >>> x = AD(np.pi/4,1,'x') 
+
+        >>> x = AD(np.pi/4,1,'x')
         >>> y = AD(np.pi/4,1,'y')
         >>> z = AD([x,y])
         >>> z.sin()
         Numerical Value is:
         [[0.70710678]
-         [0.70710678]], 
+         [0.70710678]],
         Jacobian is:
         [[0.70710678 0.        ]
-         [0.         0.70710678]], 
+         [0.         0.70710678]],
         Name is:
         ['x', 'y']
         """
@@ -1358,28 +1375,28 @@ class AD:
         Returns
         -------
         AD object representing the result of cos(self)
-        
+
         Examples
         --------
-        >>> x = AD(np.pi/4,1,'x') 
+        >>> x = AD(np.pi/4,1,'x')
         >>> x.cos()
         Numerical Value is:
-        [[0.70710678]], 
+        [[0.70710678]],
         Jacobian is:
-        [[-0.70710678]], 
+        [[-0.70710678]],
         Name is:
         ['x']
-        
-        >>> x = AD(np.pi/4,1,'x') 
+
+        >>> x = AD(np.pi/4,1,'x')
         >>> y = AD(np.pi/4,1,'y')
         >>> z = AD([x,y])
         >>> z.cos()
         Numerical Value is:
         [[0.70710678]
-         [0.70710678]], 
+         [0.70710678]],
         Jacobian is:
         [[-0.70710678 -0.        ]
-         [-0.         -0.70710678]], 
+         [-0.         -0.70710678]],
         Name is:
         ['x', 'y']
         """
@@ -1394,28 +1411,28 @@ class AD:
         Returns
         -------
         AD object representing the result of exp(self)
-        
+
         Examples
         --------
-        >>> x = x = AD(2,1,'x') 
-        >>> x.exp() 
+        >>> x = x = AD(2,1,'x')
+        >>> x.exp()
         Numerical Value is:
-        [[7.3890561]], 
+        [[7.3890561]],
         Jacobian is:
-        [[7.3890561]], 
+        [[7.3890561]],
         Name is:
         ['x']
 
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([x,y])
         >>> z.exp()
         Numerical Value is:
         [[ 7.3890561 ]
-         [20.08553692]], 
+         [20.08553692]],
         Jacobian is:
         [[ 7.3890561   0.        ]
-         [ 0.         20.08553692]], 
+         [ 0.         20.08553692]],
         Name is:
         ['x', 'y']
         """
@@ -1432,28 +1449,28 @@ class AD:
         Returns
         -------
         AD object representing the result of ln(self)
-        
+
         Examples
         --------
-        >>> x = x = AD(2,1,'x') 
-        >>> x.ln() 
+        >>> x = x = AD(2,1,'x')
+        >>> x.ln()
         Numerical Value is:
-        [[0.69314718]], 
+        [[0.69314718]],
         Jacobian is:
-        [[0.5]], 
+        [[0.5]],
         Name is:
         ['x']
-        
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([x,y])
         >>> z.ln()
         Numerical Value is:
         [[0.69314718]
-         [1.09861229]], 
+         [1.09861229]],
         Jacobian is:
         [[0.5        0.        ]
-         [0.         0.33333333]], 
+         [0.         0.33333333]],
         Name is:
         ['x', 'y']
         """
@@ -1473,28 +1490,28 @@ class AD:
         Returns
         -------
         AD object representing the result of ln_base(self)
-        
+
         Examples
         --------
-        >>> x = x = AD(8,1,'x') 
-        >>> x.ln_base(2) 
+        >>> x = x = AD(8,1,'x')
+        >>> x.ln_base(2)
         Numerical Value is:
-        [[3.]], 
+        [[3.]],
         Jacobian is:
-        [[0.18033688]], 
+        [[0.18033688]],
         Name is:
         ['x']
-        
-        >>> x = AD(8,1,'x') 
-        >>> y = AD(32,1,'y') 
+
+        >>> x = AD(8,1,'x')
+        >>> y = AD(32,1,'y')
         >>> z = AD([x*y,y])
         >>> z.ln_base(2)
         Numerical Value is:
         [[8.]
-         [5.]], 
+         [5.]],
         Jacobian is:
         [[0.18033688 0.36067376]
-         [0.         0.04508422]], 
+         [0.         0.04508422]],
         Name is:
         ['x', 'y']
         """
@@ -1508,28 +1525,28 @@ class AD:
         Returns
         -------
         AD object representing the result of sinh(self)
-        
+
         Examples
         --------
-        >>> x = x = AD(2,1,'x') 
-        >>> x.sinh() 
+        >>> x = x = AD(2,1,'x')
+        >>> x.sinh()
         Numerical Value is:
-        [[3.62686041]], 
+        [[3.62686041]],
         Jacobian is:
-        [[3.76219569]], 
+        [[3.76219569]],
         Name is:
         ['x']
 
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([x,y])
         >>> z.sinh()
         Numerical Value is:
         [[ 3.62686041]
-         [10.01787493]], 
+         [10.01787493]],
         Jacobian is:
         [[ 3.76219569  0.        ]
-         [ 0.         10.067662  ]], 
+         [ 0.         10.067662  ]],
         Name is:
         ['x', 'y']
         """
@@ -1547,28 +1564,28 @@ class AD:
         Returns
         -------
         AD object representing the result of cosh(self)
-        
+
         Examples
         --------
-        >>> x = x = AD(2,1,'x') 
-        >>> x.cosh() 
+        >>> x = x = AD(2,1,'x')
+        >>> x.cosh()
         Numerical Value is:
-        [[3.76219569]], 
+        [[3.76219569]],
         Jacobian is:
-        [[3.62686041]], 
+        [[3.62686041]],
         Name is:
         ['x']
 
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([x,y])
         >>> z.cosh()
         Numerical Value is:
         [[ 3.62686041]
-         [10.01787493]], 
+         [10.01787493]],
         Jacobian is:
         [[ 3.76219569  0.        ]
-         [ 0.         10.067662  ]], 
+         [ 0.         10.067662  ]],
         Name is:
         ['x', 'y']
         """
@@ -1587,28 +1604,28 @@ class AD:
         Returns
         -------
         AD object representing the result of tanh(self)
-        
+
         Examples
         --------
-        >>> x = x = AD(2,1,'x') 
-        >>> x.tanh() 
+        >>> x = x = AD(2,1,'x')
+        >>> x.tanh()
         Numerical Value is:
-        [[0.96402758]], 
+        [[0.96402758]],
         Jacobian is:
-        [[0.07065082]], 
+        [[0.07065082]],
         Name is:
         ['x']
 
-        >>> x = AD(2,1,'x') 
-        >>> y = AD(3,1,'y') 
+        >>> x = AD(2,1,'x')
+        >>> y = AD(3,1,'y')
         >>> z = AD([x,y])
         >>> z.tanh()
        Numerical Value is:
         [[0.96402758]
-         [0.99505475]], 
+         [0.99505475]],
         Jacobian is:
         [[0.07065082 0.        ]
-         [0.         0.00986604]], 
+         [0.         0.00986604]],
         Name is:
         ['x', 'y']
         """
@@ -1627,28 +1644,28 @@ class AD:
         Returns
         -------
         AD object representing the result of arcsin(self)
-        
+
         Examples
         --------
-        >>> x = AD(-0.5,1,'x') 
+        >>> x = AD(-0.5,1,'x')
         >>> x.arcsin()
         Numerical Value is:
-        [[-0.52359878]], 
+        [[-0.52359878]],
         Jacobian is:
-        [[1.15470054]], 
+        [[1.15470054]],
         Name is:
         ['x']
-        
-        >>> x = AD(-0.5,1,'x') 
+
+        >>> x = AD(-0.5,1,'x')
         >>> y = AD(0.5,1,'y')
         >>> z = AD([x,y])
         >>> z.arcsin()
         Numerical Value is:
         [[-0.52359878]
-         [ 0.52359878]], 
+         [ 0.52359878]],
         Jacobian is:
         [[1.15470054 0.        ]
-         [0.         1.15470054]], 
+         [0.         1.15470054]],
         Name is:
         ['x', 'y']
         """
@@ -1667,28 +1684,28 @@ class AD:
         Returns
         -------
         AD object representing the result of arccos(self)
-        
+
         Examples
         --------
-        >>> x = AD(-0.5,1,'x') 
+        >>> x = AD(-0.5,1,'x')
         >>> x.arccos()
         Numerical Value is:
-        [[2.0943951]], 
+        [[2.0943951]],
         Jacobian is:
-        [[-1.15470054]], 
+        [[-1.15470054]],
         Name is:
         ['x']
-        
-        >>> x = AD(-0.5,1,'x') 
+
+        >>> x = AD(-0.5,1,'x')
         >>> y = AD(0.5,1,'y')
         >>> z = AD([x,y])
         >>> z.arccos()
         Numerical Value is:
         [[2.0943951 ]
-         [1.04719755]], 
+         [1.04719755]],
         Jacobian is:
         [[-1.15470054 -0.        ]
-         [-0.         -1.15470054]], 
+         [-0.         -1.15470054]],
         Name is:
         ['x', 'y']
         """
@@ -1707,28 +1724,28 @@ class AD:
         Returns
         -------
         AD object representing the result of arctan(self)
-        
+
         Examples
         --------
-        >>> x = AD(-0.5,1,'x') 
+        >>> x = AD(-0.5,1,'x')
         >>> x.arctan()
         Numerical Value is:
-        [[-0.46364761]], 
+        [[-0.46364761]],
         Jacobian is:
-        [[0.8]], 
+        [[0.8]],
         Name is:
         ['x']
-        
-        >>> x = AD(-0.5,1,'x') 
+
+        >>> x = AD(-0.5,1,'x')
         >>> y = AD(0.5,1,'y')
         >>> z = AD([x,y])
         >>> z.arctan()
         Numerical Value is:
         [[-0.46364761]
-         [ 0.46364761]], 
+         [ 0.46364761]],
         Jacobian is:
         [[0.8 0. ]
-         [0.  0.8]], 
+         [0.  0.8]],
         Name is:
         ['x', 'y']
         """
@@ -1748,28 +1765,28 @@ class AD:
         Returns
         -------
         AD object representing the result of sigmoid(self)
-        
+
         Examples
         --------
-        >>> x = AD(-0.5,1,'x') 
+        >>> x = AD(-0.5,1,'x')
         >>> x.logistic()
         Numerical Value is:
-        [[0.37754067]], 
+        [[0.37754067]],
         Jacobian is:
-        [[0.23500371]], 
+        [[0.23500371]],
         Name is:
         ['x']
-        
-        >>> x = AD(-0.5,1,'x') 
+
+        >>> x = AD(-0.5,1,'x')
         >>> y = AD(0.5,1,'y')
         >>> z = AD([x,y])
         >>> z.logistic()
         Numerical Value is:
         [[0.37754067]
-         [0.62245933]], 
+         [0.62245933]],
         Jacobian is:
         [[0.23500371 0.        ]
-         [0.         0.23500371]], 
+         [0.         0.23500371]],
         Name is:
         ['x', 'y']
         """
@@ -1786,28 +1803,28 @@ class AD:
         Returns
         -------
         AD object representing the result of sigmoid(self)
-        
+
         Examples
         --------
-        >>> x = AD(25,1,'x') 
+        >>> x = AD(25,1,'x')
         >>> x.sqrt()
         Numerical Value is:
-        [[5.]], 
+        [[5.]],
         Jacobian is:
-        [[0.1]], 
+        [[0.1]],
         Name is:
         ['x']
-        
-        >>> x = AD(4,1,'x') 
+
+        >>> x = AD(4,1,'x')
         >>> y = AD(9,1,'y')
         >>> z = AD([x,y])
         >>> z.sqrt()
         Numerical Value is:
         [[2.]
-         [3.]], 
+         [3.]],
         Jacobian is:
         [[0.25       0.        ]
-         [0.         0.16666667]], 
+         [0.         0.16666667]],
         Name is:
         ['x', 'y']
         """
