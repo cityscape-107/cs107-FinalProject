@@ -213,8 +213,10 @@ class AD:
                         AD_jacobian.append(0)
                     # print('...', AD_jacobian)
                 global_jacobian.append(AD_jacobian)
+
+
             # if len(unique_names) != 0:
-            self.val = np.array(global_value)
+            self.val = np.array(global_value).reshape(-1, 1)
             self.der = np.array(global_jacobian)
             self.name = unique_names
             # else:
@@ -406,10 +408,10 @@ class AD:
                 if other.shape != self.val.shape:
                     raise ValueError('Cannot add arrays of different size')
                 else:
-                    for v in other:
+                    for v in other.flatten():
                         if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
                                            np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
-                            raise ValueError('Array entries must be int or float')
+                            raise TypeError('Array entries must be int or float')
                     else:
                         value = self.val + other
             elif isinstance(other, int) or isinstance(other, float):
@@ -668,7 +670,7 @@ class AD:
             name = new_names
         else:  # one of the coefficients of other is None, it is a constant
             if isinstance(other, np.ndarray):
-                for value in other:
+                for value in other.flatten():
                     if type(value) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
                                            np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
                             raise TypeError('Arrays must contain only integers or float')
@@ -805,9 +807,10 @@ class AD:
             if isinstance(other, np.ndarray):
                 if other.shape != self.val.shape:
                     raise TypeError('Input dimension mismatch')
-                for val in other:
-                    if not isinstance(val, float) and not isinstance(val, int):
-                        raise TypeError('The elements of the array should only be integers or floats')
+                for v in other.flatten():
+                    if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
+                                       np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
+                        raise TypeError('Array entries must be int or float')
                 if np.min(np.abs(other)) == 0:
                     raise ZeroDivisionError
                 new_value = self.val / other
@@ -944,8 +947,11 @@ class AD:
         elif isinstance(n, AD):  # n is an AD object
             value_base = self.val
             value_exponent = n.val
-            if not self.val.shape == n.val.shape and not isinstance(n.val, int) and not isinstance(n.val, float):
-                raise TypeError('Invalid Input type for the exponent')
+            if not self.val.shape == n.val.shape:
+                for v in n.val.flatten():
+                    if type(v) not in [int, float, np.int, np.int8, np.int16, np.int32, np.int64, \
+                                       np.uint8, np.uint16, np.uint32, np.uint64, np.float32, np.float64]:
+                        raise TypeError('Array entries must be int or float')
             for val_base, val_exponent in zip(value_base, value_exponent):
                 if val_base < 0 and 0 < val_exponent < 1:
                     raise ValueError('Illegal value and exponent')
