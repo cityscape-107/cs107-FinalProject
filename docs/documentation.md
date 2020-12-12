@@ -28,11 +28,9 @@ For instance, we are going to draw the graph of the function <img src="https://r
 ![images/imagesComputational_graph.jpeg](images/Computational_graph.jpeg)
 
 Therefore, the resulting quantity of interest can be explicitely expressed as a composition of several functions. In order to compute the derivative of these successive compositions, we are going to leverage a powerful mathematical tool: the **chain rule**.
-A simple version of the chain rule can be expressed as follows : for $f$ and $g$ two functions, 
+A simple version of the chain rule can be expressed as follows : for <img src="https://render.githubusercontent.com/render/math?math=$f$"> and <img src="https://render.githubusercontent.com/render/math?math=$g$"> two functions, 
 
 <img src="https://render.githubusercontent.com/render/math?math=$[f(g)]' = g'*f'(g)$">
-
-<!--  $[f(g)]' = g'*f'(g)$ -->
 
 Therefore, from the computational graph we have seen above, we can express the derivative of the function encoded at every node by computing the derivative of this elementary operation and multiplyingby the derivative of the inner function. We know that we are able to compute the derivative of the elementary operation from the derivative of the different atom functions. 
 Now, the question is to get the derivative of the inner function, that represents all the composition of the different operations encoded at every node until the current node. We do this iteratively, by applying at every node the chain rule with the previous composition operations. 
