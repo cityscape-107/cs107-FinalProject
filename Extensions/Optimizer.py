@@ -246,7 +246,7 @@ class Optimizer:
         accumulator = []
         final_values = []
         for _ in range(self.restarts):
-            if self.init:
+            if self.init is not None:
                 init_point = self.init
             else:
                 init_point = self.produce_random_points()
@@ -257,12 +257,14 @@ class Optimizer:
                 w = np.array(w)
             m = 0
             v = 0  # same as tf
+            self.trace_values = []
+            self.trace = []
             for t in range(1, int(self.max_iter)):
                 if not self.vectorize:
                     AD_function = self.init_function(*w)
                 else:
                     AD_function = self.init_function(w)
-                self.trace_values.append(AD_function.val)
+                self.trace_values.append(AD_function.val[0])
                 gradient = AD_function.der
                 self.trace_gradients.append(gradient)
                 if self.beta1 != 0 and self.beta2 != 0:  # want to perform a adam gradient descent
@@ -281,7 +283,7 @@ class Optimizer:
                     break
                 w = w - update  # weight update
                 w = w[0]
-                self.trace.append(w)
+                self.trace.append(np.array([w.val[0][0] for w in w]))  # fix we have made, to be checked
             self.num_iterations.append(t)
             final_value = [float(w.val) for w in w]
             if not self.vectorize:
@@ -386,7 +388,11 @@ class Adam(Optimizer):
     >>> f = lambda x, y, z: x ** 2 + y ** 2 + z ** 2
     >>> opt = Adam(f)
     """
-
+    def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
+                 step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0):
+        super(Adam, self).__init__(f, max_iter=max_iter, init_points=init_points, tolerance=1e-6, random_restarts=2, beta_1=0.9,
+                                      beta_2=0.999,
+                                      step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0)
     def __str__(self):
         if self.global_optimizer:
             if self.vectorize:
@@ -441,7 +447,7 @@ class RMSProp(Optimizer):
 
     def __init__(self, f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9, beta_2=0.999,
                  step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0):
-        super(RMSProp, self).__init__(f, max_iter=1e6, init_points=None, tolerance=1e-6, random_restarts=2, beta_1=0.9,
+        super(RMSProp, self).__init__(f, max_iter=max_iter, init_points=init_points, tolerance=1e-6, random_restarts=2, beta_1=0.9,
                                       beta_2=0.999,
                                       step_size=1e-3, epsilon=1e-8, tuning=False, verbose=0)
         self.beta1 = 0
