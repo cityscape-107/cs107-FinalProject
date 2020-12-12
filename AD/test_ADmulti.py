@@ -847,10 +847,6 @@ def test_rpow_array():
     assert z[0].val == 4
     assert z[0].der == 4 * np.log(2) * 3
 
-def test_rpow_arr():
-    x = AD(2, 3, 'x')
-    z = np.array([2,2,3,4]) ** x
-test_rpow_arr()
 
 def test_sqrt():
     x = AD(0, 1, 'x')
@@ -879,22 +875,18 @@ def test_order_paul():
     y = AD(2, 2, 'y')
     z = x + y
     z.sort(['x', 'y'])
+    assert z.name == ['x', 'y']
 
 
-def test_second():
-    x = AD(2, 1, 'x')
-    y = AD(3, 1, 'y')
-    z = AD([x, y])
 
-
-def test_third():
-    x = np.array([3])
-
-
-def test_add_constant_to_vec_1():
+def test_multi_dim_4():
     x = AD(1, 1, 'x')
-    a = AD(1, 1, 'a')
-    y = AD(3, 2, 'b')
-    z = AD(1, 1, 'c')
-    e = [y, z]
-    w = AD([x + a, y - a]) + np.array([1, 1]).reshape(2, 1)
+    y = AD(2, 2, 'y')
+    z = AD([y.cos()+x.cos(), y.tan()+x.tanh()])
+    z.sort(['x', 'y'])
+    np.testing.assert_allclose(z.val, np.array([0.12415547, -1.42344571]).reshape(2, 1), atol=1e-5)
+    np.testing.assert_allclose(z.der, np.array([[-0.84147098, -1.81859485], [0.41997434, 11.54879841]]), atol=1e-5)
+    assert z.name == ['x', 'y']
+
+
+
