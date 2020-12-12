@@ -333,7 +333,7 @@ Our `Optimizer()` class essentially builds a base gradient descent framework who
 - `descent()`, a function which actually runs our gradient descent algorithm to minimize a function. 
 
 We then inherit `Optimizer()` into 3 other classes: 
-- `Adam(Optimizer)`, which uses the default values we define for the parameters. By default, we have an adaptive learning rate for each weight that changes depending on the accumulated squared gradients until that iteration. Adam also keeps an exponentially decaying average of mast gradients, similar to momentum (a method that essentially helps accelerate gradient descent and reduces the oscillation). 
+- `Adam(Optimizer)`, which uses the default values we define for the parameters. By default, we have an adaptive learning rate for each weight that changes depending on the accumulated squared gradients until that iteration. Adam also keeps an exponentially decaying average of past gradients, similar to momentum (a method that essentially helps accelerate gradient descent and reduces the oscillation). 
 - `sgd(Optimizer)`, which reverts some of our default parameters that implemented "momentum"  for a standard, classic gradient descent method. This is stochastic gradient descent without any of our special parameters, like momentum, adaptive learning rate, etc. 
 
 - `RMSProp(Optimizer)`, which also (1) removes momentum and (2) adds an adaptive learning rate that changes depending on the accumulated squared gradients until that iteration (like in Adam). 
