@@ -188,12 +188,6 @@ Cityscape-107/
                         prev_milestone_docs/ #storage of previous milestone docs 
                         documentation.md
 
-                tests/ #tests
-                        __init__.py
-                        
-                        
-                        ...
-
                 examples/
                         ex_driver.py
                         NTRF_driver.py
@@ -221,11 +215,13 @@ By uploading our package to `PyPI` it will be easy to install just by simply wri
        $ pip install Cityscape
 
 #### 4. Testing 
-We will use the continuous integration tool `Travis-CI` linked to our GitHub project to automatically test changes before integrating them into the project. This will ensure that new changes are merged only if they pass the tests and do not break our code. Our directory `tests` consists of tests for our functionality. The `test_ADmulti.py` file, for example, contains many tests for the AD function.  
+We will use the continuous integration tool `Travis-CI` linked to our GitHub project to automatically test changes before integrating them into the project. This will ensure that new changes are merged only if they pass the tests and do not break our code. Our tests are located in the directories with the files they are covering. The `test_ADmulti.py` file, for example, which contains many tests for the AD function, is in the `AD` directory alongside `ADmulti.py`. 
 
 Additionally, `Codecov` will provide coverage reports of the tests performed i.e. the percentage of our code that the tests actually tested. After tests are successfully run by `Travis-CI` a report is sent to `Codecov`, which will show the test coverage of the code in our project repository. 
 
-#### 5. Packaging: How will you package your software? Will you use a framework? If so, which one and why? If not, why not?
+#### 5. Packaging: 
+
+<!--How will you package your software? Will you use a framework? If so, which one and why? If not, why not?-->
 ## jim, if you want to include any more PyPi details here, maybe
 
 
@@ -311,8 +307,7 @@ We want our weights to update so that they lower our error in our next iteration
 <img src="https://render.githubusercontent.com/render/math?math=$W_O = W_0 - \eta * \frac{\partial}{\partial W_0}$ ">
 
 
-<img src="https://render.githubusercontent.com/render/math?math=$W_1 = W_1 - \eta * \frac{\partial}{\partial W_1}$
-"> 
+<img src="https://render.githubusercontent.com/render/math?math=$W_1 = W_1 - \eta * \frac{\partial}{\partial W_1}$"> 
 
 We continue with these iterations until we have an error that is either 0 or below a certain threshold that we set for ourselves. 
 
@@ -342,10 +337,7 @@ Each of these classes have `__init__()` methods and `__str__()` methods.
 
 
 #### Other Examples: 
-We also implemented a driver for Newton's Root Finding Method for vector valued functions of vector variables. You can find this in the `examples` folder of our codebase. 
-
-## ^^^ Maybe add more about newton root finder? 
-
+We also implemented a driver for Newton's Root Finding Method for vector valued functions of vector variables. You can find this in the `examples` folder of our codebase. Newton's method, or the Newton-Raphson method, produces successively better approximations to the roots (or zeroes) of a real-valued function. It uses an initial guess and the function's derivative to approximate the root. 
 
 
 
